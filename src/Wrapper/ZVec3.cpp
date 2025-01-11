@@ -13,3 +13,12 @@ std::string ZVec3::getPos()
 {
     return std::to_string(this->posX) + " " + std::to_string(posZ) + " " + std::to_string(posY);
 }
+
+/*float ZVec3::getPosY()
+{
+    return this->posY;
+}
+
+void ZVec3::setPosY(float posY) {
+    this->posY = posY;
+}*/
