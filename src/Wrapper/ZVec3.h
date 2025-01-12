@@ -16,6 +16,9 @@ class ZVec3 {
 
         std::string getPos();
 
+        float getPosX();
+        float getPosZ();
+        float getPosY();
   /*      float getPosY();
         void setPosY(float posY);*/
 };

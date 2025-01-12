@@ -11,7 +11,7 @@ class zSTRING {
 
     public:
         zSTRING();
-
+        zSTRING(char* str);
         // Wrapper für den ursprünglichen Konstruktor
         void initialize(char* str);
 

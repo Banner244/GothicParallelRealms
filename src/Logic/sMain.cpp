@@ -1,5 +1,5 @@
 #include "sMain.h"
-
+#include <vector>
 sMain::sMain(){
 	InitTrainer();
 }
@@ -35,7 +35,7 @@ struct OCGameRef{
     void* pThis = *(void**)0x8DA6BC; // Adresse von oCGame
 }oCGame;
 
-struct OCNpc{
+/*struct OCNpc{
     typedef void(__thiscall * _InitModel)(void* pThis);
     _InitModel initModel;
 
@@ -79,7 +79,7 @@ struct OCNpc{
     _SetAdditionalVisuals setAdditionalVisuals;
 
     void* pThis = *(void**) 0x8DBBB0; // Adresse vom Player
-}oNpc;
+}oNpc;*/
 
 struct OCWorldRef {
 
@@ -128,19 +128,14 @@ struct ZCViewRef{
 }zCViewRef;
 
 
-struct OCObjectFactory {
-    typedef void*(__thiscall * _CreateNPC)(void* pThis, int param);
-    _CreateNPC createNpc;
 
-    void* pThis = *(void**)0x82c114;
-}oCObjectFactory;
 
 void initAddresses() {
     oCWorldRef.addVob = (OCWorldRef::_AddVob)(0x5f6340);
     oCWorldRef.getVobHashIndex = (OCWorldRef::_GetVobHashIndex)(0x5f9720);
     oCWorldRef.printStatus = (OCWorldRef::_PrintStatus)(0x5f6bf0);
 
-    oNpc.initModel = (OCNpc::_InitModel)(0x695020);
+    /*oNpc.initModel = (OCNpc::_InitModel)(0x695020);
     oNpc.setOnFloor = (OCNpc::_SetOnFloor)(0x6d43c0);
     oNpc.tSetPositionWorld = (OCNpc::_SetPositionWorld)(0x5ee650);
     oNpc.getPositionWorld = (OCNpc::_GetPositionWorld)(0x51b3c0);
@@ -153,9 +148,9 @@ void initAddresses() {
     oNpc.setPhysicsEnabled = (OCNpc::_SetPhysicsEnabled)(0x5efc20);
     oNpc.addVobToWorld = (OCNpc::_AddVobToWorld)(0x5d74f0);
     oNpc.enable = (OCNpc::_Enable)(0x6a2000);
-    oNpc.setAdditionalVisuals = (OCNpc::_SetAdditionalVisuals)(0x694ef0);
+    oNpc.setAdditionalVisuals = (OCNpc::_SetAdditionalVisuals)(0x694ef0);*/
 
-    oCObjectFactory.createNpc = (OCObjectFactory::_CreateNPC)(0x6c8560);
+    
 
     oCSpawnManager.spawnNpcVec = (OCSpawnManagerRef::_SpawnNpcVec)((0x6d0710));
     oCSpawnManager.spawnImmediately = (OCSpawnManagerRef::_SpawnImmediately)((0x6cf800));
@@ -183,17 +178,11 @@ void initAddresses() {
 
 void sMain::listenToKeys(ImGuiData &imGuiData){
     initAddresses();
-    
-	zSTRING modelName;
-    modelName.initialize("SCAVENGER.MDS"); //HUMANS.MDS 
-	std::cout << "zSTRING: " << modelName.getStr() << std::endl;
 
-    zSTRING body;
-    body.initialize("Sca_Body");
-    zSTRING head;
-    head.initialize("");
-
+    OCNpc *mainPlayer = new OCNpc(*(void**)ADDR_PLAYERBASE);
     ZVec3 tempPosition;
+    //std::vector<OCNpc*> listNpc;
+
 	while (true) {
 		Sleep(50);
 
@@ -204,12 +193,30 @@ void sMain::listenToKeys(ImGuiData &imGuiData){
 
         // Spawn dead Scavenger
 		if (GetAsyncKeyState(VK_DELETE) < 0){
-            oNpc.getPositionWorld(oNpc.pThis, &tempPosition);
+            /*oNpc.getPositionWorld(oNpc.pThis, &tempPosition);
             void *test = oCObjectFactory.createNpc(oCObjectFactory.pThis, -1);
 
             oNpc.setVisualWithString(test, &modelName);
             oNpc.setAdditionalVisuals(test, &body, 0, 0, &head, 0, 0, -1);
-            oNpc.enable(test, &tempPosition);
+            oNpc.enable(test, &tempPosition);*/
+
+           
+            mainPlayer->getPositionWorld(&tempPosition);
+            std::cout << tempPosition.getPos() << std::endl;
+
+            OCNpc *someOne = new OCNpc();//(OCNpc*)oCObjectFactory.createNpc(oCObjectFactory.pThis, -1);
+
+            Npc *npc = new Npc(someOne->getAddress2());
+            npc->setMaxHealth(10);
+            npc->setCurrentHealth(10);
+            
+            someOne->setVobName("SomeOne");
+            someOne->setVisualWithString("HUMANS.MDS");
+            //someOne->setAdditionalVisuals(&body, 0, 0, &head, 0, 0, -1); // scav.
+            someOne->setAdditionalVisuals("hum_body_Naked0", 9, 0, "Hum_Head_Pony", 2, 0, -1);
+
+            someOne->enable(&tempPosition);
+
             std::cout << "Successfully Spawned!" << std::endl;
 
             Sleep(100);
