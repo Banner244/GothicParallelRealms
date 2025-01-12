@@ -8,7 +8,6 @@ void sMain::InitTrainer() {
 	player = new Player();
 }
 
-
 struct OCGameRef{
     typedef void(__thiscall * _Func)(void* pThis);
     _Func pause;
@@ -37,7 +36,7 @@ struct OCGameRef{
 }oCGame;
 
 struct OCNpc{
-    typedef void*(__thiscall * _InitModel)(void* pThis);
+    typedef void(__thiscall * _InitModel)(void* pThis);
     _InitModel initModel;
 
     typedef void*(__thiscall * _SetOnFloor)(void* pThis, ZVec3 * vec);
@@ -49,15 +48,56 @@ struct OCNpc{
     typedef void(__thiscall *_GetPositionWorld)(void *pThis, ZVec3 * param1);
     _GetPositionWorld getPositionWorld;
 
+    typedef void(__thiscall *_SetVisual)(void *pThis, void * visual);
+    _SetVisual setVisual;
 
-    void* pThis = *(void**) 0x8DBBB0; // Adresse von 
+    typedef void(__thiscall *_SetVisualWithString)(void *pThis, zSTRING * visual);
+    _SetVisualWithString setVisualWithString;
+
+    typedef void*(__thiscall * _GetVisual)(void* pThis);
+    _GetVisual getVisual;
+
+     typedef void(__thiscall * _SetStaticVob)(void* pThis, int param1); // param1 = 1
+    _SetStaticVob setStaticVob;
+
+    typedef void(__thiscall * _SetDrawBBox3D)(void* pThis, int param1); // param1 = 1
+    _SetDrawBBox3D setDrawBBox3D;
+
+    typedef void(__thiscall * _SetPhysicsEnabled)(void* pThis, int param1); // param1 = 1
+    _SetPhysicsEnabled setPhysicsEnabled;
+
+    typedef void(__thiscall * _SetVobID)(void* pThis, unsigned long ID);
+    _SetVobID setVobID;
+
+    typedef void*(__thiscall * _AddVobToWorld)(void* pThis);
+    _AddVobToWorld addVobToWorld;
+
+    typedef void(__thiscall *_Enable)(void *pThis, ZVec3 * param1);
+    _Enable enable;
+
+    typedef void(__thiscall *_SetAdditionalVisuals)(void *pThis, zSTRING * textureBody, int param2, int param3, zSTRING * textureHead, int param5, int param6, int param7);
+    _SetAdditionalVisuals setAdditionalVisuals;
+
+    void* pThis = *(void**) 0x8DBBB0; // Adresse vom Player
 }oNpc;
+
+struct OCWorldRef {
+
+    typedef void(__thiscall *_AddVob)(void *pThis, void * vobParam);
+    _AddVob addVob;
+
+     typedef unsigned long(__thiscall *_GetVobHashIndex)(void *pThis, void * vobParam);
+    _GetVobHashIndex getVobHashIndex;
+
+    typedef void(__thiscall *_PrintStatus)(void *pThis);
+    _PrintStatus printStatus;
+
+    void* pThis = *(void**)(((uintptr_t)oCGame.pThis) + 0x8c);  // WORKS TOO
+}oCWorldRef;
 
 
 struct OCSpawnManagerRef{
-    bool isSpawningEnabled;
-
-    typedef void(__thiscall * _SummonNpc)(void* pThis, int param1, ZVec3 * coords, float param3);
+    typedef void*(__thiscall * _SummonNpc)(void* pThis, int param1, ZVec3 * coords, float param3);
     _SummonNpc summonNpc;
 
     typedef void(__thiscall * _SpawnImmediately)(void* pThis, int param1);
@@ -67,11 +107,8 @@ struct OCSpawnManagerRef{
     typedef void(__thiscall * _SpawnNpcString)(void* pThis, void *npc, zSTRING * coords, float param3);
     _SpawnNpcString spawnNpcString;
 
-
     // Getting the base address of oCGame and adding offset to turn it into oCSpawnManager
     void* pThis = *(void**)(((uintptr_t)oCGame.pThis) + 0x134);
-    // spawn func 
-    //void* pThis = *(void**) (0x8DA6BC + 0x134); // Adresse von oCSpawnManager (894a04) 0x54ebe0  0x6373d3
 }oCSpawnManager;
 
 struct ZCViewRef{
@@ -99,128 +136,93 @@ struct OCObjectFactory {
 }oCObjectFactory;
 
 void initAddresses() {
-// Reverse  engineering zSTRING and calling the print function!
+    oCWorldRef.addVob = (OCWorldRef::_AddVob)(0x5f6340);
+    oCWorldRef.getVobHashIndex = (OCWorldRef::_GetVobHashIndex)(0x5f9720);
+    oCWorldRef.printStatus = (OCWorldRef::_PrintStatus)(0x5f6bf0);
 
     oNpc.initModel = (OCNpc::_InitModel)(0x695020);
     oNpc.setOnFloor = (OCNpc::_SetOnFloor)(0x6d43c0);
     oNpc.tSetPositionWorld = (OCNpc::_SetPositionWorld)(0x5ee650);
     oNpc.getPositionWorld = (OCNpc::_GetPositionWorld)(0x51b3c0);
+    oNpc.setVisual = (OCNpc::_SetVisual)(0x05d6e10);
+    oNpc.setVisualWithString = (OCNpc::_SetVisualWithString)(0x5d6fa0);
+    oNpc.getVisual = (OCNpc::_GetVisual)(0x5e9a70);
+    oNpc.setVobID = (OCNpc::_SetVobID)(0x5d3720);
+    oNpc.setStaticVob = (OCNpc::_SetStaticVob)(0x645000);
+    oNpc.setDrawBBox3D = (OCNpc::_SetDrawBBox3D)(0x645030);
+    oNpc.setPhysicsEnabled = (OCNpc::_SetPhysicsEnabled)(0x5efc20);
+    oNpc.addVobToWorld = (OCNpc::_AddVobToWorld)(0x5d74f0);
+    oNpc.enable = (OCNpc::_Enable)(0x6a2000);
+    oNpc.setAdditionalVisuals = (OCNpc::_SetAdditionalVisuals)(0x694ef0);
 
     oCObjectFactory.createNpc = (OCObjectFactory::_CreateNPC)(0x6c8560);
 
-    oCSpawnManager.isSpawningEnabled = *(bool*)((uintptr_t)oCSpawnManager.pThis + 0xC);
-    /* NPC SPAWN INIT */
     oCSpawnManager.spawnNpcVec = (OCSpawnManagerRef::_SpawnNpcVec)((0x6d0710));
     oCSpawnManager.spawnImmediately = (OCSpawnManagerRef::_SpawnImmediately)((0x6cf800));
     oCSpawnManager.spawnNpcString = (OCSpawnManagerRef::_SpawnNpcString)((0x6d04c0));
-
     oCSpawnManager.summonNpc = (OCSpawnManagerRef::_SummonNpc)((0x6d0350));
 
-    //oCSpawnManager =  638b50
-    //oCGame.getSpawnManager = (OCGameRef::_GetSpawnManager)(oCGame.pThis + 0x134); //(OCGameRef::_GetSpawnManager)(0x638b50);
+    zCViewRef.open = (ZCViewRef::_Open)(0x006fd070); // does something...
+    zCViewRef.printwin = (ZCViewRef::_Printwin)((0x700d20)); 
+    zCViewRef.printTimed = (ZCViewRef::_PrintTimed)((0x6fe1a0)); 
+    zCViewRef.printMessage = (ZCViewRef::_PrintMessage)(0x6fe5c0);
 
-
+    oCGame.pause = (OCGameRef::_Func)( 0x7dcc48);
+    oCGame.unPause = (OCGameRef::_Func)( (*(DWORD*)0x7dcc4c));
+    oCGame.openSaveScreen = (OCGameRef::_FuncOneParam)( (*(DWORD*)0x7dcc88));
+    oCGame.getDrawWaynet = (OCGameRef::_RetFunc) ((*(DWORD*)0x7dcc54));
+    oCGame.init = (OCGameRef::_Func)( (*(DWORD*)0x7dcbf4)); 
+    oCGame.openView = (OCGameRef::_RetFunc2)(0x425d4d);
+    oCGame.enterWorld = (OCGameRef::_EnterWorld)(0x63ead0);
 
     globalFunction.printDebug = (GlobalFunctions::_PrintDebug)(0x645280);
     globalFunction.stdPrintWin = (GlobalFunctions::_StdPrintwin)(0x6fc420);
-
-    globalFunction.print = (GlobalFunctions::_Print)(0x756e00); // Nothing happens ...
-
-    zCViewRef.open = (ZCViewRef::_Open)(0x006fd070); // does something...
-
-    zCViewRef.printwin = (ZCViewRef::_Printwin)((0x700d20)); // No crash but no result...
-    zCViewRef.printTimed = (ZCViewRef::_PrintTimed)((0x6fe1a0)); // No crash but no result...
-    zCViewRef.printMessage = (ZCViewRef::_PrintMessage)(0x6fe5c0);
-
-    // Work
+    globalFunction.print = (GlobalFunctions::_Print)(0x756e00);
     globalFunction.openCheatConsole = (GlobalFunctions::_CheatConsole)(0x647129);
-    oCGame.pause = (OCGameRef::_Func)( 0x7dcc48);
-    //oCGame.unPause = (CCGameRef::_Func)( (*(DWORD*)0x7dcc4c));
-    //oCGame.openSaveScreen = (CCGameRef::_FuncOneParam)( (*(DWORD*)0x7dcc88));
-    //oCGame.getDrawWaynet = (CCGameRef::_RetFunc) ((*(DWORD*)0x7dcc54));
-
-    //oCGame.init = (CCGameRef::_Func)( (*(DWORD*)0x7dcbf4)); // works ??
-
-    // Do not work
-    //oCGame.getShowPlayerStatus = (CCGameRef::_RetFunc) ((*(DWORD*)0x8DA6BC + 0x9c) );
-    oCGame.openView = (OCGameRef::_RetFunc2)(0x425d4d);
-
-    oCGame.enterWorld = (OCGameRef::_EnterWorld)(0x63ead0);
 }
-
 
 void sMain::listenToKeys(ImGuiData &imGuiData){
     initAddresses();
     
-	zSTRING myString;
-    		myString.initialize("VLK_502_BUDDLER");
-			std::cout << "zSTRING: " << myString.getStr() << std::endl;
+	zSTRING modelName;
+    modelName.initialize("SCAVENGER.MDS"); //HUMANS.MDS 
+	std::cout << "zSTRING: " << modelName.getStr() << std::endl;
 
-    // In GOTHIC: X; Z; Y
-    ZVec3 vec;
+    zSTRING body;
+    body.initialize("Sca_Body");
+    zSTRING head;
+    head.initialize("");
 
-            float posx = -10112.5f;//4350;
-            float posz = -900;//6048;
-            float posy = 7768;//28454;
-            vec.initialize(posx, posz, posy);
-            //vec.initialize(player->getX(), player->getZ(), player->getY());
-            std::cout << "Vec Init: " << vec.getPos() << std::endl;    
-
-    ZCOLOR color;
-    //OCSpawnManager spanwManager;
-
+    ZVec3 tempPosition;
 	while (true) {
 		Sleep(50);
 
+        // Tp to Old Camp
         if(GetAsyncKeyState(VK_RSHIFT) < 0) {
             player->setPlayerPosition(-10112.5f, 7768, -900);
         }
 
+        // Spawn dead Scavenger
 		if (GetAsyncKeyState(VK_DELETE) < 0){
-            ZVec3 temp;
-            oNpc.getPositionWorld(oNpc.pThis, &temp);
-
-            std::cout << "Vec Player OCNPC Getter: " << temp.getPos() << std::endl;    
-
-            //oCSpawnManager.spawnImmediately(oCSpawnManager.pThis, 1);
-            //std::cout << "IsSpawningEnabled: " << oCSpawnManager.isSpawningEnabled<< std::endl;
+            oNpc.getPositionWorld(oNpc.pThis, &tempPosition);
             void *test = oCObjectFactory.createNpc(oCObjectFactory.pThis, -1);
-            
-            //oNpc.setOnFloor(test, &temp);
 
-            //oCSpawnManager.spawnNpcString(oCSpawnManager.pThis, newNpc, &myString, 0.0);
-            //oCSpawnManager.spawnNpcVec(oCSpawnManager.pThis, test, &temp, 0.0f);
-            //oCSpawnManager.spawnImmediately(oCSpawnManager.pThis, 1);
+            oNpc.setVisualWithString(test, &modelName);
+            oNpc.setAdditionalVisuals(test, &body, 0, 0, &head, 0, 0, -1);
+            oNpc.enable(test, &tempPosition);
+            std::cout << "Successfully Spawned!" << std::endl;
 
-            //oNpc.initModel(test);
-            //oNpc.getPositionWorld(test, &temp);
-            oCGame.enterWorld(oCGame.pThis, test, 0, &myString);
-            std::cout << "Ob. Factory: " << temp.getPos() << std::endl;    
-
-            //oCSpawnManager.summonNpc(oCSpawnManager.pThis, -1, &vec, 0.0f);
-
-            //spanwManager.initialize();
-            //std::cout << "spanwManager: SUCCESS"  << std::endl; 
-            //spanwManager.spawnImmediately(1);
-            //oCSpawnManager.spawnImmediately(oCSpawnManager.pThis, 1);
-
-            //spanwManager.spawnNpcVec(oNpc.pThis, &vec, 0.0f);
-
-            //zCViewRef.printwin(zCViewRef.pThis, &myString);
-            //zCViewRef.printTimed(zCViewRef.pThis, 100, 300, &myString, 3000.0f, &color);
-            //zCViewRef.printMessage(zCViewRef.pThis, &myString, &myString, 3000.0f, &color);
             Sleep(100);
 		}
 
-
-
+        // Hide/Show Menu
 		if (GetKeyState(VK_HOME) < 0){
 			imGuiData.toggleGuiVisibility();
-			std::cout << "PRessed Home" << std::endl;
+			std::cout << "Pressed Home" << std::endl;
 			Sleep(100);
 		}
 
-
+        // Ejects the DLL
 		if (GetAsyncKeyState(VK_END)) {
 			break;
 		}

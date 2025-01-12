@@ -15,4 +15,7 @@ class ZVec3 {
         void initialize(float posX, float posZ, float posY);
 
         std::string getPos();
+
+  /*      float getPosY();
+        void setPosY(float posY);*/
 };
