@@ -5,7 +5,7 @@ sMain::sMain(){
 }
 
 void sMain::InitTrainer() {
-	player = new Player();
+
 }
 
 struct OCGameRef{
@@ -115,8 +115,9 @@ void initAddresses() {
 
 void sMain::listenToKeys(ImGuiData &imGuiData){
     initAddresses();
-
-    OCNpc *mainPlayer = new OCNpc(*(void**)ADDR_PLAYERBASE);
+    
+    Npc * mainPlayer = new Npc(ADDR_PLAYERBASE);
+    //OCNpc *mainPlayer = new OCNpc(*(void**)ADDR_PLAYERBASE);
     ZVec3 tempPosition;
     //std::vector<OCNpc*> listNpc;
 
@@ -125,12 +126,13 @@ void sMain::listenToKeys(ImGuiData &imGuiData){
 
         // Tp to Old Camp
         if(GetAsyncKeyState(VK_RSHIFT) < 0) {
-            player->setPlayerPosition(-10112.5f, 7768, -900);
+            mainPlayer->setPlayerPosition(-10112.5f, 7768, -900);
+            std::cout << "Teleported to Old Camp" << std::endl;
         }
 
         // Spawn dead Scavenger
 		if (GetAsyncKeyState(VK_DELETE) < 0){
-            mainPlayer->getPositionWorld(&tempPosition);
+            mainPlayer->oCNpc->getPositionWorld(&tempPosition);
             std::cout << tempPosition.getPos() << std::endl;
 
             Npc * npc = new Npc();
@@ -140,19 +142,18 @@ void sMain::listenToKeys(ImGuiData &imGuiData){
             npc->oCNpc->setAdditionalVisuals("hum_body_Naked0", 9, 0, "Hum_Head_Pony", 2, 0, -1);
 
             npc->oCNpc->enable(&tempPosition);
-            Sleep(100);
 		}
 
         // Hide/Show Menu
 		if (GetKeyState(VK_HOME) < 0){
 			imGuiData.toggleGuiVisibility();
 			std::cout << "Pressed Home" << std::endl;
-			Sleep(100);
 		}
 
         // Ejects the DLL
 		if (GetAsyncKeyState(VK_END)) {
 			break;
 		}
+        Sleep(100);
 	}
 }

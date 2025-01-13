@@ -13,6 +13,7 @@ file(GLOB SOURCES "src/*.cpp")
 file(GLOB MODELS_SOURCES "src/Models/*.cpp")
 file(GLOB LOGIC_SOURCES "src/Logic/*.cpp")
 file(GLOB WRAPPER_SOURCES "src/Wrapper/*.cpp")
+file(GLOB NETWORK_SOURCES "src/Network/*.cpp")
 
 # Dear ImGui Quellen und Header definieren
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/imgui)
@@ -47,7 +48,7 @@ set(MINHOOK_LIB ${MINHOOK_DIR}/libMinHook.x86.lib)
 #endif()
 
 # Bibliothek erstellen (DLL)
-add_library(MyDLL SHARED ${SOURCES} ${IMGUI_SOURCES} ${MODELS_SOURCES} ${LOGIC_SOURCES} ${WRAPPER_SOURCES})
+add_library(MyDLL SHARED ${SOURCES} ${IMGUI_SOURCES} ${MODELS_SOURCES} ${LOGIC_SOURCES} ${WRAPPER_SOURCES} ${NETWORK_SOURCES})
 
 # Include-Verzeichnisse hinzufügen
 target_include_directories(MyDLL PUBLIC

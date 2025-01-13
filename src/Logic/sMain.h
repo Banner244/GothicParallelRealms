@@ -24,11 +24,7 @@ class sMain
 	private:
 		//~sMain();
 		void InitTrainer();
-	
-		Player *player;
-
 	public:
 		sMain();
-
 		void listenToKeys(ImGuiData &imGuiData);
 };
