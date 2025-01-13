@@ -6,6 +6,11 @@ _zSTRINGCtor zSTRINGCTor;
 zSTRING::zSTRING() : data(nullptr), length(0), capacity(0) {
     
 }
+zSTRING::zSTRING(char * str) : data(nullptr), length(0), capacity(0) {
+    zSTRINGCTor = (_zSTRINGCtor)(0x4013a0);
+    zSTRINGCTor(this, str);
+}
+
 
 // Wrapper für den ursprünglichen Konstruktor
 void zSTRING::initialize(char *str)
