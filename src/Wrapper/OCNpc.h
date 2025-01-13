@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 
 #include "ZVec3.h"
@@ -22,6 +24,9 @@ public:
     using _Enable = void(__thiscall *)(void *pThis, ZVec3 *param1);
     using _SetAdditionalVisuals = void(__thiscall *)(void *pThis, zSTRING *textureBody, int param2, int param3, zSTRING *textureHead, int param5, int param6, int param7);
     using _SetVobName = void(__thiscall *)(void *pThis, zSTRING *vobName);
+    using _SetByScriptInstance = int(__thiscall *)(void *pThis, zSTRING *visual, int param2);
+    
+    
     // Funktionpointer für die Methoden des NPCs
     _OCNpcCtor oCNpcCtorRef;
     _InitModel initModelRef;
@@ -39,6 +44,7 @@ public:
     _Enable enableRef;
     _SetAdditionalVisuals setAdditionalVisualsRef;
     _SetVobName setVobNameRef;
+    _SetByScriptInstance setByScriptInstanceRef;
 
 private:
     void *pThis = nullptr; // Pointer to the NPC-Instance in memory
@@ -70,10 +76,13 @@ public:
 
     void setVobName(char * vobName);
 
+    void setByScriptInstance(char * name, int param2);
+
     void enable(ZVec3 *pos);
 
     void setPosition(const ZVec3 *position);
 
     // Beispielmethode, um den NPC zu manipulieren
     void getPositionWorld(ZVec3 *position);
+
 };

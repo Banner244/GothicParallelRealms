@@ -1,7 +1,13 @@
 #include "Npc.h"
 
-Npc::Npc(uintptr_t npcAddress): npcBaseAddress(npcAddress) {
 
+Npc::Npc(){
+	oCNpc = new OCNpc();
+	npcBaseAddress = oCNpc->getAddress2();
+}
+
+Npc::Npc(uintptr_t npcAddress): npcBaseAddress(npcAddress) {
+	oCNpc = new OCNpc((void*)npcAddress);
 }
 
 template <typename T>

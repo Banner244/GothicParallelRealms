@@ -27,6 +27,7 @@ void OCNpc::initializeFunctionPointers()
     enableRef = reinterpret_cast<_Enable>(0x6a2000);
     setAdditionalVisualsRef = reinterpret_cast<_SetAdditionalVisuals>(0x694ef0);
     setVobNameRef = reinterpret_cast<_SetVobName>(0x5d4970);
+    setByScriptInstanceRef = reinterpret_cast<_SetByScriptInstance>(0x6a1bf0);
 }
 
 OCNpc::OCNpc(void *existingAddress) : pThis(existingAddress)
@@ -73,6 +74,13 @@ void OCNpc::setVobName(char * vobName) {
 
     setVobNameRef(pThis, name);
 }
+
+void OCNpc::setByScriptInstance(char * nameS, int param2){
+    zSTRING *name = new zSTRING(nameS);
+
+    setByScriptInstanceRef(pThis, name, param2);
+}
+
 
 void OCNpc::enable(ZVec3 *pos)
 {

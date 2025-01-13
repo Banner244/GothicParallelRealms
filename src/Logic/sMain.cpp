@@ -35,52 +35,6 @@ struct OCGameRef{
     void* pThis = *(void**)0x8DA6BC; // Adresse von oCGame
 }oCGame;
 
-/*struct OCNpc{
-    typedef void(__thiscall * _InitModel)(void* pThis);
-    _InitModel initModel;
-
-    typedef void*(__thiscall * _SetOnFloor)(void* pThis, ZVec3 * vec);
-    _SetOnFloor setOnFloor;
-
-    typedef void(__thiscall *_SetPositionWorld)(void *pThis, ZVec3 * param1);
-    _SetPositionWorld tSetPositionWorld;
-
-    typedef void(__thiscall *_GetPositionWorld)(void *pThis, ZVec3 * param1);
-    _GetPositionWorld getPositionWorld;
-
-    typedef void(__thiscall *_SetVisual)(void *pThis, void * visual);
-    _SetVisual setVisual;
-
-    typedef void(__thiscall *_SetVisualWithString)(void *pThis, zSTRING * visual);
-    _SetVisualWithString setVisualWithString;
-
-    typedef void*(__thiscall * _GetVisual)(void* pThis);
-    _GetVisual getVisual;
-
-     typedef void(__thiscall * _SetStaticVob)(void* pThis, int param1); // param1 = 1
-    _SetStaticVob setStaticVob;
-
-    typedef void(__thiscall * _SetDrawBBox3D)(void* pThis, int param1); // param1 = 1
-    _SetDrawBBox3D setDrawBBox3D;
-
-    typedef void(__thiscall * _SetPhysicsEnabled)(void* pThis, int param1); // param1 = 1
-    _SetPhysicsEnabled setPhysicsEnabled;
-
-    typedef void(__thiscall * _SetVobID)(void* pThis, unsigned long ID);
-    _SetVobID setVobID;
-
-    typedef void*(__thiscall * _AddVobToWorld)(void* pThis);
-    _AddVobToWorld addVobToWorld;
-
-    typedef void(__thiscall *_Enable)(void *pThis, ZVec3 * param1);
-    _Enable enable;
-
-    typedef void(__thiscall *_SetAdditionalVisuals)(void *pThis, zSTRING * textureBody, int param2, int param3, zSTRING * textureHead, int param5, int param6, int param7);
-    _SetAdditionalVisuals setAdditionalVisuals;
-
-    void* pThis = *(void**) 0x8DBBB0; // Adresse vom Player
-}oNpc;*/
-
 struct OCWorldRef {
 
     typedef void(__thiscall *_AddVob)(void *pThis, void * vobParam);
@@ -135,23 +89,6 @@ void initAddresses() {
     oCWorldRef.getVobHashIndex = (OCWorldRef::_GetVobHashIndex)(0x5f9720);
     oCWorldRef.printStatus = (OCWorldRef::_PrintStatus)(0x5f6bf0);
 
-    /*oNpc.initModel = (OCNpc::_InitModel)(0x695020);
-    oNpc.setOnFloor = (OCNpc::_SetOnFloor)(0x6d43c0);
-    oNpc.tSetPositionWorld = (OCNpc::_SetPositionWorld)(0x5ee650);
-    oNpc.getPositionWorld = (OCNpc::_GetPositionWorld)(0x51b3c0);
-    oNpc.setVisual = (OCNpc::_SetVisual)(0x05d6e10);
-    oNpc.setVisualWithString = (OCNpc::_SetVisualWithString)(0x5d6fa0);
-    oNpc.getVisual = (OCNpc::_GetVisual)(0x5e9a70);
-    oNpc.setVobID = (OCNpc::_SetVobID)(0x5d3720);
-    oNpc.setStaticVob = (OCNpc::_SetStaticVob)(0x645000);
-    oNpc.setDrawBBox3D = (OCNpc::_SetDrawBBox3D)(0x645030);
-    oNpc.setPhysicsEnabled = (OCNpc::_SetPhysicsEnabled)(0x5efc20);
-    oNpc.addVobToWorld = (OCNpc::_AddVobToWorld)(0x5d74f0);
-    oNpc.enable = (OCNpc::_Enable)(0x6a2000);
-    oNpc.setAdditionalVisuals = (OCNpc::_SetAdditionalVisuals)(0x694ef0);*/
-
-    
-
     oCSpawnManager.spawnNpcVec = (OCSpawnManagerRef::_SpawnNpcVec)((0x6d0710));
     oCSpawnManager.spawnImmediately = (OCSpawnManagerRef::_SpawnImmediately)((0x6cf800));
     oCSpawnManager.spawnNpcString = (OCSpawnManagerRef::_SpawnNpcString)((0x6d04c0));
@@ -193,32 +130,16 @@ void sMain::listenToKeys(ImGuiData &imGuiData){
 
         // Spawn dead Scavenger
 		if (GetAsyncKeyState(VK_DELETE) < 0){
-            /*oNpc.getPositionWorld(oNpc.pThis, &tempPosition);
-            void *test = oCObjectFactory.createNpc(oCObjectFactory.pThis, -1);
-
-            oNpc.setVisualWithString(test, &modelName);
-            oNpc.setAdditionalVisuals(test, &body, 0, 0, &head, 0, 0, -1);
-            oNpc.enable(test, &tempPosition);*/
-
-           
             mainPlayer->getPositionWorld(&tempPosition);
             std::cout << tempPosition.getPos() << std::endl;
 
-            OCNpc *someOne = new OCNpc();//(OCNpc*)oCObjectFactory.createNpc(oCObjectFactory.pThis, -1);
-
-            Npc *npc = new Npc(someOne->getAddress2());
-            npc->setMaxHealth(10);
+            Npc * npc = new Npc();
             npc->setCurrentHealth(10);
-            
-            someOne->setVobName("SomeOne");
-            someOne->setVisualWithString("HUMANS.MDS");
-            //someOne->setAdditionalVisuals(&body, 0, 0, &head, 0, 0, -1); // scav.
-            someOne->setAdditionalVisuals("hum_body_Naked0", 9, 0, "Hum_Head_Pony", 2, 0, -1);
+            npc->setMaxHealth(10);
+            npc->oCNpc->setVisualWithString("HUMANS.MDS");
+            npc->oCNpc->setAdditionalVisuals("hum_body_Naked0", 9, 0, "Hum_Head_Pony", 2, 0, -1);
 
-            someOne->enable(&tempPosition);
-
-            std::cout << "Successfully Spawned!" << std::endl;
-
+            npc->oCNpc->enable(&tempPosition);
             Sleep(100);
 		}
 
