@@ -1,3 +1,4 @@
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <iostream>
 
@@ -7,10 +8,12 @@
 #pragma comment(lib, "d3d11.lib")
 
 
+
 #include "Models/ImGuiData.h"
 #include "Logic/ImGuiManager.h"
 #include "Logic/sMain.h"
 
+//#include "Network/HandleConnection.h"
 
 // Globals
 HINSTANCE dll_handle;

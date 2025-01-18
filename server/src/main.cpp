@@ -16,11 +16,18 @@ struct ClientInfo {
 
 std::unordered_map<std::string, ClientInfo> clients;
 
+std::string getClientUniqueString(udp::endpoint clientEndpoint) {
+    std::string clientPortIp =clientEndpoint.address().to_string()+ ":";// clientEndpoint.address().to_string() + ":" + clientEndpoint.port();
+    clientPortIp += std::to_string(clientEndpoint.port());
+    return clientPortIp;
+}
+
 void addNewClient(udp::endpoint clientEndpoint){
     ClientInfo newClient;
     newClient.endpoint = clientEndpoint;
+    std::string clientPortIp = getClientUniqueString(clientEndpoint);
 
-    std::string clientPortIp = clientEndpoint.address().to_string();
+    std::cout << "Added new Client: " << clientPortIp << "\n";
     clients[clientPortIp] = newClient;
 
         //std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -36,20 +43,29 @@ void handleBuffer(udp::socket *socket, udp::endpoint clientEndpoint, std::string
     data.deserialize(buffer);
     std::cout << "ID: "<< data.id << "\n";
 
-    for (const auto& [key, clientInfo] : clients) {
-        std::cout << "\t Going through loop " << "\n";
-        if(key == clientEndpoint.address().to_string())
-            continue;
+
+    if(data.id == 101) {
+
+        for (const auto& [key, clientInfo] : clients) {
         
-        std::string msg = "Does it work?";
-        socket->send_to(boost::asio::buffer(msg), clientInfo.endpoint);
-        //std::cout << "Key: " << key << ", Client ID: " << clientInfo.id << "\n";
+            std::string clientPortIp = getClientUniqueString(clientEndpoint);
+            if(key == clientPortIp)
+                continue;
+            
+            std::cout << "\t" << key << " | " << clientPortIp << "\n";
+
+            //std::string msg = "X: " + data.names.at(0) + ", Z: " + data.names.at(1) +", Y: " + data.names.at(2);
+            Data package102;
+            package102.id = 102;
+            package102.names.push_back(clientPortIp);
+            package102.names.push_back(data.names.at(0));
+            package102.names.push_back(data.names.at(1));
+            package102.names.push_back(data.names.at(2));
+
+            socket->send_to(boost::asio::buffer(package102.serialize()), clientInfo.endpoint);
+            std::cout << package102.serialize() << "\n";
+        }
     }
-
-    /*for(int i =0; i< data.names.size(); i++){
-        std::cout << data.id << data.names.at(i) << "\n";
-    }*/
-
 }
 
 int main() {

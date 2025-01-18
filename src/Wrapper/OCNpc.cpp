@@ -89,6 +89,13 @@ void OCNpc::enable(ZVec3 *pos)
     enableRef(pThis, pos);
 }
 
+void OCNpc::enableWithdCoords(float x, float z, float y)
+{
+    this->pos = new ZVec3();
+    this->pos->initialize(x, z, y);
+    enableRef(pThis, pos);
+}
+
 void OCNpc::setPosition(const ZVec3 *position)
 {
 

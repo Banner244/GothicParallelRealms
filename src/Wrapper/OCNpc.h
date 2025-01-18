@@ -80,6 +80,8 @@ public:
 
     void enable(ZVec3 *pos);
 
+    void enableWithdCoords(float x, float z, float y);
+
     void setPosition(const ZVec3 *position);
 
     // Beispielmethode, um den NPC zu manipulieren

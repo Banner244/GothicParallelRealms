@@ -5,6 +5,48 @@ project(MyDLL)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
+# |--------------------------Network shit----------------------------| # 
+
+if(POLICY CMP0144)
+    cmake_policy(SET CMP0144 NEW)
+endif()
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 OLD) # Für Kompatibilität mit dem alten FindBoost-Modul
+endif()
+
+
+if(WIN32)
+    add_definitions(-D_WIN32_WINNT=0x0A00) # config for win 10
+    # Boost konfigurieren
+    set(BOOST_ROOT "C:/Program Files/boost_1_87_0")
+    set(BOOST_INCLUDEDIR "${BOOST_ROOT}/boost")
+    set(BOOST_LIBRARYDIR "${BOOST_ROOT}/stage/lib")
+elseif(UNIX)
+    # Linux-spezifische Einstellungen
+    set(BOOST_INCLUDEDIR "/usr/include")
+    set(BOOST_LIBRARYDIR "/usr/lib")
+endif()
+
+
+find_package(Boost REQUIRED COMPONENTS system)
+
+if(Boost_FOUND)
+    message(STATUS "Boost gefunden: ${Boost_VERSION}")
+    message(STATUS "Boost Include-Verzeichnis: ${Boost_INCLUDE_DIRS}")
+    message(STATUS "Boost Bibliotheken: ${Boost_LIBRARIES}")
+else()
+    message(FATAL_ERROR "Boost konnte nicht gefunden werden")
+endif()
+
+
+
+
+# |------------------------------------------------------------------| # 
+
+
+
+
 # MinHook Pfad relativ zum CMake-Projektverzeichnis
 set(MINHOOK_DIR ${CMAKE_SOURCE_DIR}/MinHook)
 
@@ -55,7 +97,8 @@ target_include_directories(MyDLL PUBLIC
     ${IMGUI_DIR}
     ${IMGUI_BACKENDS_DIR}
     ${MINHOOK_DIR}  # MinHook Header hinzufügen
+    ${Boost_INCLUDE_DIRS}
 )
 
 # Linke notwendige Bibliotheken für Dear ImGui und MinHook
-target_link_libraries(MyDLL d3d11 dxgi dxguid ${MINHOOK_LIB})  # MinHook Bibliothek verlinken
+target_link_libraries(MyDLL d3d11 dxgi dxguid ${MINHOOK_LIB} ${Boost_LIBRARIES})  # MinHook Bibliothek verlinken
