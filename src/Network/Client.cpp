@@ -95,8 +95,9 @@ void Client::start_receive()
 
                             if(*key == receivedKey){
                                 value->setX(x);
-                                value->setX(z);
-                                value->setX(y);
+                                value->setZ(z);
+                                value->setY(y);
+                                std::cout << "Found NPC\n";
                             }
                         }
                     }
@@ -109,7 +110,7 @@ void Client::start_receive()
                 std::cerr << "Error receiving: " << ec.message() << std::endl;
             }
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
             // Start listening for the next message
             start_receive();
         });

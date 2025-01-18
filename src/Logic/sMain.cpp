@@ -132,7 +132,7 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
     boost::asio::io_context io_context;
 
     // Erstelle den Client
-    Client client(io_context, "127.0.0.1", "12345", clients);
+    Client client(io_context, "192.168.0.209", "12345", clients);
 
     // Hauptschleife, um Nachrichten zu senden
     std::thread io_thread([&io_context]()
@@ -149,12 +149,11 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
 
     while (true)
     {
-        Sleep(50);
 
         // Tp to Old Camp
         if (GetAsyncKeyState(VK_RSHIFT) < 0)
         {
-            std::cout << "Pressed Shift! \n";
+            /*std::cout << "Pressed Shift! \n";
 
             Data data;
             data.id = 101;
@@ -164,7 +163,7 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
 
             std::string bufferStr = data.serialize();
             client.send_message(bufferStr);
-            Sleep(400);
+            Sleep(400);*/
             /*mainPlayer->setPlayerPosition(-10112.5f, 7768, -900);
             std::cout << "Teleported to Old Camp" << std::endl;*/
         }
@@ -199,7 +198,16 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
 
         // Sets or refreshes the Position of NPC's
         //setPositions();
-        Sleep(100);
+
+                    Data data;
+            data.id = 101;
+            data.names.push_back(std::to_string(mainPlayer->getX()));
+            data.names.push_back(std::to_string(mainPlayer->getZ()));
+            data.names.push_back(std::to_string(mainPlayer->getY()));
+
+            std::string bufferStr = data.serialize();
+            client.send_message(bufferStr);
+        Sleep(50);
     }
 
     io_thread.join();
