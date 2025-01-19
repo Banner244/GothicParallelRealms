@@ -17,31 +17,14 @@ void Client::send_message(const std::string &message)
         [this](boost::system::error_code ec, std::size_t bytes_sent)
         {
             if (ec)
-            {
                 std::cerr << "Error sending: " << ec.message() << std::endl;
-            }
             else
-            {
                 std::cout << "Sent " << bytes_sent << " bytes." << std::endl;
-            }
         });
 }
 
 void Client::start_receive()
 {
-    /*if(!connected){
-        
-                Data data;
-                data.id = 100;
-                data.names.push_back("Hello");
-                data.names.push_back("Steve");
-
-                std::string bufferStr = data.serialize();
-
-        this->send_message(bufferStr);
-        connected = true;
-    }*/
-
     socket_.async_receive_from(
         boost::asio::buffer(recv_buffer_),
         sender_endpoint_,
@@ -51,8 +34,10 @@ void Client::start_receive()
             {
                 std::string receivedPackage = std::string(recv_buffer_.data(), bytes_received);
                 std::cout << "Received: " << receivedPackage << std::endl;
+                
+                messageHandler.managePacket(receivedPackage);
 
-                Data receivedData;
+                /*Data receivedData;
                 receivedData.deserialize(receivedPackage);
 
                 if(receivedData.id == 102) {
@@ -103,7 +88,7 @@ void Client::start_receive()
                     }
 
                     std::string msg = "X: " + receivedData.names.at(1) + ", Z: " + receivedData.names.at(2) +", Y: " + receivedData.names.at(3);
-                }
+                }*/
             }
             else
             {

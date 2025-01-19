@@ -207,7 +207,7 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
 
             std::string bufferStr = data.serialize();
             client.send_message(bufferStr);
-        Sleep(50);
+        Sleep(100);
     }
 
     io_thread.join();

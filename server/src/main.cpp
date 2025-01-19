@@ -4,10 +4,10 @@
 #include <sstream>
 #include <boost/asio.hpp>
 
+#include "MessageHandler.h"
 #include "Data.h"
 
 using boost::asio::ip::udp;
-
 
 struct ClientInfo {
     udp::endpoint endpoint;
@@ -15,6 +15,8 @@ struct ClientInfo {
 };
 
 std::unordered_map<std::string, ClientInfo> clients;
+MessageHandler messageHandler;
+
 
 std::string getClientUniqueString(udp::endpoint clientEndpoint) {
     std::string clientPortIp =clientEndpoint.address().to_string()+ ":";// clientEndpoint.address().to_string() + ":" + clientEndpoint.port();
@@ -44,6 +46,8 @@ void handleBuffer(udp::socket *socket, udp::endpoint clientEndpoint, std::string
     std::cout << "ID: "<< data.id << "\n";
 
 
+
+
     if(data.id == 101) {
 
         for (const auto& [key, clientInfo] : clients) {
@@ -56,7 +60,7 @@ void handleBuffer(udp::socket *socket, udp::endpoint clientEndpoint, std::string
 
             //std::string msg = "X: " + data.names.at(0) + ", Z: " + data.names.at(1) +", Y: " + data.names.at(2);
             Data package102;
-            package102.id = 102;
+            package102.id = 101;
             package102.names.push_back(clientPortIp);
             package102.names.push_back(data.names.at(0));
             package102.names.push_back(data.names.at(1));

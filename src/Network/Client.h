@@ -6,6 +6,8 @@
 #include <functional>
 #include <unordered_map>
 
+#include "MessageHandler.h"
+
 #include "../server/src/Data.h"
 #include "../Models/Npc.h"
 
@@ -24,8 +26,6 @@ public:
 private:
     void start_receive();
 
-    
-
     udp::socket socket_;
     udp::resolver resolver_;
     udp::endpoint server_endpoint_;
@@ -33,4 +33,6 @@ private:
     std::array<char, 1024> recv_buffer_;
 
     bool connected = false;
+    MessageHandler messageHandler;
+    
 };
