@@ -149,23 +149,21 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
 {
     clients = new std::unordered_map<std::string*, Npc*>();
     // ----- SERVER SHIT
-    /*boost::asio::io_context io_context;
+    boost::asio::io_context io_context;
 
     // Erstelle den Client
     Client client(io_context, "192.168.0.209", "12345", clients);
 
     // Hauptschleife, um Nachrichten zu senden
     std::thread io_thread([&io_context]()
-                          { io_context.run(); });*/
+                          { io_context.run(); });
 
     // ----- -----
 
     initAddresses();
 
     Npc *mainPlayer = new Npc(ADDR_PLAYERBASE);
-    // OCNpc *mainPlayer = new OCNpc(*(void**)ADDR_PLAYERBASE);
     ZVec3 tempPosition;
-    // std::vector<OCNpc*> listNpc;
 
     while (true)
     {
@@ -216,16 +214,16 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
         // Sets or refreshes the Position of NPC's
         //setPositions();
 
-            /*Data data;
+            Data data;
             data.id = 101;
             data.names.push_back(std::to_string(mainPlayer->getX()));
             data.names.push_back(std::to_string(mainPlayer->getZ()));
             data.names.push_back(std::to_string(mainPlayer->getY()));
 
             std::string bufferStr = data.serialize();
-            client.send_message(bufferStr);*/
+            client.send_message(bufferStr);
         Sleep(50);
     }
 
-    //io_thread.join();
+    io_thread.join();
 }
