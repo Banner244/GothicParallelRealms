@@ -66,6 +66,22 @@ struct OCSpawnManagerRef
     void *pThis = *(void **)(((uintptr_t)oCGame.pThis) + 0x134);
 } oCSpawnManager;
 
+struct OCAntiCrtl_HumanRef
+{
+    typedef void(__thiscall *_SetWalkMode)(void *pThis, int param1);
+    _SetWalkMode setWalkMode;
+
+    typedef void(__thiscall *_ToggleWalkMode)(void *pThis, int param1);
+    _ToggleWalkMode toggleWalkMode;
+
+    typedef int(__thiscall *_IsWalking)(void *pThis);
+    _IsWalking isWalking;
+
+    // Getting the base address of oCGame and adding offset to turn it into oCSpawnManager
+
+    void *pThis = *(void **)((ADDR_PLAYERBASE) + 0x9b4);
+} oCAntiCrtl_HumanRef;
+
 struct ZCViewRef
 {
     typedef void(__thiscall *_PrintMessage)(void *pThis, zSTRING *param_1, zSTRING *param_2, float param_3, ZCOLOR *param_4);
@@ -85,6 +101,10 @@ struct ZCViewRef
 
 void initAddresses()
 {
+    oCAntiCrtl_HumanRef.setWalkMode = (OCAntiCrtl_HumanRef::_SetWalkMode)(0x6211e0);
+    oCAntiCrtl_HumanRef.toggleWalkMode = (OCAntiCrtl_HumanRef::_SetWalkMode)(0x624e30);
+    oCAntiCrtl_HumanRef.isWalking = (OCAntiCrtl_HumanRef::_IsWalking)(0x6257e0);
+
     oCWorldRef.addVob = (OCWorldRef::_AddVob)(0x5f6340);
     oCWorldRef.getVobHashIndex = (OCWorldRef::_GetVobHashIndex)(0x5f9720);
     oCWorldRef.printStatus = (OCWorldRef::_PrintStatus)(0x5f6bf0);
@@ -129,14 +149,14 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
 {
     clients = new std::unordered_map<std::string*, Npc*>();
     // ----- SERVER SHIT
-    boost::asio::io_context io_context;
+    /*boost::asio::io_context io_context;
 
     // Erstelle den Client
     Client client(io_context, "192.168.0.209", "12345", clients);
 
     // Hauptschleife, um Nachrichten zu senden
     std::thread io_thread([&io_context]()
-                          { io_context.run(); });
+                          { io_context.run(); });*/
 
     // ----- -----
 
@@ -153,17 +173,14 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
         // Tp to Old Camp
         if (GetAsyncKeyState(VK_RSHIFT) < 0)
         {
-            /*std::cout << "Pressed Shift! \n";
+            std::cout << "Pressed Shift! \n";
 
-            Data data;
-            data.id = 101;
-            data.names.push_back(std::to_string(mainPlayer->getX()));
-            data.names.push_back(std::to_string(mainPlayer->getZ()));
-            data.names.push_back(std::to_string(mainPlayer->getY()));
+            //oCAntiCrtl_HumanRef.setWalkMode(oCAntiCrtl_HumanRef.pThis, 0);
+            //oCAntiCrtl_HumanRef.toggleWalkMode(oCAntiCrtl_HumanRef.pThis, 1);
+            int isJumping = oCAntiCrtl_HumanRef.isWalking(oCAntiCrtl_HumanRef.pThis);
+            std::cout << "Jumping: " << isJumping << "\n";
 
-            std::string bufferStr = data.serialize();
-            client.send_message(bufferStr);
-            Sleep(400);*/
+            Sleep(400);
             /*mainPlayer->setPlayerPosition(-10112.5f, 7768, -900);
             std::cout << "Teleported to Old Camp" << std::endl;*/
         }
@@ -199,16 +216,16 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
         // Sets or refreshes the Position of NPC's
         //setPositions();
 
-                    Data data;
+            /*Data data;
             data.id = 101;
             data.names.push_back(std::to_string(mainPlayer->getX()));
             data.names.push_back(std::to_string(mainPlayer->getZ()));
             data.names.push_back(std::to_string(mainPlayer->getY()));
 
             std::string bufferStr = data.serialize();
-            client.send_message(bufferStr);
-        Sleep(100);
+            client.send_message(bufferStr);*/
+        Sleep(50);
     }
 
-    io_thread.join();
+    //io_thread.join();
 }

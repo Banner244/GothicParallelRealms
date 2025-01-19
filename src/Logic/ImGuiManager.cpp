@@ -29,6 +29,23 @@ void ImGuiManager::showContent(ImGuiData imGuiData)
     ImGui::Text(coords.c_str());
     ImGui::Text(level.c_str());
 
+
+    if(!imGuiData.npcs.empty()){
+        for(u_int i =0; i < imGuiData.npcs.size(); i++){
+           // std::string idAsString = std::to_string(i);
+            std::string posX = std::to_string(imGuiData.npcs.at(i)->playerNpc->getX());
+            std::string posZ = std::to_string(imGuiData.npcs.at(i)->playerNpc->getZ());
+            std::string posY = std::to_string(imGuiData.npcs.at(i)->playerNpc->getY());
+
+            ImGui::Text(imGuiData.npcs.at(i)->id.c_str());
+            ImGui::Text(("\t" + posX).c_str());
+            ImGui::Text(("\t" + posZ).c_str());
+            ImGui::Text(("\t" + posY).c_str());
+        }
+    } else {
+        ImGui::Text("No other Players...");
+    }
+
     ImGui::End();
 }
 

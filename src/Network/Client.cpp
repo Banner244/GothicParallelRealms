@@ -5,6 +5,7 @@ Client::Client(boost::asio::io_context &io_context, const std::string &host, con
 {
     this->clients = clients;
     messageHandler = new MessageHandler(clients);
+
     socket_.open(udp::v4());
     start_receive();
 }
@@ -36,66 +37,13 @@ void Client::start_receive()
                 std::cout << "Received: " << receivedPackage << std::endl;
 
                 messageHandler->managePacket(receivedPackage);
-
-                /*Data receivedData;
-                receivedData.deserialize(receivedPackage);
-
-                if(receivedData.id == 102) {
-                    bool playerExists = false;
-                    std::string receivedKey = receivedData.names.at(0);
-
-                    for (const auto& pair : *clients) {
-                        std::string* key = pair.first; // Zeiger auf den Schlüssel
-                        Npc* value = pair.second;     // Zeiger auf den Wert
-
-                        if(*key == receivedKey){
-                            playerExists = true;
-                        }
-                        // Verarbeitung der Schlüssel-Wert-Paare
-                        std::cout << "Key: " << *key << ", Value: " << value << std::endl;
-                    }
-
-                    float x = std::stof(receivedData.names.at(1));
-                    float z = std::stof(receivedData.names.at(2));
-                    float y = std::stof(receivedData.names.at(3));
-
-
-                    if(!playerExists) {
-                        // Erstelle Schlüssel und Wert
-                        std::string* key = &receivedKey;
-                        Npc* value = new Npc(); // Npc ist ein Zeiger auf dein NPC-Objekt
-                        value->setCurrentHealth(10);
-                        value->setMaxHealth(10);
-                        value->oCNpc->setVisualWithString("HUMANS.MDS");
-                        value->oCNpc->setAdditionalVisuals("hum_body_Naked0", 9, 0, "Hum_Head_Pony", 2, 0, -1);
-
-                        value->oCNpc->enableWithdCoords(x, z, y);
-
-                        // Füge das Paar in die Map ein
-                        clients->insert({key, value});
-                    } else {
-                        for (const auto& pair : *clients) {
-                            std::string* key = pair.first; // Zeiger auf den Schlüssel
-                            Npc* value = pair.second;     // Zeiger auf den Wert
-
-                            if(*key == receivedKey){
-                                value->setX(x);
-                                value->setZ(z);
-                                value->setY(y);
-                                std::cout << "Found NPC\n";
-                            }
-                        }
-                    }
-
-                    std::string msg = "X: " + receivedData.names.at(1) + ", Z: " + receivedData.names.at(2) +", Y: " + receivedData.names.at(3);
-                }*/
             }
             else
             {
                 std::cerr << "Error receiving: " << ec.message() << std::endl;
             }
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
             // Start listening for the next message
             start_receive();
         });

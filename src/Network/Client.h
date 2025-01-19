@@ -8,6 +8,7 @@
 
 #include "MessageHandler.h"
 
+#include "../Models/ImGuiData.h"
 #include "../server/src/Data.h"
 #include "../Models/Npc.h"
 

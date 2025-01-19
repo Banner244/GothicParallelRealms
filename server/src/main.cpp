@@ -19,22 +19,11 @@ MessageHandler messageHandler;
 
 
 std::string getClientUniqueString(udp::endpoint clientEndpoint) {
-    std::string clientPortIp =clientEndpoint.address().to_string()+ ":";// clientEndpoint.address().to_string() + ":" + clientEndpoint.port();
+    std::string clientPortIp =clientEndpoint.address().to_string()+ ":";
     clientPortIp += std::to_string(clientEndpoint.port());
     return clientPortIp;
 }
 
-/*void addNewClient(udp::endpoint clientEndpoint){
-    ClientInfo newClient;
-    newClient.endpoint = clientEndpoint;
-    std::string clientPortIp = getClientUniqueString(clientEndpoint);
-
-    std::cout << "Added new Client: " << clientPortIp << "\n";
-    clients[clientPortIp] = newClient;
-
-        //std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-}*/
 void addNewClient(udp::endpoint clientEndpoint) {
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
 
@@ -42,29 +31,26 @@ void addNewClient(udp::endpoint clientEndpoint) {
     if (inserted) 
         std::cout << "Added new Client: " << clientPortIp << "\n";
 }
+
 void handleBuffer(udp::socket *socket, udp::endpoint clientEndpoint, std::string buffer) {
     addNewClient(clientEndpoint);
-    std::cout << "\tBUfferHandler " << "\n";
-    //const std::string msgBuffer;
-    
+
     Data data;
     data.deserialize(buffer);
     std::cout << "ID: "<< data.id << "\n";
-
-
-
+    std::string clientPortIp = getClientUniqueString(clientEndpoint);
 
     if(data.id == 101) {
+        for (auto it = clients.begin(); it != clients.end(); ) {
+            const auto& [key, clientInfo] = *it;
 
-        for (const auto& [key, clientInfo] : clients) {
-        
-            std::string clientPortIp = getClientUniqueString(clientEndpoint);
-            if(key == clientPortIp)
+            if (key == clientPortIp) {
+                ++it; // Weiter zum nächsten Element
                 continue;
-            
+            }
+
             std::cout << "\t" << key << " | " << clientPortIp << "\n";
 
-            //std::string msg = "X: " + data.names.at(0) + ", Z: " + data.names.at(1) +", Y: " + data.names.at(2);
             Data package102;
             package102.id = 101;
             package102.names.push_back(clientPortIp);
@@ -133,62 +119,3 @@ int main() {
     }
     return 0;
 }
-
-/*int main() {
-    try {
-        boost::asio::io_context io_context;
-
-            const size_t thread_count = std::thread::hardware_concurrency();
-            std::cout << "Using " << thread_count << " threads.\n";
-
-            // Threads erstellen
-            std::vector<std::thread> threads;
-            for (size_t i = 0; i < thread_count; ++i) {
-                threads.emplace_back([&io_context]() {
-                    io_context.run();
-                });
-            }
-            
-
-        // Server-Socket on Port 12345
-        udp::socket socket(io_context, udp::endpoint(udp::v4(), 12345));
-
-        std::cout << "UDP-Server started on Port 12345..." << std::endl;
-
-        while (true) {
-            char buffer[1024];
-            udp::endpoint sender_endpoint;
-
-            // Receive Data 
-            std::size_t bytes_received = socket.receive_from(boost::asio::buffer(buffer), sender_endpoint);
-            std::cout << "Received something: " << bytes_received << " bytes" << "\n";
-
-            boost::asio::post(io_context, [sender_endpoint, buffer, bytes_received]() { 
-                handleBuffer(sender_endpoint, std::string(buffer, bytes_received));
-            });
-
-        
-        }
-
-
-        // Warten, bis alle Threads fertig sind
-        for (auto& thread : threads) {
-            thread.join();
-        }
-    } catch (std::exception& e) {
-        std::cerr << "Fehler: " << e.what() << std::endl;
-    }
-    return 0;
-}*/
-
-
-
-
-
-            /*std::cout << "Received: " << std::string(buffer, bytes_received)
-                      << " from " << sender_endpoint.address().to_string() << ":"
-                      << sender_endpoint.port() << std::endl;
-
-            // send Answer
-            std::string reply = "Got the Message!!";
-            socket.send_to(boost::asio::buffer(reply), sender_endpoint);*/
