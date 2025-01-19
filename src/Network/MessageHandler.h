@@ -10,6 +10,8 @@
 
 class MessageHandler {
     public:
+        MessageHandler(std::unordered_map<std::string*, Npc*> *clients);
+        
         void managePacket(std::string stringPacket);
     private:
         std::unordered_map<std::string*, Npc*> *clients;

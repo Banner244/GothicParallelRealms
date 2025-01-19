@@ -24,7 +24,7 @@ std::string getClientUniqueString(udp::endpoint clientEndpoint) {
     return clientPortIp;
 }
 
-void addNewClient(udp::endpoint clientEndpoint){
+/*void addNewClient(udp::endpoint clientEndpoint){
     ClientInfo newClient;
     newClient.endpoint = clientEndpoint;
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
@@ -34,8 +34,14 @@ void addNewClient(udp::endpoint clientEndpoint){
 
         //std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-}
+}*/
+void addNewClient(udp::endpoint clientEndpoint) {
+    std::string clientPortIp = getClientUniqueString(clientEndpoint);
 
+    auto [it, inserted] = clients.try_emplace(clientPortIp, ClientInfo{clientEndpoint});
+    if (inserted) 
+        std::cout << "Added new Client: " << clientPortIp << "\n";
+}
 void handleBuffer(udp::socket *socket, udp::endpoint clientEndpoint, std::string buffer) {
     addNewClient(clientEndpoint);
     std::cout << "\tBUfferHandler " << "\n";

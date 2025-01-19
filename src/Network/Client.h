@@ -33,6 +33,6 @@ private:
     std::array<char, 1024> recv_buffer_;
 
     bool connected = false;
-    MessageHandler messageHandler;
+    MessageHandler * messageHandler;
     
 };

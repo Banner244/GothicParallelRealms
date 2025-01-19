@@ -1,5 +1,9 @@
 #include "MessageHandler.h"
 
+MessageHandler::MessageHandler(std::unordered_map<std::string*, Npc*> *clients) : clients(clients) {
+
+}
+
 void MessageHandler::managePacket(std::string stringPacket)
 {
 
@@ -38,20 +42,6 @@ void MessageHandler::handleServerDistributePosition(Data data)
     if (it != clients->end())
         playerExists = true;
 
-    /*for (const auto &pair : *clients)
-    {
-        std::string *key = pair.first; // Zeiger auf den Schlüssel
-        Npc *value = pair.second;      // Zeiger auf den Wert
-
-        if (*key == receivedKey)
-            playerExists = true;
-
-        // Verarbeitung der Schlüssel-Wert-Paare
-        std::cout << "Key: " << *key << ", Value: " << value << std::endl;
-    }*/
-
-
-
     if (playerExists)
     {
         auto it = clients->find(&receivedKey);
@@ -63,6 +53,7 @@ void MessageHandler::handleServerDistributePosition(Data data)
             value->setY(y);
             std::cout << "Found NPC\n";
         }
+        return;
     }
 
     // Erstelle Schlüssel und Wert
@@ -77,19 +68,4 @@ void MessageHandler::handleServerDistributePosition(Data data)
 
     // Füge das Paar in die Map ein
     clients->insert({key, value});
-
-    return;
-    /*for (const auto &pair : *clients)
-    {
-        std::string *key = pair.first; // Zeiger auf den Schlüssel
-        Npc *value = pair.second;      // Zeiger auf den Wert
-
-        if (*key == receivedKey)
-        {
-            value->setX(x);
-            value->setZ(z);
-            value->setY(y);
-            std::cout << "Found NPC\n";
-        }
-    }*/
 }
