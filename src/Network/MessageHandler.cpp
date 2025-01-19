@@ -26,6 +26,7 @@ void MessageHandler::handleServerHandshakeAccept(Data data)
 
 void MessageHandler::handleServerDistributePosition(Data data)
 {
+    std::cout << "handleServerDistributePosition\n"; 
     bool playerExists = false;
     std::string receivedKey = data.names.at(0);
 
