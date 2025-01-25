@@ -30,7 +30,7 @@ void ImGuiManager::showContent(ImGuiData imGuiData)
     ImGui::Text(level.c_str());
 
 
-    if(!imGuiData.clients->empty()){
+    /*if(!imGuiData.clients->empty() || imGuiData.clients != nullptr){
         auto it = imGuiData.clients->begin();
         if (it != imGuiData.clients->end())
         {
@@ -49,7 +49,7 @@ void ImGuiManager::showContent(ImGuiData imGuiData)
         }
     } else {
         ImGui::Text("No other Players...");
-    }
+    }*/
 
     /*if(!imGuiData.npcs.empty()){
         for(u_int i =0; i < imGuiData.npcs.size(); i++){

@@ -148,7 +148,7 @@ void sMain::setPositions()
 void sMain::listenToKeys(ImGuiData &imGuiData)
 {
     clients = new std::unordered_map<std::string, Npc*>();
-    imGuiData.clients = clients;
+    //imGuiData.clients = clients;
 
     // ----- SERVER SHIT
     boost::asio::io_context io_context;
@@ -235,16 +235,16 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
         //setPositions();
 
 
-            /*zMAT4 matrix;
+            zMAT4 matrix;
             mainPlayer->oCNpc->getTrafoModelNodeToWorld(&matrix, 0); // Zweiter Parameter: Knotenspezifikation (0 = kein spezifischer Knoten)
 
             // Rotation extrahieren
             float yaw = atan2(matrix[0][2], matrix[0][0]);
             float pitch = asin(-matrix[0][1]);
-            float roll = atan2(matrix[1][2], matrix[2][2]);*/
-            float yaw = 0;
+            float roll = atan2(matrix[1][2], matrix[2][2]);
+            /*float yaw = 0;
             float pitch = 0;
-            float roll = 0;
+            float roll = 0;*/
 
             Data data;
             data.id = 101;

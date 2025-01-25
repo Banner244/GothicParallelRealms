@@ -57,7 +57,7 @@ void MessageHandler::handleServerDistributePosition(Data data)
             value->setX(x);
             value->setZ(z);
             value->setY(y);
-            //value->oCNpc->setTrafo(&matrix);
+            value->oCNpc->setTrafo(&matrix);
             std::cout << "Found NPC\n";
         }
         return;

@@ -40,16 +40,6 @@ void handleBuffer(udp::socket *socket, udp::endpoint clientEndpoint, std::string
     std::cout << "ID: "<< data.id << "\n";
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
 
-    if(data.id == 101) {
-        for (auto it = clients.begin(); it != clients.end(); ) {
-            const auto& [key, clientInfo] = *it;
-
-            if (key == clientPortIp) {
-                ++it; // Weiter zum nächsten Element
-                continue;
-            }
-
-            std::cout << "\t" << key << " | " << clientPortIp << "\n";
 
             Data package102;
             package102.id = 101;
@@ -63,9 +53,35 @@ void handleBuffer(udp::socket *socket, udp::endpoint clientEndpoint, std::string
             package102.names.push_back(data.names.at(4));
             package102.names.push_back(data.names.at(5));
 
+    if(data.id == 101) {
+
+        for (const auto& [key, clientInfo] : clients) {
+            if (key == clientPortIp) {
+                continue;
+            }
+
+            std::cout << "\t" << key << " | " << clientPortIp << "\n";
+
             socket->send_to(boost::asio::buffer(package102.serialize()), clientInfo.endpoint);
             std::cout << package102.serialize() << "\n";
+            //std::cout << "Key: " << key << ", Client ID: " << clientInfo.id << "\n";
         }
+
+        /*for (auto it = clients.begin(); it != clients.end(); ) {
+            const auto& [key, clientInfo] = *it;
+
+            if (key == clientPortIp) {
+                ++it; // Weiter zum nächsten Element
+                continue;
+            }
+
+            std::cout << "\t" << key << " | " << clientPortIp << "\n";
+
+
+
+            socket->send_to(boost::asio::buffer(package102.serialize()), clientInfo.endpoint);
+            std::cout << package102.serialize() << "\n";
+        }*/
     }
 }
 
