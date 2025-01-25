@@ -50,10 +50,13 @@ void MessageHandler::handleServerDistributePosition(Data data)
         auto it = clients->find(receivedKey);
         if (it != clients->end())
         {
-            zMAT4 matrix;
-            zMAT4::CalculateRotationMatrix(yaw, pitch, roll, matrix);
+
 
             Npc *value = it->second; // Zeiger auf den Wert
+            zMAT4 matrix;
+            value->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
+            matrix.MakeRotationX(pitch);
+
             value->setX(x);
             value->setZ(z);
             value->setY(y);
