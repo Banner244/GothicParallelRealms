@@ -1,6 +1,6 @@
 #include "MessageHandler.h"
 
-MessageHandler::MessageHandler(std::unordered_map<std::string*, Npc*> *clients) : clients(clients) {
+MessageHandler::MessageHandler(std::unordered_map<std::string, Npc*> *clients) : clients(clients) {
 
 }
 
@@ -41,13 +41,13 @@ void MessageHandler::handleServerDistributePosition(Data data)
     float pitch = std::stof(data.names.at(5));
     float roll = std::stof(data.names.at(6));
 
-    auto it = clients->find(&receivedKey);
+    auto it = clients->find(receivedKey);
     if (it != clients->end())
         playerExists = true;
 
     if (playerExists)
     {
-        auto it = clients->find(&receivedKey);
+        auto it = clients->find(receivedKey);
         if (it != clients->end())
         {
             zMAT4 matrix;
@@ -57,14 +57,14 @@ void MessageHandler::handleServerDistributePosition(Data data)
             value->setX(x);
             value->setZ(z);
             value->setY(y);
-            value->oCNpc->setTrafo(&matrix);
+            //value->oCNpc->setTrafo(&matrix);
             std::cout << "Found NPC\n";
         }
         return;
     }
 
     // Erstelle Schlüssel und Wert
-    std::string *key = &receivedKey;
+    std::string key = receivedKey;
     Npc *value = new Npc(); // Npc ist ein Zeiger auf dein NPC-Objekt
     value->setCurrentHealth(10);
     value->setMaxHealth(10);

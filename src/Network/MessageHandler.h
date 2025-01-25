@@ -10,11 +10,11 @@
 
 class MessageHandler {
     public:
-        MessageHandler(std::unordered_map<std::string*, Npc*> *clients);
+        MessageHandler(std::unordered_map<std::string, Npc*> *clients);
         
         void managePacket(std::string stringPacket);
     private:
-        std::unordered_map<std::string*, Npc*> *clients;
+        std::unordered_map<std::string, Npc*> *clients;
 
         void handleServerHandshakeAccept(Data data);
         void handleServerDistributePosition(Data data);

@@ -1,6 +1,6 @@
 #include "Client.h"
 
-Client::Client(boost::asio::io_context &io_context, const std::string &host, const std::string &port, std::unordered_map<std::string*, Npc*> *clients)
+Client::Client(boost::asio::io_context &io_context, const std::string &host, const std::string &port, std::unordered_map<std::string, Npc*> *clients)
     : socket_(io_context), resolver_(io_context), server_endpoint_(*resolver_.resolve(udp::v4(), host, port).begin())
 {
     this->clients = clients;

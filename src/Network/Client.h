@@ -16,13 +16,13 @@ using boost::asio::ip::udp;
 
 class Client {
 public:
-    Client(boost::asio::io_context& io_context, const std::string& host, const std::string& port, std::unordered_map<std::string*, Npc*> *clients);
+    Client(boost::asio::io_context& io_context, const std::string& host, const std::string& port, std::unordered_map<std::string, Npc*> *clients);
 
     void send_message(const std::string& message);
 
     /*void setConnected();
     bool isConnected();*/
-    std::unordered_map<std::string*, Npc*> *clients;
+    std::unordered_map<std::string, Npc*> *clients;
 
 private:
     void start_receive();

@@ -34,18 +34,18 @@ void ImGuiManager::showContent(ImGuiData imGuiData)
         auto it = imGuiData.clients->begin();
         if (it != imGuiData.clients->end())
         {
-            std::string * valueKey = it->first;
+            std::string valueKey = it->first;
             Npc *valueNpc = it->second; // Zeiger auf den Wert
 
             std::string posX = std::to_string(valueNpc->getX());
             std::string posZ = std::to_string(valueNpc->getZ());
             std::string posY = std::to_string(valueNpc->getY());
-
-            ImGui::Text(valueKey->c_str());
+ 
+            ImGui::Text(valueKey.c_str());
             ImGui::Text(("\t" + posX).c_str());
             ImGui::Text(("\t" + posZ).c_str());
             ImGui::Text(("\t" + posY).c_str());
-
+            std::cout << "key: " << valueKey <<"\n";
         }
     } else {
         ImGui::Text("No other Players...");

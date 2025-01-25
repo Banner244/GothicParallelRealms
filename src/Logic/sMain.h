@@ -34,5 +34,5 @@ class sMain
 		sMain();
 		void listenToKeys(ImGuiData &imGuiData);
 
-		std::unordered_map<std::string*, Npc*> *clients;
+		std::unordered_map<std::string, Npc*> *clients;
 };
