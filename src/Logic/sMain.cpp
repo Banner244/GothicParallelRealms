@@ -148,6 +148,8 @@ void sMain::setPositions()
 void sMain::listenToKeys(ImGuiData &imGuiData)
 {
     clients = new std::unordered_map<std::string*, Npc*>();
+    imGuiData.clients = clients;
+
     // ----- SERVER SHIT
     boost::asio::io_context io_context;
 
@@ -173,10 +175,23 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
         {
             std::cout << "Pressed Shift! \n";
 
+            zMAT4 matrix;
+            
+            mainPlayer->oCNpc->getTrafoModelNodeToWorld(&matrix, 0); // Zweiter Parameter: Knotenspezifikation (0 = kein spezifischer Knoten)
+
+            // Rotation extrahieren
+            float yaw = atan2(matrix[0][2], matrix[0][0]);
+            float pitch = asin(-matrix[0][1]);
+            float roll = atan2(matrix[1][2], matrix[2][2]);
+
+            std::cout << "Yaw: " << yaw << ", Pitch: " << pitch << ", Roll: " << roll << std::endl;
+
             //oCAntiCrtl_HumanRef.setWalkMode(oCAntiCrtl_HumanRef.pThis, 0);
             //oCAntiCrtl_HumanRef.toggleWalkMode(oCAntiCrtl_HumanRef.pThis, 1);
-            int isJumping = oCAntiCrtl_HumanRef.isWalking(oCAntiCrtl_HumanRef.pThis);
-            std::cout << "Jumping: " << isJumping << "\n";
+
+
+            /*int isJumping = oCAntiCrtl_HumanRef.isWalking(oCAntiCrtl_HumanRef.pThis);
+            std::cout << "Jumping: " << isJumping << "\n";*/
 
             Sleep(400);
             /*mainPlayer->setPlayerPosition(-10112.5f, 7768, -900);
@@ -196,6 +211,11 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
             npc->oCNpc->setAdditionalVisuals("hum_body_Naked0", 9, 0, "Hum_Head_Pony", 2, 0, -1);
 
             npc->oCNpc->enable(&tempPosition);
+
+            // Set same View direction as player
+            zMAT4 matrix;
+            mainPlayer->oCNpc->getTrafoModelNodeToWorld(&matrix, 0); 
+            npc->oCNpc->setTrafo(&matrix);
         }
 
         // Hide/Show Menu
@@ -214,14 +234,28 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
         // Sets or refreshes the Position of NPC's
         //setPositions();
 
+
+            zMAT4 matrix;
+            mainPlayer->oCNpc->getTrafoModelNodeToWorld(&matrix, 0); // Zweiter Parameter: Knotenspezifikation (0 = kein spezifischer Knoten)
+
+            // Rotation extrahieren
+            float yaw = atan2(matrix[0][2], matrix[0][0]);
+            float pitch = asin(-matrix[0][1]);
+            float roll = atan2(matrix[1][2], matrix[2][2]);
+
+
             Data data;
             data.id = 101;
             data.names.push_back(std::to_string(mainPlayer->getX()));
             data.names.push_back(std::to_string(mainPlayer->getZ()));
             data.names.push_back(std::to_string(mainPlayer->getY()));
+            data.names.push_back(std::to_string(yaw));
+            data.names.push_back(std::to_string(pitch));
+            data.names.push_back(std::to_string(roll));
 
             std::string bufferStr = data.serialize();
             client.send_message(bufferStr);
+
         Sleep(50);
     }
 

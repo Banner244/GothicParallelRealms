@@ -54,9 +54,14 @@ void handleBuffer(udp::socket *socket, udp::endpoint clientEndpoint, std::string
             Data package102;
             package102.id = 101;
             package102.names.push_back(clientPortIp);
+            // coords
             package102.names.push_back(data.names.at(0));
             package102.names.push_back(data.names.at(1));
             package102.names.push_back(data.names.at(2));
+            // rotation
+            package102.names.push_back(data.names.at(3));
+            package102.names.push_back(data.names.at(4));
+            package102.names.push_back(data.names.at(5));
 
             socket->send_to(boost::asio::buffer(package102.serialize()), clientInfo.endpoint);
             std::cout << package102.serialize() << "\n";

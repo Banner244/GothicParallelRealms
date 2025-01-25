@@ -28,6 +28,9 @@ void OCNpc::initializeFunctionPointers()
     setAdditionalVisualsRef = reinterpret_cast<_SetAdditionalVisuals>(0x694ef0);
     setVobNameRef = reinterpret_cast<_SetVobName>(0x5d4970);
     setByScriptInstanceRef = reinterpret_cast<_SetByScriptInstance>(0x6a1bf0);
+    beginMovementRef = reinterpret_cast<_BeginMovement>(0x5f0510);
+    getTrafoModelNodeToWorldRef = reinterpret_cast<_GetTrafoModelNodeToWorld>(0x5d84d0);
+    setTrafoRef = reinterpret_cast<_SetTrafo>(0x5ee6b0);
 }
 
 OCNpc::OCNpc(void *existingAddress) : pThis(existingAddress)
@@ -105,6 +108,18 @@ void OCNpc::setPosition(const ZVec3 *position)
 void OCNpc::getPositionWorld(ZVec3 *position)
 {
     getPositionWorldRef(pThis, position);
+}
+
+void OCNpc::beginMovement(){
+    beginMovementRef(pThis);
+}
+
+zMAT4* OCNpc::getTrafoModelNodeToWorld(zMAT4 * matrix, int param2){
+    return getTrafoModelNodeToWorldRef(pThis, matrix, param2);
+}
+
+void OCNpc::setTrafo(zMAT4 * matrix){
+    setTrafoRef(pThis, matrix);
 }
 
 /*    _Enable enableRef;

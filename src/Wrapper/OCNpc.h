@@ -4,6 +4,7 @@
 
 #include "ZVec3.h"
 #include "zSTRING.h"
+#include "zMAT4.h"
 
 class OCNpc
 {
@@ -25,9 +26,11 @@ public:
     using _SetAdditionalVisuals = void(__thiscall *)(void *pThis, zSTRING *textureBody, int param2, int param3, zSTRING *textureHead, int param5, int param6, int param7);
     using _SetVobName = void(__thiscall *)(void *pThis, zSTRING *vobName);
     using _SetByScriptInstance = int(__thiscall *)(void *pThis, zSTRING *visual, int param2);
+    using _BeginMovement = void(__thiscall *)(void *pThis);
+    using _GetTrafoModelNodeToWorld = zMAT4*(__thiscall *)(void *pThis, zMAT4 * matrix, int param2);
+    using _SetTrafo = void(__thiscall *)(void *pThis, zMAT4 * matrix);
     
-    
-    // Funktionpointer für die Methoden des NPCs
+    // function-pointer for the methods of the NPCs
     _OCNpcCtor oCNpcCtorRef;
     _InitModel initModelRef;
     _SetOnFloor setOnFloorRef;
@@ -45,6 +48,9 @@ public:
     _SetAdditionalVisuals setAdditionalVisualsRef;
     _SetVobName setVobNameRef;
     _SetByScriptInstance setByScriptInstanceRef;
+    _BeginMovement beginMovementRef;
+    _GetTrafoModelNodeToWorld getTrafoModelNodeToWorldRef;
+    _SetTrafo setTrafoRef;
 
 private:
     void *pThis = nullptr; // Pointer to the NPC-Instance in memory
@@ -86,5 +92,11 @@ public:
 
     // Beispielmethode, um den NPC zu manipulieren
     void getPositionWorld(ZVec3 *position);
+
+    void beginMovement();
+
+    zMAT4* getTrafoModelNodeToWorld(zMAT4 * matrix, int param2);
+
+    void setTrafo(zMAT4 * matrix);
 
 };

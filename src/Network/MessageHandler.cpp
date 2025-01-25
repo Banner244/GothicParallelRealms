@@ -30,13 +30,16 @@ void MessageHandler::handleServerHandshakeAccept(Data data)
 
 void MessageHandler::handleServerDistributePosition(Data data)
 {
-    std::cout << "handleServerDistributePosition\n"; 
     bool playerExists = false;
     std::string receivedKey = data.names.at(0);
 
     float x = std::stof(data.names.at(1));
     float z = std::stof(data.names.at(2));
     float y = std::stof(data.names.at(3));
+
+    float yaw = std::stof(data.names.at(4));
+    float pitch = std::stof(data.names.at(5));
+    float roll = std::stof(data.names.at(6));
 
     auto it = clients->find(&receivedKey);
     if (it != clients->end())
@@ -47,10 +50,14 @@ void MessageHandler::handleServerDistributePosition(Data data)
         auto it = clients->find(&receivedKey);
         if (it != clients->end())
         {
+            zMAT4 matrix;
+            zMAT4::CalculateRotationMatrix(yaw, pitch, roll, matrix);
+
             Npc *value = it->second; // Zeiger auf den Wert
             value->setX(x);
             value->setZ(z);
             value->setY(y);
+            value->oCNpc->setTrafo(&matrix);
             std::cout << "Found NPC\n";
         }
         return;
