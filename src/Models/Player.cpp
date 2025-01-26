@@ -12,7 +12,7 @@ template <typename T>
 T *Player::getPointer(uintptr_t offset)
 {
 	if (playerBase() == 0)
-		return NULL; // Keine gültige Basisadresse
+		return NULL; // no valid base address
 
 	return reinterpret_cast<T *>(playerBase() + offset);
 }

@@ -50,7 +50,7 @@ void MessageHandler::handleServerDistributePosition(Data data)
         auto it = clients->find(receivedKey);
         if (it != clients->end())
         {
-            Npc *value = it->second; // Zeiger auf den Wert
+            Npc *value = it->second;
             zMAT4 matrix;
             value->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
             //matrix.CalculateRotationMatrix(yaw, pitch, roll, matrix);
@@ -64,8 +64,6 @@ void MessageHandler::handleServerDistributePosition(Data data)
         return;
     }
 
-    // Erstelle Schlüssel und Wert
-    std::string key = receivedKey;
     Npc *value = new Npc(); // Npc ist ein Zeiger auf dein NPC-Objekt
     value->setCurrentHealth(10);
     value->setMaxHealth(10);
@@ -75,5 +73,5 @@ void MessageHandler::handleServerDistributePosition(Data data)
     value->oCNpc->enableWithdCoords(x, z, y);
 
     // Füge das Paar in die Map ein
-    clients->insert({key, value});
+    clients->insert({receivedKey, value});
 }

@@ -12,7 +12,10 @@ void MessageGameThreadManager::addTask(std::string task)
 
 void MessageGameThreadManager::removeTask(std::vector<std::string>::iterator it)
 {
-    gameThreadTasks.erase(it);
+    //gameThreadTasks.erase(it);
+    if(!gameThreadTasks.empty())
+        gameThreadTasks.erase(it);
+        //gameThreadTasks.erase(gameThreadTasks.begin() + 0);
 }
 
 void MessageGameThreadManager::processMessages()

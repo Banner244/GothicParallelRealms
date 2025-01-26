@@ -12,7 +12,6 @@
 #include "Logic/ImGuiManager.h"
 #include "Logic/sMain.h"
 
-// #include "Network/HandleConnection.h"
 
 // Globals
 HINSTANCE dll_handle;
@@ -173,9 +172,9 @@ DWORD WINAPI MainThread()
 	// ################## START ############################
 
 	boost::asio::io_context io_context;
-	// Erstelle den Client
+	// create Client
 	Client client(io_context, "192.168.0.209", "12345", gameThreadManager);
-	// Hauptschleife, um Nachrichten zu senden
+	// mainloop for receiving messages
 	std::thread io_thread([&io_context]()
 						  { io_context.run(); });
 
@@ -183,9 +182,9 @@ DWORD WINAPI MainThread()
 	while (!GetAsyncKeyState(VK_END))
 	{
 		zMAT4 matrix;
-		mainPlayer->oCNpc->getTrafoModelNodeToWorld(&matrix, 0); // Zweiter Parameter: Knotenspezifikation (0 = kein spezifischer Knoten)
+		mainPlayer->oCNpc->getTrafoModelNodeToWorld(&matrix, 0); // second param: Node specification (0 = no specific node)
 
-		// Rotation extrahieren
+		// get Rotation 
 		float yaw = atan2(matrix[0][2], matrix[0][0]);
 		float pitch = asin(-matrix[0][1]);
 		float roll = atan2(matrix[1][2], matrix[2][2]);

@@ -5,11 +5,8 @@
 #include <memory>
 #include <functional>
 
-//#include "MessageHandler.h"
-
-//#include "../Models/ImGuiData.h"
 #include "../server/src/Data.h"
-//#include "../Models/Npc.h"
+
 #include "../Logic/MessageGameThreadManager.h"
 class MessageGameThreadManager;
 
