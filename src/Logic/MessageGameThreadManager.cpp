@@ -10,15 +10,22 @@ void MessageGameThreadManager::addTask(std::string task)
     gameThreadTasks.push_back(task);
 }
 
+void MessageGameThreadManager::removeTask(std::vector<std::string>::iterator it)
+{
+    gameThreadTasks.erase(it);
+}
+
 void MessageGameThreadManager::processMessages()
 {
     std::vector<std::string>::iterator firstTask = gameThreadTasks.begin();
 
     if (firstTask == gameThreadTasks.end()) {
+        std::cout << "no messages\n";
         return;
     }
 
     messageHandler->managePacket(*firstTask);
+
 
     /*if (GetKeyState(VK_HOME) < 0)
     {

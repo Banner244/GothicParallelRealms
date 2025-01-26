@@ -18,6 +18,7 @@ class MessageGameThreadManager {
         void processMessages();
 
         void addTask(std::string task);
+        void removeTask(std::vector<std::string>::iterator it);
 
 
     private:
