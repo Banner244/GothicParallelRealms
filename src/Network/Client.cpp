@@ -36,14 +36,14 @@ void Client::start_receive()
                 std::string receivedPackage = std::string(recv_buffer_.data(), bytes_received);
                 std::cout << "Received: " << receivedPackage << std::endl;
 
-                messageHandler->managePacket(receivedPackage);
+                //messageHandler->managePacket(receivedPackage);
             }
             else
             {
                 std::cerr << "Error receiving: " << ec.message() << std::endl;
             }
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            std::this_thread::sleep_for(std::chrono::milliseconds(30));
             // Start listening for the next message
             start_receive();
         });

@@ -50,17 +50,15 @@ void MessageHandler::handleServerDistributePosition(Data data)
         auto it = clients->find(receivedKey);
         if (it != clients->end())
         {
-
-
             Npc *value = it->second; // Zeiger auf den Wert
-            zMAT4 matrix;
-            value->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
-            matrix.MakeRotationX(pitch);
+            zMAT4 *matrix = new zMAT4();
+            value->oCNpc->getTrafoModelNodeToWorld(matrix, 0);
+            matrix->MakeRotationX(pitch);
 
             value->setX(x);
             value->setZ(z);
             value->setY(y);
-            value->oCNpc->setTrafo(&matrix);
+            //value->oCNpc->setTrafo(&matrix);
             std::cout << "Found NPC\n";
         }
         return;

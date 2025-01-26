@@ -56,9 +56,9 @@ void handleBuffer(udp::socket *socket, udp::endpoint clientEndpoint, std::string
     if(data.id == 101) {
 
         for (const auto& [key, clientInfo] : clients) {
-            if (key == clientPortIp) {
+            /*if (key == clientPortIp) {
                 continue;
-            }
+            }*/
 
             std::cout << "\t" << key << " | " << clientPortIp << "\n";
 
