@@ -202,7 +202,9 @@ DWORD WINAPI MainThread()
 		std::string bufferStr = data.serialize();
 		client.send_message(bufferStr);
 
-		Sleep(1000);
+		// give imGui the players Information
+		imGuiData.clients = *gameThreadManager->clients;
+		Sleep(100);
 	}
 	io_thread.join();
 

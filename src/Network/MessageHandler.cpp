@@ -53,13 +53,13 @@ void MessageHandler::handleServerDistributePosition(Data data)
             Npc *value = it->second; // Zeiger auf den Wert
             zMAT4 matrix;
             value->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
-            matrix.MakeRotationX(pitch);
+            //matrix.CalculateRotationMatrix(yaw, pitch, roll, matrix);
+            matrix.MakeRotationY(yaw);
 
             value->setX(x);
             value->setZ(z);
             value->setY(y);
             value->oCNpc->setTrafo(&matrix);
-            std::cout << "Found NPC\n";
         }
         return;
     }

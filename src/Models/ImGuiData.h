@@ -18,6 +18,6 @@ class ImGuiData {
         bool isGuiVisible();
 
         //std::vector<NpcInformation*> npcs;
-        //std::unordered_map<std::string, Npc*> *clients;
+        std::unordered_map<std::string, Npc*> clients;
 };
 

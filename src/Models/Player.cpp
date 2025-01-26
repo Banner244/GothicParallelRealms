@@ -33,7 +33,7 @@ std::string Player::getCoordinates()
 	float *y = getPointer<float>(OFFSET_PosY);
 	float *z = getPointer<float>(OFFSET_PosZ);
 
-	return "X: " + std::to_string(*x) + " Y: " + std::to_string(*y) + " Z: " + std::to_string(*z);
+	return "X: " + std::to_string(*x) + " Z: " + std::to_string(*z) + " Y: " + std::to_string(*y) ;
 }
 
 void Player::setPlayerPosition(float x, float y, float z)

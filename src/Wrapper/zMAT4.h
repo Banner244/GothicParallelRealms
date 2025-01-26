@@ -30,6 +30,38 @@ class zMAT4 {
         matrix[2][1] = s;  // sin(angle)
         matrix[2][2] = c;  // cos(angle)
     }
+
+    void MakeRotationY(float angle) {
+        float c = cos(angle);
+        float s = sin(angle);
+
+        // Setze Matrix auf Identität
+        for (int i = 0; i < 4; ++i)
+            for (int j = 0; j < 4; ++j)
+                matrix[i][j] = (i == j) ? 1.0f : 0.0f;
+
+        // Anpassung für die Rotation um die Y-Achse
+        matrix[0][0] = c;  // cos(angle)
+        matrix[0][2] = s;  // sin(angle)
+        matrix[2][0] = -s; // -sin(angle)
+        matrix[2][2] = c;  // cos(angle)
+    }
+
+    void MakeRotationZ(float angle) {
+        float c = cos(angle);
+        float s = sin(angle);
+
+        // Setze Matrix auf Identität
+        for (int i = 0; i < 4; ++i)
+            for (int j = 0; j < 4; ++j)
+                matrix[i][j] = (i == j) ? 1.0f : 0.0f;
+
+        // Anpassung für die Rotation um die Z-Achse
+        matrix[0][0] = c;  // cos(angle)
+        matrix[0][1] = -s; // -sin(angle)
+        matrix[1][0] = s;  // sin(angle)
+        matrix[1][1] = c;  // cos(angle)
+    }
     static void CalculateRotationMatrix(float yaw, float pitch, float roll, zMAT4& rotationMatrix) {
         float cosYaw = cos(yaw), sinYaw = sin(yaw);
         float cosPitch = cos(pitch), sinPitch = sin(pitch);
