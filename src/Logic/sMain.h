@@ -1,8 +1,12 @@
 #pragma once
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 #include <iostream>
+#include <unordered_map>
+
+#include "../Network/Client.h"
 
 #include "../Models/Addresses.h"
 #include "../Models/Player.h"
@@ -24,11 +28,11 @@ class sMain
 	private:
 		//~sMain();
 		void InitTrainer();
-	
-		Player *player;
 
+		void setPositions();
 	public:
 		sMain();
-
 		void listenToKeys(ImGuiData &imGuiData);
+
+		std::unordered_map<std::string, Npc*> *clients;
 };

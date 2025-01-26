@@ -6,8 +6,15 @@ Npc::Npc(){
 	npcBaseAddress = oCNpc->getAddress2();
 }
 
-Npc::Npc(uintptr_t npcAddress): npcBaseAddress(npcAddress) {
-	oCNpc = new OCNpc((void*)npcAddress);
+Npc::Npc(uintptr_t npcAddress/*, bool toPointer*/){
+
+	/*if(toPointer)*/{
+		oCNpc = new OCNpc(*(void**)npcAddress);
+		this->npcBaseAddress = oCNpc->getAddress2();
+	}
+	/*oCNpc = new OCNpc(*(void**)npcAddress);
+
+	std::cout << "Addr of player: " << npcAddress<< std::endl;*/
 }
 
 template <typename T>
