@@ -151,14 +151,14 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
     //imGuiData.clients = clients;
 
     // ----- SERVER SHIT
-    boost::asio::io_context io_context;
+    /*boost::asio::io_context io_context;
 
     // Erstelle den Client
     Client client(io_context, "192.168.0.209", "12345", clients);
 
     // Hauptschleife, um Nachrichten zu senden
     std::thread io_thread([&io_context]()
-                          { io_context.run(); });
+                          { io_context.run(); });*/
 
     // ----- -----
 
@@ -235,16 +235,13 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
         //setPositions();
 
 
-            zMAT4 matrix;
+            /*zMAT4 matrix;
             mainPlayer->oCNpc->getTrafoModelNodeToWorld(&matrix, 0); // Zweiter Parameter: Knotenspezifikation (0 = kein spezifischer Knoten)
 
             // Rotation extrahieren
             float yaw = atan2(matrix[0][2], matrix[0][0]);
             float pitch = asin(-matrix[0][1]);
             float roll = atan2(matrix[1][2], matrix[2][2]);
-            /*float yaw = 0;
-            float pitch = 0;
-            float roll = 0;*/
 
             Data data;
             data.id = 101;
@@ -256,10 +253,10 @@ void sMain::listenToKeys(ImGuiData &imGuiData)
             data.names.push_back(std::to_string(roll));
 
             std::string bufferStr = data.serialize();
-            client.send_message(bufferStr);
+            client.send_message(bufferStr);*/
 
         Sleep(1000);
     }
 
-    io_thread.join();
+    //io_thread.join();
 }

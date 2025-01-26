@@ -174,7 +174,7 @@ DWORD WINAPI MainThread()
 
 	boost::asio::io_context io_context;
 	// Erstelle den Client
-	Client client(io_context, "192.168.0.209", "12345", gameThreadManager->clients);
+	Client client(io_context, "192.168.0.209", "12345", gameThreadManager);
 	// Hauptschleife, um Nachrichten zu senden
 	std::thread io_thread([&io_context]()
 						  { io_context.run(); });
