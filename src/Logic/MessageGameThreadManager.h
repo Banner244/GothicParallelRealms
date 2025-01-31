@@ -6,7 +6,7 @@
 #include "../Network/Client.h"
 
 #include "../Wrapper/OCNpc.h"
-
+#include "../Wrapper/zCModel.h"
 #include "../Network/MessageHandler.h"
 
 class MessageGameThreadManager {

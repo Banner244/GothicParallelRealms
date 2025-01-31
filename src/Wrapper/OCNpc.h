@@ -29,7 +29,11 @@ public:
     using _BeginMovement = void(__thiscall *)(void *pThis);
     using _GetTrafoModelNodeToWorld = zMAT4*(__thiscall *)(void *pThis, zMAT4 * matrix, int param2);
     using _SetTrafo = void(__thiscall *)(void *pThis, zMAT4 * matrix);
-    
+    using _SetVobInMovement = void(__thiscall *)(void *pThis, int param1);
+    using _Move = void(__thiscall *)(void *pThis, float x, float z, float y);
+    using _GetModel = void*(__thiscall *)(void *pThis);
+    using _ApplyOverlay = int(__thiscall *)(void *pThis, zSTRING *anim);
+
     // function-pointer for the methods of the NPCs
     _OCNpcCtor oCNpcCtorRef;
     _InitModel initModelRef;
@@ -51,6 +55,10 @@ public:
     _BeginMovement beginMovementRef;
     _GetTrafoModelNodeToWorld getTrafoModelNodeToWorldRef;
     _SetTrafo setTrafoRef;
+    _SetVobInMovement setVobInMovementRef;
+    _Move moveRef;
+    _GetModel getModelRef;
+    _ApplyOverlay applayOverlayRef;
 
 private:
     void *pThis = nullptr; // Pointer to the NPC-Instance in memory
@@ -98,5 +106,12 @@ public:
     zMAT4* getTrafoModelNodeToWorld(zMAT4 * matrix, int param2);
 
     void setTrafo(zMAT4 * matrix);
+
+    void setVobInMovement(int param);
+    void move(float x, float z, float y);
+
+    void* getModel();
+
+    int applyOverlay(char * animName);
 
 };

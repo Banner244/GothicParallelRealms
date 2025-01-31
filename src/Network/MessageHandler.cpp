@@ -55,10 +55,10 @@ void MessageHandler::handleServerDistributePosition(Data data)
             value->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
             //matrix.CalculateRotationMatrix(yaw, pitch, roll, matrix);
             matrix.MakeRotationY(yaw);
-
-            value->setX(x);
+            /*value->setX(x);
             value->setZ(z);
-            value->setY(y);
+            value->setY(y);*/
+            value->oCNpc->move(x, z, y);
             value->oCNpc->setTrafo(&matrix);
         }
         return;
