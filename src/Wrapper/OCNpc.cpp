@@ -36,6 +36,8 @@ void OCNpc::initializeFunctionPointers()
     moveRef = reinterpret_cast<_Move>(0x5edde0);
     getModelRef = reinterpret_cast<_GetModel>(0x695300);
     applayOverlayRef = reinterpret_cast<_ApplyOverlay>(0x68ad40);
+    setBodyStateRef = reinterpret_cast<_SetBodyState>(0x6b8000);
+    initHumanAIRef = reinterpret_cast<_InitHumanAI>(0x68ce20);
 }
 
 OCNpc::OCNpc(void *existingAddress) : pThis(existingAddress)
@@ -154,6 +156,14 @@ int OCNpc::applyOverlay(char *animName)
 {
     zSTRING *name = new zSTRING(animName);
     return applayOverlayRef(pThis, name);
+}
+
+void OCNpc::setBodyState(int param1){
+    setBodyStateRef(pThis, param1);
+}
+
+void OCNpc::initHumanAI() {
+    initHumanAIRef(pThis);
 }
 /*    _Enable enableRef;
     _SetAdditionalVisuals setAdditionalVisualsRef;*/

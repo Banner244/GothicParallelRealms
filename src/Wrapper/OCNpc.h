@@ -32,7 +32,9 @@ public:
     using _SetVobInMovement = void(__thiscall *)(void *pThis, int param1);
     using _Move = void(__thiscall *)(void *pThis, float x, float z, float y);
     using _GetModel = void*(__thiscall *)(void *pThis);
-    using _ApplyOverlay = int(__thiscall *)(void *pThis, zSTRING *anim);
+    using _ApplyOverlay = int(__thiscall *)(void *pThis, zSTRING *anim); // style of walk? http://forenarchiv.worldofplayers.de/thread.php?id=242842
+    using _SetBodyState = void(__thiscall *)(void *pThis, int param1);
+    using _InitHumanAI = void(__thiscall *)(void *pThis);
 
     // function-pointer for the methods of the NPCs
     _OCNpcCtor oCNpcCtorRef;
@@ -59,6 +61,8 @@ public:
     _Move moveRef;
     _GetModel getModelRef;
     _ApplyOverlay applayOverlayRef;
+    _SetBodyState setBodyStateRef; 
+    _InitHumanAI initHumanAIRef;
 
 private:
     void *pThis = nullptr; // Pointer to the NPC-Instance in memory
@@ -114,4 +118,7 @@ public:
 
     int applyOverlay(char * animName);
 
+    void setBodyState(int param1);
+
+    void initHumanAI();
 };

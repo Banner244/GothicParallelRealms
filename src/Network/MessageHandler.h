@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 #include "../Models/Npc.h"
-
+#include "../Wrapper/zCModel.h"
 #include "../../server/src/PacketIDs.h"
 #include "../../server/src/Data.h"
 

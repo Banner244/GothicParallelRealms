@@ -41,6 +41,8 @@ void MessageHandler::handleServerDistributePosition(Data data)
     float pitch = std::stof(data.names.at(5));
     float roll = std::stof(data.names.at(6));
 
+    int isPlayerRunning = std::stoi(data.names.at(7));
+
     auto it = clients->find(receivedKey);
     if (it != clients->end())
         playerExists = true;
@@ -51,15 +53,21 @@ void MessageHandler::handleServerDistributePosition(Data data)
         if (it != clients->end())
         {
             Npc *value = it->second;
+            zCModel *npcModel = new zCModel(value->oCNpc->getModel()); 
             zMAT4 matrix;
             value->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
             //matrix.CalculateRotationMatrix(yaw, pitch, roll, matrix);
             matrix.MakeRotationY(yaw);
-            /*value->setX(x);
+            value->setX(x);
             value->setZ(z);
-            value->setY(y);*/
-            value->oCNpc->move(x, z, y);
+            value->setY(y);
+            //value->oCNpc->move(x, z, y);
             value->oCNpc->setTrafo(&matrix);
+
+            if(isPlayerRunning == 1)
+                npcModel->startAnimation("S_RUNL");
+            else
+                npcModel->stopAnimation("S_RUNL");
         }
         return;
     }

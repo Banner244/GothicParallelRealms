@@ -64,6 +64,7 @@ void Client::start_receive()
 
 void Client::sendPlayerPosition()
 {
+    zCModel npcModel(mainPlayer);
     zMAT4 matrix;
     mainPlayer->oCNpc->getTrafoModelNodeToWorld(&matrix, 0); // second param: Node specification (0 = no specific node)
 
@@ -80,6 +81,7 @@ void Client::sendPlayerPosition()
     data.names.push_back(std::to_string(yaw));
     data.names.push_back(std::to_string(pitch));
     data.names.push_back(std::to_string(roll));
+    data.names.push_back(std::to_string(npcModel.isAnimationActive("S_RUNL")));
 
     std::string bufferStr = data.serialize();
     this->send_message(bufferStr);

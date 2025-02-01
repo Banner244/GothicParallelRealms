@@ -39,7 +39,7 @@ void MessageGameThreadManager::processMessages()
             npc->setMaxHealth(10);
             npc->oCNpc->setVisualWithString("HUMANS.MDS");
             npc->oCNpc->setAdditionalVisuals("hum_body_Naked0", 9, 0, "Hum_Head_Pony", 2, 0, -1);
-            npc->oCNpc->enable(&tempPosition);
+            //npc->oCNpc->enable(&tempPosition);
 
             // Set same View direction as player
             zMAT4 matrix;
@@ -47,15 +47,18 @@ void MessageGameThreadManager::processMessages()
             npc->oCNpc->setTrafo(&matrix);
             /*npc->oCNpc->beginMovement();
             npc->oCNpc->move(mainPlayer->getX()+5, mainPlayer->getZ(), mainPlayer->getY());*/
-            npc->oCNpc->setPhysicsEnabledRef(npc->oCNpc->getAddress(), 0);
+            //npc->oCNpc->setPhysicsEnabledRef(npc->oCNpc->getAddress(), 0);
             //npc->oCNpc->setStaticVobRef(npc->oCNpc->getAddress(), 0);
             zCModel *npcModel = new zCModel(npc->oCNpc->getModel()); 
-            std::cout << "zCModel Addr: " << npcModel->pThis << "\n";
+            std::cout << "zCModel Addr: " << npcModel->getAddress() << "\n";
+            //std::cout << "isAnimActive: " << npcModel->isAnimationActive("S_RUNL") << "\n";
+            //npc->oCNpc->initHumanAI();
             
-            int ret = npc->oCNpc->applyOverlay("HUMANS_FLEE.MDS"); //(HUMANS_MILITIA.MDS),
+            //mainPlayer->oCNpc->move(mainPlayer->getX(), mainPlayer->getZ(), mainPlayer->getY()-1);
+            //int ret = npc->oCNpc->applyOverlay("Humans_Militia.mds"); //(HUMANS_MILITIA.MDS),
             //npcModel->startAnimation("S_RUNL");
 
-            std::cout << "anim: " << ret << "\n";
+            //std::cout << "anim: " << ret << "\n";
             delete mainPlayer;
     }
 }

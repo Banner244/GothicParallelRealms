@@ -172,24 +172,29 @@ DWORD WINAPI MainThread()
 
 	Sleep(200);
 	// ################## START ############################
+	std::cout << "Press RControl to connect...\n";
+	while (!GetAsyncKeyState(VK_RCONTROL) & 1)
+	{
+		Sleep(100);
+	}
 
-	/*boost::asio::io_context io_context;
+	boost::asio::io_context io_context;
 	// create Client
 	Client client(io_context, "127.0.0.1", "12345", gameThreadManager);
 	//auto client = std::make_unique<Client>(io_context, "127.0.0.1", "12345", gameThreadManager);
 	// mainloop for receiving messages
 	std::thread io_thread([&io_context]()
-						  { io_context.run(); });*/
+						  { io_context.run(); });
 
 	
 	while (!GetAsyncKeyState(VK_END) & 1)
 	{
-		/*client.sendPlayerPosition();
+		client.sendPlayerPosition();
 		// give imGui the players Information
-		imGuiData.clients = *gameThreadManager->clients;'*/
+		imGuiData.clients = *gameThreadManager->clients;
 		Sleep(100);
 	}
-	//io_thread.join();
+	io_thread.join();
 
 	// ################## END ############################
 

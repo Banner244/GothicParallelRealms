@@ -71,6 +71,8 @@ void handleBuffer(udp::socket *socket, udp::endpoint clientEndpoint, std::string
     package102.names.push_back(data.names.at(3));
     package102.names.push_back(data.names.at(4));
     package102.names.push_back(data.names.at(5));
+    // isPlayerRunning
+    package102.names.push_back(data.names.at(6));
 
     std::string serializedPacket = package102.serialize();
 
