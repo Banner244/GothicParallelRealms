@@ -16,9 +16,10 @@ struct ClientInfo
 };
 
 std::unordered_map<std::string, ClientInfo> clients;
+std::mutex clients_mutex;
 MessageHandler messageHandler;
 
-std::string getClientUniqueString(udp::endpoint clientEndpoint)
+std::string getClientUniqueString(udp::endpoint &clientEndpoint)
 {
     std::string clientPortIp = clientEndpoint.address().to_string() + ":";
     clientPortIp += std::to_string(clientEndpoint.port());
@@ -30,8 +31,9 @@ void updateConsoleTitle(){
     SetConsoleTitle(title.c_str());
 }
 
-void removeClient(udp::endpoint clientEndpoint)
+void removeClient(udp::endpoint &clientEndpoint)
 {
+    std::lock_guard<std::mutex> lock(clients_mutex); 
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
     auto it = clients.find(clientPortIp);
     if (it != clients.end())
@@ -40,8 +42,9 @@ void removeClient(udp::endpoint clientEndpoint)
     updateConsoleTitle();
 }
 
-void addNewClient(udp::endpoint clientEndpoint)
+void addNewClient(udp::endpoint &clientEndpoint)
 {
+    std::lock_guard<std::mutex> lock(clients_mutex); 
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
 
     auto [it, inserted] = clients.try_emplace(clientPortIp, ClientInfo{clientEndpoint});
@@ -51,7 +54,7 @@ void addNewClient(udp::endpoint clientEndpoint)
     updateConsoleTitle();
 }
 
-void handleBuffer(udp::socket *socket, udp::endpoint clientEndpoint, std::string buffer)
+void handleBuffer(udp::socket *socket, udp::endpoint &clientEndpoint, std::string buffer)
 {
     addNewClient(clientEndpoint);
 
@@ -60,36 +63,49 @@ void handleBuffer(udp::socket *socket, udp::endpoint clientEndpoint, std::string
     std::cout << "ID: " << data.id << "\n";
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
 
+    // Erstelle das zu sendende Paket
     Data package102;
     package102.id = 101;
     package102.names.push_back(clientPortIp);
-    // coords
-    package102.names.push_back(data.names.at(0));
-    package102.names.push_back(data.names.at(1));
-    package102.names.push_back(data.names.at(2));
-    // rotation
-    package102.names.push_back(data.names.at(3));
-    package102.names.push_back(data.names.at(4));
-    package102.names.push_back(data.names.at(5));
-    // isPlayerRunning
-    package102.names.push_back(data.names.at(6));
+    package102.names.insert(package102.names.end(), data.names.begin(), data.names.end());
 
     std::string serializedPacket = package102.serialize();
 
     if (data.id == 101)
     {
-        for (const auto &[key, clientInfo] : clients)
+        // copy to keep clients safe
+        std::vector<udp::endpoint> clientEndpoints;
         {
-            if (key == clientPortIp)
+            std::lock_guard<std::mutex> lock(clients_mutex); 
+            for (const auto &[key, clientInfo] : clients)
             {
-                continue;
+                if (key != clientPortIp)
+                {
+                    clientEndpoints.push_back(clientInfo.endpoint);
+                }
             }
+        }
 
-            std::cout << "\t" << key << " | " << clientPortIp << "\n";
+        // sending players information
+        for (const auto &endpoint : clientEndpoints)
+        {
+            // to keep the string safe
+            auto packetPtr = std::make_shared<std::string>(serializedPacket);
 
-            socket->send_to(boost::asio::buffer(serializedPacket), clientInfo.endpoint);
-            std::cout << "\t" << serializedPacket << "\n";
-            // std::cout << "Key: " << key << ", Client ID: " << clientInfo.id << "\n";
+            socket->async_send_to(
+                boost::asio::buffer(*packetPtr),
+                endpoint,
+                [packetPtr, endpoint](boost::system::error_code ec, std::size_t bytes_sent)
+                {
+                    if (ec)
+                    {
+                        std::cerr << "Async send error to " << endpoint << ": " << ec.message() << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << "Gesendet (" << bytes_sent << " Bytes) an " << endpoint << std::endl;
+                    }
+                });
         }
     }
 }
@@ -99,16 +115,15 @@ int main()
     try
     {
         boost::asio::io_context io_context;
-
+        boost::asio::io_context processing_context;
+        boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work_guard(processing_context.get_executor());
         // Server-Socket on Port 12345
         udp::socket socket(io_context, udp::endpoint(udp::v4(), 12345));
         std::cout << "UDP-Server started on Port 12345..." << std::endl;
 
-        // Datenpuffer und Endpoint für asynchronen Empfang
         auto buffer = std::make_shared<std::array<char, 1024>>();
         auto sender_endpoint = std::make_shared<udp::endpoint>();
 
-        // Empfangshandler
         std::function<void(const boost::system::error_code &, std::size_t)> receive_handler;
         receive_handler = [&](const boost::system::error_code &error, std::size_t bytes_received)
         {
@@ -117,30 +132,28 @@ int main()
             {
                 std::cout << "Received something: " << bytes_received << " bytes\n";
 
-                // Daten an handleBuffer übergeben
-                boost::asio::post(io_context, [sender_endpoint, buffer, bytes_received, &socket]()
-                                  {
+                boost::asio::post(processing_context, [sender_endpoint, buffer, bytes_received, &socket]() {
                     std::string receivedPackage = std::string(buffer->data(), bytes_received);
-                    handleBuffer(&socket, *sender_endpoint, receivedPackage); });
+                    handleBuffer(&socket, *sender_endpoint, receivedPackage);
+                });
 
-                // Weiter auf Nachrichten warten
                 socket.async_receive_from(boost::asio::buffer(*buffer), *sender_endpoint, receive_handler);
             }
             else
             {
-                //std::string clientId = getClientUniqueString(*sender_endpoint);
                 std::cerr << "\nError receiving: " << error.message() << "\n";
                 removeClient(*sender_endpoint);
                 socket.async_receive_from(boost::asio::buffer(*buffer), *sender_endpoint, receive_handler);
             }
         };
 
-        // Erste Empfangsanfrage starten
+        
+
+        // starting receiving
         socket.async_receive_from(boost::asio::buffer(*buffer), *sender_endpoint, receive_handler);
 
-        // Threads für den io_context-Thread-Pool erstellen
-        const size_t thread_count = std::thread::hardware_concurrency();
-        std::cout << "Using " << thread_count << " threads.\n";
+        const size_t thread_count = std::max(1u, std::thread::hardware_concurrency() / 2);
+        std::cout << "Using " << thread_count << " network threads.\n";
 
         std::vector<std::thread> threads;
         for (size_t i = 0; i < thread_count; ++i)
@@ -149,7 +162,14 @@ int main()
                                  { io_context.run(); });
         }
 
-        // Warten, bis alle Threads beendet sind
+        const size_t processing_threads = std::max(1u, std::thread::hardware_concurrency() / 2);
+        std::cout << "Using " << processing_threads << " processing threads.\n";
+        for (size_t i = 0; i < processing_threads; ++i)
+        {
+            threads.emplace_back([&processing_context]() { processing_context.run(); });
+        }
+
+        // waiting for the end of all threads
         for (auto &thread : threads)
         {
             thread.join();

@@ -49,26 +49,24 @@ void MessageHandler::handleServerDistributePosition(Data data)
 
     if (playerExists)
     {
-        auto it = clients->find(receivedKey);
-        if (it != clients->end())
-        {
             Npc *value = it->second;
             zCModel *npcModel = new zCModel(value->oCNpc->getModel()); 
             zMAT4 matrix;
             value->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
+
+            if(isPlayerRunning == 1 && !npcModel->isAnimationActive("S_RUNL"))
+                npcModel->startAnimation("S_RUNL");
+            else if(isPlayerRunning == 0)
+                npcModel->stopAnimation("S_RUNL");
             //matrix.CalculateRotationMatrix(yaw, pitch, roll, matrix);
             matrix.MakeRotationY(yaw);
+            value->oCNpc->setTrafo(&matrix);
+            
             value->setX(x);
             value->setZ(z);
             value->setY(y);
             //value->oCNpc->move(x, z, y);
-            value->oCNpc->setTrafo(&matrix);
-
-            if(isPlayerRunning == 1)
-                npcModel->startAnimation("S_RUNL");
-            else
-                npcModel->stopAnimation("S_RUNL");
-        }
+            
         return;
     }
 
