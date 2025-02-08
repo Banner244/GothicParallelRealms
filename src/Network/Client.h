@@ -20,12 +20,15 @@ public:
     Client(boost::asio::io_context& io_context, const std::string& host, const std::string& port, MessageGameThreadManager *gameThreadManager);
     ~Client();
     void send_message(const std::string &message);
+
     void sendPlayerPosition();
     void sendPlayerAnimation();
+    void sendPlayerRotation();
+
 
     /*void setConnected();
     bool isConnected();*/
-    
+    Npc * getMainPlayer();
 
 private:
     MessageGameThreadManager *gameThreadManager;

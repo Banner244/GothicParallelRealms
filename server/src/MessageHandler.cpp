@@ -24,6 +24,10 @@ void MessageHandler::handleBuffer(udp::socket *socket, udp::endpoint &clientEndp
     case ClientPacket::clientShareAnimations:
         clientSharesAnimations(socket, clientEndpoint, data);
         break;
+
+    case ClientPacket::clientShareRotation:
+        clientSharesRotation(socket, clientEndpoint, data);
+        break;
     default:
         std::cout << "Unknown Paket...\n"
                   << std::endl;
@@ -35,12 +39,12 @@ void MessageHandler::clientSharesPosition(udp::socket *socket, udp::endpoint &cl
 {
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
 
-    Data package102;
-    package102.id = 101;
-    package102.names.push_back(clientPortIp);
-    package102.names.insert(package102.names.end(), data.names.begin(), data.names.end());
+    Data newData;
+    newData.id = ServerPacket::serverDistributePosition;
+    newData.names.push_back(clientPortIp);
+    newData.names.insert(newData.names.end(), data.names.begin(), data.names.end());
 
-    std::string serializedPacket = package102.serialize();
+    std::string serializedPacket = newData.serialize();
 
     {
         std::lock_guard<std::mutex> lock(clients_mutex);
@@ -50,17 +54,37 @@ void MessageHandler::clientSharesPosition(udp::socket *socket, udp::endpoint &cl
         }
     }
 }
+
 void MessageHandler::clientSharesAnimations(udp::socket *socket, udp::endpoint &clientEndpoint, Data data)
 {
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
 
-    Data package102;
-    package102.id = 102;
-    package102.names.push_back(clientPortIp);
-    package102.names.insert(package102.names.end(), data.names.begin(), data.names.end());
+    Data newData;
+    newData.id = ServerPacket::serverDistributeAnimations;
+    newData.names.push_back(clientPortIp);
+    newData.names.insert(newData.names.end(), data.names.begin(), data.names.end());
 
-    std::string serializedPacket = package102.serialize();
+    std::string serializedPacket = newData.serialize();
 
+    {
+        std::lock_guard<std::mutex> lock(clients_mutex);
+        for (auto it = clients->begin(); it != clients->end(); ++it)
+        {
+            sendMessage(socket, it->second, serializedPacket);
+        }
+    }
+}
+
+void MessageHandler::clientSharesRotation(udp::socket *socket, udp::endpoint &clientEndpoint, Data data)
+{
+    std::string clientPortIp = getClientUniqueString(clientEndpoint);
+
+    Data newData;
+    newData.id = ServerPacket::serverDistributeRotation;
+    newData.names.push_back(clientPortIp);
+    newData.names.insert(newData.names.end(), data.names.begin(), data.names.end());
+
+    std::string serializedPacket = newData.serialize();
     {
         std::lock_guard<std::mutex> lock(clients_mutex);
         for (auto it = clients->begin(); it != clients->end(); ++it)

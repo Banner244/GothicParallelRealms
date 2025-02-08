@@ -20,4 +20,5 @@ class MessageHandler {
         void handleServerHandshakeAccept(Data data);
         void handleServerDistributePosition(Data data);
         void handleServerDistributeAnimations(Data data);
+        void handleServerDistributeRotations(Data data);
 };

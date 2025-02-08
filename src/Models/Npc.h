@@ -4,8 +4,10 @@
 #include <string>
 
 #include "Addresses.h"
-
+#include "DataStructures.h"
 #include "../Wrapper/OCNpc.h"
+#include "../Wrapper/zCModel.h"
+#include "../Wrapper/zMAT4.h"
 
 class Npc
 {
@@ -54,4 +56,8 @@ class Npc
 		void setZ(float z);
 
 		void setInterpolatePosition(float x, float z, float y);
+
+		DataStructures::LastPosition getLastPosition();
+		DataStructures::LastAnimation getLastAnimation();
+		DataStructures::LastRotation getLastRotation();
 };

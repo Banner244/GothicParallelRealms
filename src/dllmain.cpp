@@ -11,7 +11,7 @@
 #include "Models/ImGuiData.h"
 #include "Logic/ImGuiManager.h"
 #include "Logic/sMain.h"
-
+#include "Network/DataChangeNotifier.h"
 
 // Globals
 HINSTANCE dll_handle;
@@ -181,17 +181,19 @@ DWORD WINAPI MainThread()
 	boost::asio::io_context io_context;
 	// create Client
 	Client client(io_context, "127.0.0.1", "12345", gameThreadManager);
-	//auto client = std::make_unique<Client>(io_context, "127.0.0.1", "12345", gameThreadManager);
 	// mainloop for receiving messages
 	std::thread io_thread([&io_context]()
 						  { io_context.run(); });
 
 	
+	DataChangeNotifier notifier(&client);
 	while (!GetAsyncKeyState(VK_END) & 1)
 	{
-		client.sendPlayerPosition();
+		//client.sendPlayerPosition();
 
-		client.sendPlayerAnimation();
+		//client.sendPlayerAnimation();
+		notifier.sendChanges();
+
 		// give imGui the players Information
 		//imGuiData.clients = *gameThreadManager->clients;
 		Sleep(80);

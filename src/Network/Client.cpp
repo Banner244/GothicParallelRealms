@@ -20,6 +20,10 @@ Client::~Client()
     delete gameThreadManager;
 }
 
+Npc * Client::getMainPlayer(){
+    return mainPlayer;
+}
+
 void Client::send_message(const std::string &message)
 {
     auto message_ptr = std::make_shared<std::string>(message); // keep the message in the memory
@@ -69,27 +73,26 @@ void Client::start_receive()
 
 void Client::sendPlayerPosition()
 {
-    zCModel *npcModel = new zCModel(mainPlayer->oCNpc->getModel());
-    zMAT4 matrix;
-    mainPlayer->oCNpc->getTrafoModelNodeToWorld(&matrix, 0); // second param: Node specification (0 = no specific node)
+    /*zMAT4 matrix;
+    mainPlayer->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);*/ // second param: Node specification (0 = no specific node)
 
-    std::string x = std::to_string((mainPlayer->getX() + 90));
-    std::string y = std::to_string((mainPlayer->getY() + 90));
+    DataStructures::LastPosition lasPos = mainPlayer->getLastPosition();
 
     // get Rotation
-    float yaw = atan2(matrix[0][2], matrix[0][0]);
+    /*float yaw = atan2(matrix[0][2], matrix[0][0]);
     float pitch = asin(-matrix[0][1]);
-    float roll = atan2(matrix[1][2], matrix[2][2]);
+    float roll = atan2(matrix[1][2], matrix[2][2]);*/
 
     Data data;
     data.id = ClientPacket::clientSharePosition;
-    data.names.push_back(x);
-    data.names.push_back(std::to_string(mainPlayer->getZ()));
-    data.names.push_back(y);
-    data.names.push_back(std::to_string(yaw));
-    data.names.push_back(std::to_string(pitch));
-    data.names.push_back(std::to_string(roll));
-    data.names.push_back(std::to_string(npcModel->isAnimationActive("S_RUNL")));
+    data.names.push_back(std::to_string(lasPos.x + 90));
+    data.names.push_back(std::to_string(lasPos.z));
+    data.names.push_back(std::to_string(lasPos.y + 90));
+
+    data.names.push_back(std::to_string(lasPos.yaw));
+    data.names.push_back(std::to_string(lasPos.pitch));
+    data.names.push_back(std::to_string(lasPos.roll));
+    /*data.names.push_back(std::to_string(npcModel->isAnimationActive("S_RUNL")));*/
 
     std::string bufferStr = data.serialize();
     this->send_message(bufferStr);
@@ -98,9 +101,6 @@ void Client::sendPlayerPosition()
 void Client::sendPlayerAnimation()
 {
     zCModel *npcModel = new zCModel(mainPlayer->oCNpc->getModel());
-
-    
-    //std::vector<AnimationInformation> animList;
     auto animList = std::make_shared<std::vector<AnimationInformation>>();
 
 
@@ -120,7 +120,6 @@ void Client::sendPlayerAnimation()
 
         animList->push_back(animInfo);
         break;
-        //std::cout << "Animation " << i << ": ID=" << aniID << ", Frame=" << frame << std::endl;
     }
 
     int animCount = animList->size();
@@ -133,6 +132,20 @@ void Client::sendPlayerAnimation()
         data.names.push_back(std::to_string(animList->at(i).id));
         //data.names.push_back(std::to_string(animList.at(i).frame));
     }
+
+    std::string bufferStr = data.serialize();
+    this->send_message(bufferStr);
+}
+
+void Client::sendPlayerRotation() {
+    Data data;
+    data.id = ClientPacket::clientShareRotation;
+
+    DataStructures::LastRotation lastRot =  mainPlayer->getLastRotation();
+
+    data.names.push_back(std::to_string(lastRot.yaw));
+    data.names.push_back(std::to_string(lastRot.pitch));
+    data.names.push_back(std::to_string(lastRot.roll));
 
     std::string bufferStr = data.serialize();
     this->send_message(bufferStr);

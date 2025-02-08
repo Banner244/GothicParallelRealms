@@ -26,6 +26,8 @@ private:
 
     void clientSharesPosition(udp::socket *socket, udp::endpoint &clientEndpoint, Data data);
     void clientSharesAnimations(udp::socket *socket, udp::endpoint &clientEndpoint, Data data);
+    void clientSharesRotation(udp::socket *socket, udp::endpoint &clientEndpoint, Data data);
+
 
     void sendMessage(udp::socket *socket, udp::endpoint &clientEndpoint, std::string buffer);
 

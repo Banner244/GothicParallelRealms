@@ -20,6 +20,9 @@ void MessageHandler::managePacket(std::string stringPacket)
     case ServerPacket::serverDistributeAnimations:
         handleServerDistributeAnimations(receivedData);
         break;
+    case ServerPacket::serverDistributeRotation:
+        handleServerDistributeRotations(receivedData);
+        break;
     default:
         std::cout << "\n\tWeird... Unknown Packet....\n";
     }
@@ -32,7 +35,6 @@ void MessageHandler::handleServerHandshakeAccept(Data data)
 
 void MessageHandler::handleServerDistributePosition(Data data)
 {
-
     bool playerExists = false;
     std::string receivedKey = data.names.at(0);
 
@@ -44,7 +46,7 @@ void MessageHandler::handleServerDistributePosition(Data data)
     float pitch = std::stof(data.names.at(5));
     float roll = std::stof(data.names.at(6));
 
-    int isPlayerRunning = std::stoi(data.names.at(7));
+    /*int isPlayerRunning = std::stoi(data.names.at(7));*/
     std::lock_guard<std::mutex> lock(clientsMutex);
     auto it = clients->find(receivedKey);
     if (it != clients->end())
@@ -53,7 +55,7 @@ void MessageHandler::handleServerDistributePosition(Data data)
     if (playerExists)
     {
         Npc *value = it->second;
-        zCModel *npcModel = new zCModel(value->oCNpc->getModel());
+        /*zCModel *npcModel = new zCModel(value->oCNpc->getModel());*/
         zMAT4 matrix;
         value->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
 
@@ -103,4 +105,32 @@ void MessageHandler::handleServerDistributeAnimations(Data data)
         if (!aniActive)
             npcModel->startAniInt(animID, 0);
     }
+}
+
+void MessageHandler::handleServerDistributeRotations(Data data)
+{
+    bool playerExists = false;
+    std::string receivedKey = data.names.at(0);
+    std::lock_guard<std::mutex> lock(clientsMutex);
+
+    auto it = clients->find(receivedKey);
+    if (it != clients->end())
+        playerExists = true;
+
+    if (!playerExists)
+        return;
+
+    Npc *value = it->second;
+
+    float yaw = std::stof(data.names.at(1));
+    float pitch = std::stof(data.names.at(2));
+    float roll = std::stof(data.names.at(3));
+
+    zMAT4 matrix;
+    value->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
+
+    matrix.MakeRotationY(yaw);
+
+
+    value->oCNpc->setTrafo(&matrix);
 }
