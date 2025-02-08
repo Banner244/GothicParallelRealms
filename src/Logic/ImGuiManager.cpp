@@ -46,7 +46,6 @@ void ImGuiManager::showContent(ImGuiData imGuiData)
             ImGui::Text(("\t" + posX).c_str());
             ImGui::Text(("\t" + posZ).c_str());
             ImGui::Text(("\t" + posY).c_str());
-            std::cout << "key: " << valueKey << "\n";
         }
     }
     else

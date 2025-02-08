@@ -205,3 +205,65 @@ void Npc::setZ(float posZ)
 	float *tempPosZ =getPointer<float>(OFFSET_PosZ);
 	*tempPosZ = posZ;
 }
+
+void Npc::setInterpolatePosition(float x, float z, float y){
+	ZVec3 currentPos;
+	ZVec3 targetPos;
+	float factor = 0.5;
+
+	targetPos.initialize(x, z, y);
+	oCNpc->getPositionWorld(&currentPos);
+
+	ZVec3 newPos = currentPos + (targetPos - currentPos) * factor;
+
+	setX(newPos.getPosX());
+	setZ(newPos.getPosZ());
+	setY(newPos.getPosY());
+}
+
+DataStructures::LastPosition Npc::getLastPosition() {
+	DataStructures::LastPosition retLastPos;
+	retLastPos.x = getX();
+	retLastPos.z = getZ();
+	retLastPos.y = getY();
+
+	DataStructures::LastRotation lastRot = getLastRotation();
+	retLastPos.yaw = lastRot.yaw;
+	retLastPos.pitch = lastRot.pitch;
+	retLastPos.roll = lastRot.roll;
+	return retLastPos;
+}
+
+DataStructures::LastAnimation Npc::getLastAnimation() {
+	DataStructures::LastAnimation retLastAnim;
+	zCModel *npcModel = new zCModel(oCNpc->getModel());
+
+    for (int i = 0; i < 550; i++)
+    {
+        void *aniActive = npcModel->getActiveAni(i);
+        if (!aniActive)
+            continue;
+
+        //int aniID = *(int *)((uintptr_t)aniActive + 0x4C);
+        //float frame = *(float *)((uintptr_t)aniActive + 0x30);
+
+        retLastAnim.animation = i;
+        retLastAnim.frame = 0;//static_cast<int>(frame);
+        break;
+    }
+	return retLastAnim;
+}
+
+DataStructures::LastRotation Npc::getLastRotation(){
+	DataStructures::LastRotation retLastRot;
+
+	zMAT4 matrix;
+	oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
+	
+	// get Rotation
+    retLastRot.yaw = atan2(matrix[0][2], matrix[0][0]);
+    retLastRot.pitch = asin(-matrix[0][1]);
+    retLastRot.roll = atan2(matrix[1][2], matrix[2][2]);
+
+	return retLastRot;
+}

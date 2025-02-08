@@ -11,7 +11,7 @@
 #include "Models/ImGuiData.h"
 #include "Logic/ImGuiManager.h"
 #include "Logic/sMain.h"
-
+#include "Network/DataChangeNotifier.h"
 
 // Globals
 HINSTANCE dll_handle;
@@ -143,6 +143,7 @@ void SetupConsole()
 	// Standardeingabe (std::cin) mit der Konsole verbinden
 	freopen_s(&stream, "CONIN$", "r", stdin);
 }
+
 //"main" loop
 DWORD WINAPI MainThread()
 {
@@ -169,41 +170,33 @@ DWORD WINAPI MainThread()
 	// Key Events here
 	// mainLoop->listenToKeys(imGuiData);
 
+	Sleep(200);
 	// ################## START ############################
+	std::cout << "Press RControl to connect...\n";
+	while (!GetAsyncKeyState(VK_RCONTROL) & 1)
+	{
+		Sleep(100);
+	}
 
 	boost::asio::io_context io_context;
 	// create Client
-	Client client(io_context, "192.168.0.209", "12345", gameThreadManager);
+	Client client(io_context, "127.0.0.1", "12345", gameThreadManager);
 	// mainloop for receiving messages
 	std::thread io_thread([&io_context]()
 						  { io_context.run(); });
 
-	Npc *mainPlayer = new Npc(ADDR_PLAYERBASE);
-	while (!GetAsyncKeyState(VK_END))
+	
+	DataChangeNotifier notifier(&client);
+	while (!GetAsyncKeyState(VK_END) & 1)
 	{
-		zMAT4 matrix;
-		mainPlayer->oCNpc->getTrafoModelNodeToWorld(&matrix, 0); // second param: Node specification (0 = no specific node)
+		//client.sendPlayerPosition();
 
-		// get Rotation 
-		float yaw = atan2(matrix[0][2], matrix[0][0]);
-		float pitch = asin(-matrix[0][1]);
-		float roll = atan2(matrix[1][2], matrix[2][2]);
-
-		Data data;
-		data.id = 101;
-		data.names.push_back(std::to_string(mainPlayer->getX()));
-		data.names.push_back(std::to_string(mainPlayer->getZ()));
-		data.names.push_back(std::to_string(mainPlayer->getY()));
-		data.names.push_back(std::to_string(yaw));
-		data.names.push_back(std::to_string(pitch));
-		data.names.push_back(std::to_string(roll));
-
-		std::string bufferStr = data.serialize();
-		client.send_message(bufferStr);
+		//client.sendPlayerAnimation();
+		notifier.sendChanges();
 
 		// give imGui the players Information
-		imGuiData.clients = *gameThreadManager->clients;
-		Sleep(100);
+		//imGuiData.clients = *gameThreadManager->clients;
+		Sleep(80);
 	}
 	io_thread.join();
 

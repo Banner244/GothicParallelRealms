@@ -1,11 +1,12 @@
 #include "OCNpc.h"
 
-struct OCObjectFactory {
-    typedef void*(__thiscall * _CreateNPC)(void* pThis, int param);
+struct OCObjectFactory
+{
+    typedef void *(__thiscall *_CreateNPC)(void *pThis, int param);
     _CreateNPC createNpc;
 
-    void* pThis = *(void**)0x82c114;
-}oCObjectFactory;
+    void *pThis = *(void **)0x82c114;
+} oCObjectFactory;
 
 void OCNpc::initializeFunctionPointers()
 {
@@ -31,13 +32,19 @@ void OCNpc::initializeFunctionPointers()
     beginMovementRef = reinterpret_cast<_BeginMovement>(0x5f0510);
     getTrafoModelNodeToWorldRef = reinterpret_cast<_GetTrafoModelNodeToWorld>(0x5d84d0);
     setTrafoRef = reinterpret_cast<_SetTrafo>(0x5ee6b0);
+    setVobInMovementRef = reinterpret_cast<_SetVobInMovement>(0x5f0460);
+    moveRef = reinterpret_cast<_Move>(0x5edde0);
+    getModelRef = reinterpret_cast<_GetModel>(0x695300);
+    applayOverlayRef = reinterpret_cast<_ApplyOverlay>(0x68ad40);
+    setBodyStateRef = reinterpret_cast<_SetBodyState>(0x6b8000);
+    initHumanAIRef = reinterpret_cast<_InitHumanAI>(0x68ce20);
 }
 
 OCNpc::OCNpc(void *existingAddress) : pThis(existingAddress)
 {
     if (!pThis)
         throw std::runtime_error("Invalid Memory-Address given over.");
-    
+
     initializeFunctionPointers();
 }
 
@@ -45,45 +52,51 @@ OCNpc::OCNpc()
 {
     initializeFunctionPointers();
     createNewNpc();
-    //pThis = createNewNpc();
-
+    // pThis = createNewNpc();
 }
 
-uintptr_t OCNpc::getAddress2(){
+void *OCNpc::getAddress() const
+{
+    return pThis;
+}
+
+uintptr_t OCNpc::getAddress2()
+{
     return reinterpret_cast<uintptr_t>(pThis);
 }
 
 void OCNpc::createNewNpc()
 {
-    pThis = (void*)oCObjectFactory.createNpc(oCObjectFactory.pThis, -1); //oCNpcCtorRef(this); //
+    pThis = (void *)oCObjectFactory.createNpc(oCObjectFactory.pThis, -1); // oCNpcCtorRef(this); //
     std::cout << "Pointer of NPC: " << pThis << std::endl;
-    //return oCNpcCtorRef(this);
+    // return oCNpcCtorRef(this);
 }
 
-void OCNpc::setVisualWithString(char *visual){
+void OCNpc::setVisualWithString(char *visual)
+{
     zSTRING *visualString = new zSTRING(visual);
     setVisualWithStringRef(pThis, visualString);
 }
 
-void OCNpc::setAdditionalVisuals(char * textureBody, int param2, int param3, char * textureHead, int param5, int param6, int param7){
-    zSTRING *body = new zSTRING(textureBody);// "Sca_Body", hum_body_Naked0
-    zSTRING *head = new zSTRING(textureHead);// "",         Hum_Head_Pony
-    
+void OCNpc::setAdditionalVisuals(char *textureBody, int param2, int param3, char *textureHead, int param5, int param6, int param7)
+{
+    zSTRING *body = new zSTRING(textureBody); // "Sca_Body", hum_body_Naked0
+    zSTRING *head = new zSTRING(textureHead); // "",         Hum_Head_Pony
+
     setAdditionalVisualsRef(pThis, body, param2, param3, head, param5, param6, param7);
 }
 
-void OCNpc::setVobName(char * vobName) {
+void OCNpc::setVobName(char *vobName)
+{
     zSTRING *name = new zSTRING(vobName);
-
     setVobNameRef(pThis, name);
 }
 
-void OCNpc::setByScriptInstance(char * nameS, int param2){
+void OCNpc::setByScriptInstance(char *nameS, int param2)
+{
     zSTRING *name = new zSTRING(nameS);
-
     setByScriptInstanceRef(pThis, name, param2);
 }
-
 
 void OCNpc::enable(ZVec3 *pos)
 {
@@ -101,7 +114,6 @@ void OCNpc::enableWithdCoords(float x, float z, float y)
 
 void OCNpc::setPosition(const ZVec3 *position)
 {
-
 }
 
 // Beispielmethode, um den NPC zu manipulieren
@@ -110,17 +122,48 @@ void OCNpc::getPositionWorld(ZVec3 *position)
     getPositionWorldRef(pThis, position);
 }
 
-void OCNpc::beginMovement(){
+void OCNpc::beginMovement()
+{
     beginMovementRef(pThis);
 }
 
-zMAT4* OCNpc::getTrafoModelNodeToWorld(zMAT4 * matrix, int param2){
+zMAT4 *OCNpc::getTrafoModelNodeToWorld(zMAT4 *matrix, int param2)
+{
     return getTrafoModelNodeToWorldRef(pThis, matrix, param2);
 }
 
-void OCNpc::setTrafo(zMAT4 * matrix){
+void OCNpc::setTrafo(zMAT4 *matrix)
+{
     setTrafoRef(pThis, matrix);
 }
 
+void OCNpc::setVobInMovement(int param)
+{
+    setVobInMovementRef(pThis, param);
+}
+
+void OCNpc::move(float x, float z, float y)
+{
+    moveRef(pThis, x, z, y);
+}
+
+void *OCNpc::getModel()
+{
+    return getModelRef(pThis);
+}
+
+int OCNpc::applyOverlay(char *animName)
+{
+    zSTRING *name = new zSTRING(animName);
+    return applayOverlayRef(pThis, name);
+}
+
+void OCNpc::setBodyState(int param1){
+    setBodyStateRef(pThis, param1);
+}
+
+void OCNpc::initHumanAI() {
+    initHumanAIRef(pThis);
+}
 /*    _Enable enableRef;
     _SetAdditionalVisuals setAdditionalVisualsRef;*/
