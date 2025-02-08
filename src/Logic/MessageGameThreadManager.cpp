@@ -15,10 +15,11 @@ void MessageGameThreadManager::removeTask(std::vector<std::string>::iterator it)
     if(!gameThreadTasks.empty())
         gameThreadTasks.erase(it);
 }
-
+int count = 0;
 void MessageGameThreadManager::processMessages()
 {
     if(!gameThreadTasks.empty()){
+        //std::lock_guard<std::mutex> lock(clientsMutex); 
         std::vector<std::string>::iterator firstTask = gameThreadTasks.begin();
 
         if (firstTask == gameThreadTasks.end()) 
@@ -39,7 +40,7 @@ void MessageGameThreadManager::processMessages()
             npc->setMaxHealth(10);
             npc->oCNpc->setVisualWithString("HUMANS.MDS");
             npc->oCNpc->setAdditionalVisuals("hum_body_Naked0", 9, 0, "Hum_Head_Pony", 2, 0, -1);
-            //npc->oCNpc->enable(&tempPosition);
+            npc->oCNpc->enable(&tempPosition);
 
             // Set same View direction as player
             zMAT4 matrix;
@@ -51,6 +52,31 @@ void MessageGameThreadManager::processMessages()
             //npc->oCNpc->setStaticVobRef(npc->oCNpc->getAddress(), 0);
             zCModel *npcModel = new zCModel(npc->oCNpc->getModel()); 
             std::cout << "zCModel Addr: " << npcModel->getAddress() << "\n";
+
+            //int id = npcModel->SearchAniIndex("S_RUNL");
+            //std::cout << "id: " << id << "\n";
+
+
+            //int numAnis = *(int*)((uintptr_t)npcModel + 0x38); // Anzahl aktiver Animationen
+            //std::cout << "Active Animations: " << numAnis << std::endl;
+/*std::cout << "\n";
+            for (int i = 0; i < 700; i++) { 
+                    void * aniActive = npcModel->getActiveAni(i);
+                    if (!aniActive) continue;  // Sobald eine NULL kommt, abbrechen
+
+                    int aniID = *(int*)((uintptr_t)aniActive + 0x4C);
+                    float frame = *(float*)((uintptr_t)aniActive + 0x30);
+
+                    std::cout << "Animation " << i << ": ID=" << aniID << ", Frame=" << frame << std::endl;
+            }
+std::cout << "\n";*/
+            npcModel->startAniInt(342, 0);
+            /*count++;*/
+
+
+            /*void * aniFromID = npcModel->getAniFromAniID(8);
+            npcModel->startAni(aniFromID, 0);*/
+
             //std::cout << "isAnimActive: " << npcModel->isAnimationActive("S_RUNL") << "\n";
             //npc->oCNpc->initHumanAI();
             

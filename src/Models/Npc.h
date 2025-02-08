@@ -52,4 +52,6 @@ class Npc
 		
 		float getZ();
 		void setZ(float z);
+
+		void setInterpolatePosition(float x, float z, float y);
 };

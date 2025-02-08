@@ -190,9 +190,11 @@ DWORD WINAPI MainThread()
 	while (!GetAsyncKeyState(VK_END) & 1)
 	{
 		client.sendPlayerPosition();
+
+		client.sendPlayerAnimation();
 		// give imGui the players Information
-		imGuiData.clients = *gameThreadManager->clients;
-		Sleep(100);
+		//imGuiData.clients = *gameThreadManager->clients;
+		Sleep(80);
 	}
 	io_thread.join();
 

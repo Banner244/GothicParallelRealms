@@ -14,7 +14,7 @@ class MessageGameThreadManager {
     public:
         MessageGameThreadManager();
         std::unordered_map<std::string, Npc*> *clients;
-
+        //std::mutex clientsMutex;
         void processMessages();
 
         void addTask(std::string task);

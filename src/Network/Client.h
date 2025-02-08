@@ -7,7 +7,7 @@
 
 #include "../Models/Addresses.h"
 #include "../server/src/Data.h"
-
+#include "../server/src/PacketIDs.h"
 
 #include "../Logic/MessageGameThreadManager.h"
 #include "../Models/Npc.h"
@@ -21,6 +21,7 @@ public:
     ~Client();
     void send_message(const std::string &message);
     void sendPlayerPosition();
+    void sendPlayerAnimation();
 
     /*void setConnected();
     bool isConnected();*/

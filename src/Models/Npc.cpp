@@ -205,3 +205,18 @@ void Npc::setZ(float posZ)
 	float *tempPosZ =getPointer<float>(OFFSET_PosZ);
 	*tempPosZ = posZ;
 }
+
+void Npc::setInterpolatePosition(float x, float z, float y){
+	ZVec3 currentPos;
+	ZVec3 targetPos;
+	float factor = 0.5;
+
+	targetPos.initialize(x, z, y);
+	oCNpc->getPositionWorld(&currentPos);
+
+	ZVec3 newPos = currentPos + (targetPos - currentPos) * factor;
+
+	setX(newPos.getPosX());
+	setZ(newPos.getPosZ());
+	setY(newPos.getPosY());
+}

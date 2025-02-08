@@ -1,12 +1,11 @@
 #include "MessageHandler.h"
 
-MessageHandler::MessageHandler(std::unordered_map<std::string, Npc*> *clients) : clients(clients) {
-
+MessageHandler::MessageHandler(std::unordered_map<std::string, Npc *> *clients) : clients(clients)
+{
 }
 
 void MessageHandler::managePacket(std::string stringPacket)
 {
-
     Data receivedData;
     receivedData.deserialize(stringPacket);
 
@@ -18,7 +17,9 @@ void MessageHandler::managePacket(std::string stringPacket)
     case ServerPacket::serverDistributePosition:
         handleServerDistributePosition(receivedData);
         break;
-
+    case ServerPacket::serverDistributeAnimations:
+        handleServerDistributeAnimations(receivedData);
+        break;
     default:
         std::cout << "\n\tWeird... Unknown Packet....\n";
     }
@@ -26,10 +27,12 @@ void MessageHandler::managePacket(std::string stringPacket)
 
 void MessageHandler::handleServerHandshakeAccept(Data data)
 {
+    
 }
 
 void MessageHandler::handleServerDistributePosition(Data data)
 {
+
     bool playerExists = false;
     std::string receivedKey = data.names.at(0);
 
@@ -42,31 +45,25 @@ void MessageHandler::handleServerDistributePosition(Data data)
     float roll = std::stof(data.names.at(6));
 
     int isPlayerRunning = std::stoi(data.names.at(7));
-
+    std::lock_guard<std::mutex> lock(clientsMutex);
     auto it = clients->find(receivedKey);
     if (it != clients->end())
         playerExists = true;
 
     if (playerExists)
     {
-            Npc *value = it->second;
-            zCModel *npcModel = new zCModel(value->oCNpc->getModel()); 
-            zMAT4 matrix;
-            value->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
+        Npc *value = it->second;
+        zCModel *npcModel = new zCModel(value->oCNpc->getModel());
+        zMAT4 matrix;
+        value->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
 
-            if(isPlayerRunning == 1 && !npcModel->isAnimationActive("S_RUNL"))
-                npcModel->startAnimation("S_RUNL");
-            else if(isPlayerRunning == 0)
-                npcModel->stopAnimation("S_RUNL");
-            //matrix.CalculateRotationMatrix(yaw, pitch, roll, matrix);
-            matrix.MakeRotationY(yaw);
-            value->oCNpc->setTrafo(&matrix);
-            
-            value->setX(x);
-            value->setZ(z);
-            value->setY(y);
-            //value->oCNpc->move(x, z, y);
-            
+        matrix.MakeRotationY(yaw);
+        value->oCNpc->setTrafo(&matrix);
+
+        //value->setInterpolatePosition(x, z, y);
+        value->setX(x);
+        value->setZ(z);
+        value->setY(y);
         return;
     }
 
@@ -80,4 +77,30 @@ void MessageHandler::handleServerDistributePosition(Data data)
 
     // Füge das Paar in die Map ein
     clients->insert({receivedKey, value});
+}
+
+void MessageHandler::handleServerDistributeAnimations(Data data)
+{
+    bool playerExists = false;
+    std::string receivedKey = data.names.at(0);
+    std::lock_guard<std::mutex> lock(clientsMutex);
+    auto it = clients->find(receivedKey);
+    if (it != clients->end())
+        playerExists = true;
+
+    if (!playerExists)
+        return;
+
+    Npc *value = it->second;
+    zCModel *npcModel = new zCModel(value->oCNpc->getModel());
+
+    int animCount = std::stoi(data.names.at(1));
+    if (animCount != 0)
+    {
+        int animID = std::stoi(data.names.at(2));
+
+        void *aniActive = npcModel->getActiveAni(animID);
+        if (!aniActive)
+            npcModel->startAniInt(animID, 0);
+    }
 }
