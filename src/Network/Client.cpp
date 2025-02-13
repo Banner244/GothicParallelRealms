@@ -27,7 +27,7 @@ Npc * Client::getMainPlayer(){
 void Client::send_message(const std::string &message)
 {
     auto message_ptr = std::make_shared<std::string>(message); // keep the message in the memory
-
+    std::cout << "Packet " << *message_ptr << std::endl;
     socket_.async_send_to(
         boost::asio::buffer(*message_ptr),
         server_endpoint_,
@@ -35,8 +35,10 @@ void Client::send_message(const std::string &message)
         {
             if (ec)
                 std::cerr << "Error sending: " << ec.message() << std::endl;
-            else
+            else {
                 std::cout << "Sent " << bytes_sent << " bytes." << std::endl;
+            }
+                
         });
 }
 
@@ -83,7 +85,7 @@ void Client::sendPlayerPosition()
     float pitch = asin(-matrix[0][1]);
     float roll = atan2(matrix[1][2], matrix[2][2]);*/
 
-    Data data;
+   /* Data data;
     data.id = ClientPacket::clientSharePosition;
     data.names.push_back(std::to_string(lasPos.x + 90));
     data.names.push_back(std::to_string(lasPos.z));
@@ -91,16 +93,32 @@ void Client::sendPlayerPosition()
 
     data.names.push_back(std::to_string(lasPos.yaw));
     data.names.push_back(std::to_string(lasPos.pitch));
-    data.names.push_back(std::to_string(lasPos.roll));
+    data.names.push_back(std::to_string(lasPos.roll));*/
+    PackagingSystem packetAnim(Packets::ClientPacket::clientSharePosition);
+    packetAnim.addFloatPointNumber(lasPos.x + 90, 2);
+    packetAnim.addFloatPointNumber(lasPos.z, 2);
+    packetAnim.addFloatPointNumber(lasPos.y + 90, 2);
+
+    packetAnim.addFloatPointNumber(lasPos.yaw);
+    packetAnim.addFloatPointNumber(lasPos.pitch);
+    packetAnim.addFloatPointNumber(lasPos.roll);
+
+
     /*data.names.push_back(std::to_string(npcModel->isAnimationActive("S_RUNL")));*/
 
-    std::string bufferStr = data.serialize();
+    std::string bufferStr = packetAnim.serializePacket();
     this->send_message(bufferStr);
 }
 
 void Client::sendPlayerAnimation()
 {
-    zCModel *npcModel = new zCModel(mainPlayer->oCNpc->getModel());
+    DataStructures::LastAnimation lastAnim =  mainPlayer->getLastAnimation();
+    PackagingSystem packetAnim(Packets::ClientPacket::clientSharePosition);
+    packetAnim.addInt(lastAnim.animation);
+
+    std::string bufferStr = packetAnim.serializePacket();
+    this->send_message(bufferStr);
+    /*zCModel *npcModel = new zCModel(mainPlayer->oCNpc->getModel());
     auto animList = std::make_shared<std::vector<AnimationInformation>>();
 
 
@@ -134,11 +152,11 @@ void Client::sendPlayerAnimation()
     }
 
     std::string bufferStr = data.serialize();
-    this->send_message(bufferStr);
+    this->send_message(bufferStr);*/
 }
 
 void Client::sendPlayerRotation() {
-    Data data;
+    /*Data data;
     data.id = ClientPacket::clientShareRotation;
 
     DataStructures::LastRotation lastRot =  mainPlayer->getLastRotation();
@@ -148,7 +166,7 @@ void Client::sendPlayerRotation() {
     data.names.push_back(std::to_string(lastRot.roll));
 
     std::string bufferStr = data.serialize();
-    this->send_message(bufferStr);
+    this->send_message(bufferStr);*/
 }
 
 /*void Client::setConnected()

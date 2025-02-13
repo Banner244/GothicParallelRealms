@@ -6,8 +6,8 @@
 #include <functional>
 
 #include "../Models/Addresses.h"
-#include "../server/src/Data.h"
-#include "../server/src/PacketIDs.h"
+#include "../server/src/PackagingSystem.h"
+#include "../server/src/Packets.h"
 
 #include "../Logic/MessageGameThreadManager.h"
 #include "../Models/Npc.h"

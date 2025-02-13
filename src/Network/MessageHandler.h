@@ -5,8 +5,8 @@
 
 #include "../Models/Npc.h"
 #include "../Wrapper/zCModel.h"
-#include "../../server/src/PacketIDs.h"
-#include "../../server/src/Data.h"
+#include "../../server/src/Packets.h"
+#include "../../server/src/PackagingSystem.h"
 #include <mutex>
 
 class MessageHandler {
@@ -17,8 +17,8 @@ class MessageHandler {
     private:
         std::unordered_map<std::string, Npc*> *clients;
         std::mutex clientsMutex;
-        void handleServerHandshakeAccept(Data data);
-        void handleServerDistributePosition(Data data);
-        void handleServerDistributeAnimations(Data data);
-        void handleServerDistributeRotations(Data data);
+        void handleServerHandshakeAccept(std::string &buffer);
+        void handleServerDistributePosition(std::string &buffer);
+        void handleServerDistributeAnimations(std::string &buffer);
+        void handleServerDistributeRotations(std::string &buffer);
 };

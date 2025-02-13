@@ -4,9 +4,10 @@
 
 #include <boost/asio.hpp>
 
-#include "Data.h"
+//#include "Data.h"
+#include "Packets.h"
+#include "PackagingSystem.h"
 
-#include "PacketIDs.h"
 
 
 using boost::asio::ip::udp;
@@ -24,10 +25,8 @@ private:
     std::unordered_map<std::string, udp::endpoint> *clients;
     std::mutex clients_mutex;
 
-    void clientSharesPosition(udp::socket *socket, udp::endpoint &clientEndpoint, Data data);
-    void clientSharesAnimations(udp::socket *socket, udp::endpoint &clientEndpoint, Data data);
-    void clientSharesRotation(udp::socket *socket, udp::endpoint &clientEndpoint, Data data);
-
+    void clientSharesPosition(udp::socket *socket, udp::endpoint &clientEndpoint, std::string &buffer);
+    void clientSharesAnimations(udp::socket *socket, udp::endpoint &clientEndpoint, std::string &buffer);
 
     void sendMessage(udp::socket *socket, udp::endpoint &clientEndpoint, std::string buffer);
 

@@ -6,37 +6,46 @@ MessageHandler::MessageHandler(std::unordered_map<std::string, Npc *> *clients) 
 
 void MessageHandler::managePacket(std::string stringPacket)
 {
-    Data receivedData;
-    receivedData.deserialize(stringPacket);
+    /*Data receivedData;
+    receivedData.deserialize(stringPacket);*/
+    Packets::ServerPacket packetId = static_cast<Packets::ServerPacket>(PackagingSystem::ReadPacketId(stringPacket));
 
-    switch (receivedData.id)
+    switch (packetId)
     {
-    case ServerPacket::serverHandshakeAccept:
-        handleServerHandshakeAccept(receivedData);
+    case Packets::ServerPacket::serverHandshakeAccept:
+        handleServerHandshakeAccept(stringPacket);
         break;
-    case ServerPacket::serverDistributePosition:
-        handleServerDistributePosition(receivedData);
+    case Packets::ServerPacket::serverDistributePosition:
+        handleServerDistributePosition(stringPacket);
         break;
-    case ServerPacket::serverDistributeAnimations:
-        handleServerDistributeAnimations(receivedData);
+    case Packets::ServerPacket::serverDistributeAnimations:
+        handleServerDistributeAnimations(stringPacket);
         break;
-    case ServerPacket::serverDistributeRotation:
-        handleServerDistributeRotations(receivedData);
-        break;
+    /*case Packets::ServerPacket::serverDistributeRotation:
+        handleServerDistributeRotations(stringPacket);
+        break;*/
     default:
         std::cout << "\n\tWeird... Unknown Packet....\n";
     }
 }
 
-void MessageHandler::handleServerHandshakeAccept(Data data)
+void MessageHandler::handleServerHandshakeAccept(std::string &buffer)
 {
     
 }
 
-void MessageHandler::handleServerDistributePosition(Data data)
+void MessageHandler::handleServerDistributePosition(std::string &buffer)
 {
     bool playerExists = false;
-    std::string receivedKey = data.names.at(0);
+    std::string receivedKey = PackagingSystem::ReadItem<std::string>(buffer);
+    float x = PackagingSystem::ReadItem<float>(buffer);
+    float z = PackagingSystem::ReadItem<float>(buffer);
+    float y = PackagingSystem::ReadItem<float>(buffer);
+
+    float yaw = PackagingSystem::ReadItem<float>(buffer);
+    float pitch = PackagingSystem::ReadItem<float>(buffer);
+    float roll = PackagingSystem::ReadItem<float>(buffer);
+    /*std::string receivedKey = data.names.at(0);
 
     float x = std::stof(data.names.at(1));
     float z = std::stof(data.names.at(2));
@@ -44,7 +53,7 @@ void MessageHandler::handleServerDistributePosition(Data data)
 
     float yaw = std::stof(data.names.at(4));
     float pitch = std::stof(data.names.at(5));
-    float roll = std::stof(data.names.at(6));
+    float roll = std::stof(data.names.at(6));*/
 
     /*int isPlayerRunning = std::stoi(data.names.at(7));*/
     std::lock_guard<std::mutex> lock(clientsMutex);
@@ -81,10 +90,10 @@ void MessageHandler::handleServerDistributePosition(Data data)
     clients->insert({receivedKey, value});
 }
 
-void MessageHandler::handleServerDistributeAnimations(Data data)
+void MessageHandler::handleServerDistributeAnimations(std::string &buffer)
 {
     bool playerExists = false;
-    std::string receivedKey = data.names.at(0);
+    std::string receivedKey = PackagingSystem::ReadItem<std::string>(buffer); //data.names.at(0);
     std::lock_guard<std::mutex> lock(clientsMutex);
     auto it = clients->find(receivedKey);
     if (it != clients->end())
@@ -96,7 +105,12 @@ void MessageHandler::handleServerDistributeAnimations(Data data)
     Npc *value = it->second;
     zCModel *npcModel = new zCModel(value->oCNpc->getModel());
 
-    int animCount = std::stoi(data.names.at(1));
+    int animID = PackagingSystem::ReadItem<int>(buffer);
+
+    void *aniActive = npcModel->getActiveAni(animID);
+    if (!aniActive)
+        npcModel->startAniInt(animID, 0);
+    /*int animCount = std::stoi(data.names.at(1));
     if (animCount != 0)
     {
         int animID = std::stoi(data.names.at(2));
@@ -104,13 +118,13 @@ void MessageHandler::handleServerDistributeAnimations(Data data)
         void *aniActive = npcModel->getActiveAni(animID);
         if (!aniActive)
             npcModel->startAniInt(animID, 0);
-    }
+    }*/
 }
 
-void MessageHandler::handleServerDistributeRotations(Data data)
+void MessageHandler::handleServerDistributeRotations(std::string &buffer)
 {
-    bool playerExists = false;
-    std::string receivedKey = data.names.at(0);
+    /*bool playerExists = false;
+    std::string receivedKey = PackagingSystem::ReadItem<std::string>(buffer);
     std::lock_guard<std::mutex> lock(clientsMutex);
 
     auto it = clients->find(receivedKey);
@@ -132,5 +146,5 @@ void MessageHandler::handleServerDistributeRotations(Data data)
     matrix.MakeRotationY(yaw);
 
 
-    value->oCNpc->setTrafo(&matrix);
+    value->oCNpc->setTrafo(&matrix);*/
 }
