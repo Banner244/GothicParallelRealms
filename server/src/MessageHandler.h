@@ -31,8 +31,6 @@ private:
     void sendMessage(udp::socket *socket, udp::endpoint &clientEndpoint, std::string buffer);
 
 
-    
-
     void MessageHandler::addNewClient(udp::endpoint &clientEndpoint);
 
     std::string MessageHandler::getClientUniqueString(udp::endpoint &clientEndpoint);

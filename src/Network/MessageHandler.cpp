@@ -45,17 +45,7 @@ void MessageHandler::handleServerDistributePosition(std::string &buffer)
     float yaw = PackagingSystem::ReadItem<float>(buffer);
     float pitch = PackagingSystem::ReadItem<float>(buffer);
     float roll = PackagingSystem::ReadItem<float>(buffer);
-    /*std::string receivedKey = data.names.at(0);
 
-    float x = std::stof(data.names.at(1));
-    float z = std::stof(data.names.at(2));
-    float y = std::stof(data.names.at(3));
-
-    float yaw = std::stof(data.names.at(4));
-    float pitch = std::stof(data.names.at(5));
-    float roll = std::stof(data.names.at(6));*/
-
-    /*int isPlayerRunning = std::stoi(data.names.at(7));*/
     std::lock_guard<std::mutex> lock(clientsMutex);
     auto it = clients->find(receivedKey);
     if (it != clients->end())
@@ -64,14 +54,12 @@ void MessageHandler::handleServerDistributePosition(std::string &buffer)
     if (playerExists)
     {
         Npc *value = it->second;
-        /*zCModel *npcModel = new zCModel(value->oCNpc->getModel());*/
         zMAT4 matrix;
         value->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
 
         matrix.MakeRotationY(yaw);
         value->oCNpc->setTrafo(&matrix);
 
-        //value->setInterpolatePosition(x, z, y);
         value->setX(x);
         value->setZ(z);
         value->setY(y);
@@ -107,9 +95,16 @@ void MessageHandler::handleServerDistributeAnimations(std::string &buffer)
 
     int animID = PackagingSystem::ReadItem<int>(buffer);
 
-    void *aniActive = npcModel->getActiveAni(animID);
-    if (!aniActive)
-        npcModel->startAniInt(animID, 0);
+
+    for(int i = 0; i < 550; i++){
+        void *aniActive = npcModel->getActiveAni(i);
+        if (aniActive)
+            npcModel->stopAnimationInt(i);
+    }
+
+    //void *aniActive = npcModel->getActiveAni(animID);
+    //if (!aniActive)
+    npcModel->startAniInt(animID, 0);
     /*int animCount = std::stoi(data.names.at(1));
     if (animCount != 0)
     {

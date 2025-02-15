@@ -81,15 +81,17 @@ int PackagingSystem::VerifyPacket(std::string &packet){ // STATIC PRIVATE
     packet.erase(packet.begin());
 
     int sizeOfPacket = std::stoi(size);
-    /*if(sizeReceived != sizeOfPacket) {
-        std::cout << "\n\tERROR -- SIZE MISMATCH RECEIVED: "<<sizeReceived<<" CONTAINING: " << sizeOfPacket << "\n";
+    if(sizeReceived != sizeOfPacket) {
+        std::cout << "\n\tERROR -- SIZE MISMATCH RECEIVED: "<< sizeReceived <<" CONTAINING: " << sizeOfPacket << "\n";
         return -1;
-    }*/
+    }
         
     return sizeOfPacket;
 }
 template<typename T>
 T PackagingSystem::ReadItem(std::string &packet) { // STATIC
+    if(packet.empty()) return 0;
+
     std::string item = "";
     std::string itemSizeStr = "";
 
@@ -97,6 +99,7 @@ T PackagingSystem::ReadItem(std::string &packet) { // STATIC
         itemSizeStr += packet.at(0);
         packet.erase(packet.begin());
     }
+
     packet.erase(packet.begin());
 
     int itemSize = std::stoi(itemSizeStr);
@@ -119,24 +122,18 @@ T PackagingSystem::ReadItem(std::string &packet) { // STATIC
 }
 
 std::string PackagingSystem::serializePacket() {
-    std::vector<char> packetBuffer;
     addItemAtBeginning(std::to_string(this->mPacketId));
     addItemAtBeginning("|");
 
     int size = mPacket.length();
     size += std::to_string(size).length();
 
+    if(size < (mPacket.length() + std::to_string(size).length()))
+        size++;
+
     addItemAtBeginning(std::to_string(size));
     std::string s = "";
 
-    /*for(char &c: this->mPacket)
-        packetBuffer.push_back(c);
-
-    mPacketBufferPtr = new char[packetBuffer.size()];
-    for(int i = 0; i< packetBuffer.size(); i++) 
-        mPacketBufferPtr[i] = packetBuffer.at(i);
-
-    return mPacketBufferPtr;*/
     return mPacket;
 }
 

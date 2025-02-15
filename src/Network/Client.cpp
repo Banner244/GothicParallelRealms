@@ -75,36 +75,17 @@ void Client::start_receive()
 
 void Client::sendPlayerPosition()
 {
-    /*zMAT4 matrix;
-    mainPlayer->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);*/ // second param: Node specification (0 = no specific node)
-
     DataStructures::LastPosition lasPos = mainPlayer->getLastPosition();
 
-    // get Rotation
-    /*float yaw = atan2(matrix[0][2], matrix[0][0]);
-    float pitch = asin(-matrix[0][1]);
-    float roll = atan2(matrix[1][2], matrix[2][2]);*/
-
-   /* Data data;
-    data.id = ClientPacket::clientSharePosition;
-    data.names.push_back(std::to_string(lasPos.x + 90));
-    data.names.push_back(std::to_string(lasPos.z));
-    data.names.push_back(std::to_string(lasPos.y + 90));
-
-    data.names.push_back(std::to_string(lasPos.yaw));
-    data.names.push_back(std::to_string(lasPos.pitch));
-    data.names.push_back(std::to_string(lasPos.roll));*/
     PackagingSystem packetAnim(Packets::ClientPacket::clientSharePosition);
     packetAnim.addFloatPointNumber(lasPos.x + 90, 2);
     packetAnim.addFloatPointNumber(lasPos.z, 2);
     packetAnim.addFloatPointNumber(lasPos.y + 90, 2);
 
-    packetAnim.addFloatPointNumber(lasPos.yaw);
-    packetAnim.addFloatPointNumber(lasPos.pitch);
-    packetAnim.addFloatPointNumber(lasPos.roll);
+    packetAnim.addFloatPointNumber(lasPos.yaw, 2);
+    packetAnim.addFloatPointNumber(lasPos.pitch, 2);
+    packetAnim.addFloatPointNumber(lasPos.roll, 2);
 
-
-    /*data.names.push_back(std::to_string(npcModel->isAnimationActive("S_RUNL")));*/
 
     std::string bufferStr = packetAnim.serializePacket();
     this->send_message(bufferStr);
@@ -113,7 +94,7 @@ void Client::sendPlayerPosition()
 void Client::sendPlayerAnimation()
 {
     DataStructures::LastAnimation lastAnim =  mainPlayer->getLastAnimation();
-    PackagingSystem packetAnim(Packets::ClientPacket::clientSharePosition);
+    PackagingSystem packetAnim(Packets::ClientPacket::clientShareAnimations);
     packetAnim.addInt(lastAnim.animation);
 
     std::string bufferStr = packetAnim.serializePacket();
