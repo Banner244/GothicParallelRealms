@@ -3,6 +3,9 @@
 MessageHandler::MessageHandler(std::unordered_map<std::string, Npc *> *clients) : clients(clients)
 {
 }
+void MessageHandler::setClient(Client &client) {
+    this->pClient = &client;
+}
 
 void MessageHandler::managePacket(std::string stringPacket)
 {
@@ -14,6 +17,9 @@ void MessageHandler::managePacket(std::string stringPacket)
     {
     case Packets::ServerPacket::serverHandshakeAccept:
         handleServerHandshakeAccept(stringPacket);
+        break;
+    case Packets::ServerPacket::serverRequestHeartbeat:
+        handleServerRequestsHeartbeat(stringPacket);
         break;
     case Packets::ServerPacket::serverDistributePosition:
         handleServerDistributePosition(stringPacket);
@@ -32,6 +38,14 @@ void MessageHandler::managePacket(std::string stringPacket)
 void MessageHandler::handleServerHandshakeAccept(std::string &buffer)
 {
     
+}
+
+void MessageHandler::handleServerRequestsHeartbeat(std::string &buffer) {
+    PackagingSystem packetAnim(Packets::ClientPacket::clientResponseHeartbeat);
+
+    std::string bufferStr = packetAnim.serializePacket();
+    //this->send_message(bufferStr);
+    this->pClient->send_message(bufferStr);
 }
 
 void MessageHandler::handleServerDistributePosition(std::string &buffer)

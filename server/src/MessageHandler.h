@@ -7,7 +7,7 @@
 //#include "Data.h"
 #include "Packets.h"
 #include "PackagingSystem.h"
-
+#include "CommonStructures.h"
 
 
 using boost::asio::ip::udp;
@@ -16,24 +16,28 @@ class MessageHandler
 {
 
 public:
-    MessageHandler(std::unordered_map<std::string, udp::endpoint> &clients);
-    void handleBuffer(udp::socket *socket, udp::endpoint &clientEndpoint, std::string buffer);
+    MessageHandler(std::unordered_map<std::string, CommonStructures::ClientInfo> &clients, udp::socket &socket);
+    void handleBuffer(udp::endpoint &clientEndpoint, std::string buffer);
 
-    void MessageHandler::removeClient(udp::endpoint &clientEndpoint);
+    void removeClient(udp::endpoint &clientEndpoint);
 
+    void sendMessage(udp::endpoint &clientEndpoint, std::string buffer);
 private:
-    std::unordered_map<std::string, udp::endpoint> *clients;
+    std::unordered_map<std::string, CommonStructures::ClientInfo> *clients;
+    udp::socket * pSocket;
     std::mutex clients_mutex;
 
-    void clientSharesPosition(udp::socket *socket, udp::endpoint &clientEndpoint, std::string &buffer);
-    void clientSharesAnimations(udp::socket *socket, udp::endpoint &clientEndpoint, std::string &buffer);
+    void clientRepondsHeartbeat(udp::endpoint &clientEndpoint, std::string &buffer);
+    void clientSharesPosition(udp::endpoint &clientEndpoint, std::string &buffer);
+    void clientSharesAnimations(udp::endpoint &clientEndpoint, std::string &buffer);
 
-    void sendMessage(udp::socket *socket, udp::endpoint &clientEndpoint, std::string buffer);
+    
 
 
-    void MessageHandler::addNewClient(udp::endpoint &clientEndpoint);
+    void addNewClient(udp::endpoint &clientEndpoint);
+    void updateLastResponse(udp::endpoint &clientEndpoint);
 
-    std::string MessageHandler::getClientUniqueString(udp::endpoint &clientEndpoint);
+    std::string getClientUniqueString(udp::endpoint &clientEndpoint);
 
-    void MessageHandler::updateConsoleTitle();
+    void updateConsoleTitle();
 };

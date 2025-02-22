@@ -167,9 +167,7 @@ DWORD WINAPI MainThread()
 		return 1;
 	std::cout << "MH_EnableHook: SUCCESS" << std::endl;
 
-	// Key Events here
-	// mainLoop->listenToKeys(imGuiData);
-
+	// WAITING ... 
 	Sleep(200);
 	// ################## START ############################
 	std::cout << "Press RControl to connect...\n";
@@ -189,9 +187,6 @@ DWORD WINAPI MainThread()
 	DataChangeNotifier notifier(&client);
 	while (!GetAsyncKeyState(VK_END) & 1)
 	{
-		//client.sendPlayerPosition();
-
-		//client.sendPlayerAnimation();
 		notifier.sendChanges();
 
 		// give imGui the players Information

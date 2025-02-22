@@ -4,8 +4,8 @@ ServerManager::ServerManager(boost::asio::io_context &io_context, boost::asio::i
 
     this->processing_context = &processing_context;
     std::cout << "UDP-Server started on Port 12345..." << std::endl;
-
-    messageHandler = new MessageHandler(clients);
+    serverRunning = true;
+    messageHandler = new MessageHandler(clients, socket);
 
     start_receive();
 }
@@ -26,7 +26,7 @@ void ServerManager::start_receive()
                 boost::asio::post(*processing_context, [this, buffer, sender_endpoint, bytes_received]() {
                     std::string receivedPackage(buffer->data(), bytes_received);
 
-                    messageHandler->handleBuffer(&socket, *sender_endpoint, receivedPackage);
+                    messageHandler->handleBuffer(*sender_endpoint, receivedPackage);
                 });
 
                 // Starte den nächsten Empfang mit einem neuen Buffer!
@@ -41,4 +41,36 @@ void ServerManager::start_receive()
                 start_receive();
             }
         });
+}
+
+void ServerManager::watchingHeartbeat() {
+    while(serverRunning) {
+        {
+            for (auto it = clients.begin(); it != clients.end(); ++it)
+            {
+                auto currentTime = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double, std::milli> elapsed = currentTime - it->second.lastResponse;
+                int durrationInSec = static_cast<int>(elapsed.count()/1000);
+
+                if(durrationInSec >= 25) {
+                    messageHandler->removeClient(it->second.endpoint);
+                }
+
+                if( durrationInSec >= 5) {
+                    std::cout << "Elapsed Time: " << durrationInSec << " seconds" << std::endl;
+
+                    // Sending every 5 Seconds a Heartbeat request
+                    if(durrationInSec % 5 == 0){
+                        PackagingSystem heartbeatRequest(Packets::ServerPacket::serverRequestHeartbeat);
+                        messageHandler->sendMessage(it->second.endpoint, heartbeatRequest.serializePacket());
+                    }   
+                }
+
+
+            }
+        }
+
+        Sleep(1000);
+    }
+
 }

@@ -9,6 +9,10 @@
 #include "../Wrapper/zCModel.h"
 #include "../Network/MessageHandler.h"
 
+class Client;
+class Npc;
+class MessageHandler;
+
 class MessageGameThreadManager {
 
     public:
@@ -20,7 +24,7 @@ class MessageGameThreadManager {
         void addTask(std::string task);
         void removeTask(std::vector<std::string>::iterator it);
 
-
+        void setClientForHandler(Client &client);
     private:
         std::vector<std::string> gameThreadTasks;
         MessageHandler * messageHandler;

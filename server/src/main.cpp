@@ -37,6 +37,8 @@ int main()
             threads.emplace_back([&processing_context]() { processing_context.run(); });
         }
 
+        serverManager.watchingHeartbeat();
+
         // waiting for the end of all threads
         for (auto &thread : threads)
         {

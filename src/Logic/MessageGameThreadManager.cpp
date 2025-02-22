@@ -5,6 +5,10 @@ MessageGameThreadManager::MessageGameThreadManager(){
     messageHandler = new MessageHandler(clients);
 }
 
+void MessageGameThreadManager::setClientForHandler(Client &client) {
+    messageHandler->setClient(client);
+}
+
 void MessageGameThreadManager::addTask(std::string task)
 {
     gameThreadTasks.push_back(task);

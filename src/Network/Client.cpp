@@ -12,6 +12,7 @@ Client::Client(boost::asio::io_context &io_context, const std::string &host, con
 
     socket_.open(udp::v4());
     start_receive();
+    gameThreadManager->setClientForHandler(*this);
 }
 
 Client::~Client()
