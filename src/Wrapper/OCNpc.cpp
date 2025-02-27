@@ -39,7 +39,8 @@ void OCNpc::initializeFunctionPointers()
     setBodyStateRef = reinterpret_cast<_SetBodyState>(0x6b8000);
     initHumanAIRef = reinterpret_cast<_InitHumanAI>(0x68ce20);
     preSaveGameProcessingRef = reinterpret_cast<_PreSaveGameProcessing>(0x6a4500);
-    postSaveGameProcessingRef = reinterpret_cast<_PostSaveGameProcessing>(0x6a4810);
+    setSleepingModeRef = reinterpret_cast<_SetSleepingMode>(0x6a4810);
+    setSleepingRef = reinterpret_cast<_SetSleeping>(0x5d7250);
 }
 
 OCNpc::OCNpc(void *existingAddress) : pThis(existingAddress)
@@ -167,6 +168,14 @@ void OCNpc::setBodyState(int param1){
 
 void OCNpc::initHumanAI() {
     initHumanAIRef(pThis);
+}
+
+void OCNpc::setSleepingMode(int param1) {
+    setSleepingModeRef(pThis, param1);
+}
+
+void OCNpc::setSleeping(int param1) {
+    setSleepingRef(pThis, param1);
 }
 /*    _Enable enableRef;
     _SetAdditionalVisuals setAdditionalVisualsRef;*/

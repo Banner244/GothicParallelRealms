@@ -37,6 +37,8 @@ public:
     using _InitHumanAI = void(__thiscall *)(void *pThis);
     using _PreSaveGameProcessing = void(__thiscall *)(void *pThis);
     using _PostSaveGameProcessing = void(__thiscall *)(void *pThis);
+    using _SetSleepingMode = void(__thiscall *)(void *pThis, int param1);
+    using _SetSleeping = void(__thiscall *)(void *pThis, int param1);
 
     // function-pointer for the methods of the NPCs
     _OCNpcCtor oCNpcCtorRef;
@@ -67,6 +69,8 @@ public:
     _InitHumanAI initHumanAIRef;
     _PreSaveGameProcessing preSaveGameProcessingRef;
     _PostSaveGameProcessing postSaveGameProcessingRef;
+    _SetSleepingMode setSleepingModeRef;
+    _SetSleeping setSleepingRef;
 
 private:
     void *pThis = nullptr; // Pointer to the NPC-Instance in memory
@@ -125,4 +129,7 @@ public:
     void setBodyState(int param1);
 
     void initHumanAI();
+
+    void setSleepingMode(int param1);
+    void setSleeping(int param1);
 };

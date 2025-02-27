@@ -11,27 +11,22 @@ void MessageGameThreadManager::setClientForHandler(Client &client) {
 
 void MessageGameThreadManager::addTask(std::string task)
 {
-    gameThreadTasks.push_back(task);
+    gameThreadTasks.push(task);
 }
 
-void MessageGameThreadManager::removeTask(std::vector<std::string>::iterator it)
+void MessageGameThreadManager::removeTask(std::string item)
 {
     if(!gameThreadTasks.empty())
-        gameThreadTasks.erase(it);
+        gameThreadTasks.pop();
 }
 int count = 0;
 void MessageGameThreadManager::processMessages()
 {
     if(!gameThreadTasks.empty()){
-        //std::lock_guard<std::mutex> lock(clientsMutex); 
-        std::vector<std::string>::iterator firstTask = gameThreadTasks.begin();
-
-        if (firstTask == gameThreadTasks.end()) 
-            return;
-        
-        messageHandler->managePacket(*firstTask);
-        removeTask(firstTask);
+        messageHandler->managePacket(gameThreadTasks.front());
+        removeTask(gameThreadTasks.front());
     }
+
     /* ############## Custom Shit ################### */
     if (GetAsyncKeyState(VK_RSHIFT) < 0)
     {
@@ -50,47 +45,15 @@ void MessageGameThreadManager::processMessages()
             zMAT4 matrix;
             mainPlayer->oCNpc->getTrafoModelNodeToWorld(&matrix, 0); 
             npc->oCNpc->setTrafo(&matrix);
-            /*npc->oCNpc->beginMovement();
-            npc->oCNpc->move(mainPlayer->getX()+5, mainPlayer->getZ(), mainPlayer->getY());*/
-            //npc->oCNpc->setPhysicsEnabledRef(npc->oCNpc->getAddress(), 0);
-            //npc->oCNpc->setStaticVobRef(npc->oCNpc->getAddress(), 0);
+
             zCModel *npcModel = new zCModel(npc->oCNpc->getModel()); 
             std::cout << "zCModel Addr: " << npcModel->getAddress() << "\n";
 
-            //int id = npcModel->SearchAniIndex("S_RUNL");
-            //std::cout << "id: " << id << "\n";
 
-
-            //int numAnis = *(int*)((uintptr_t)npcModel + 0x38); // Anzahl aktiver Animationen
-            //std::cout << "Active Animations: " << numAnis << std::endl;
-/*std::cout << "\n";
-            for (int i = 0; i < 700; i++) { 
-                    void * aniActive = npcModel->getActiveAni(i);
-                    if (!aniActive) continue;  // Sobald eine NULL kommt, abbrechen
-
-                    int aniID = *(int*)((uintptr_t)aniActive + 0x4C);
-                    float frame = *(float*)((uintptr_t)aniActive + 0x30);
-
-                    std::cout << "Animation " << i << ": ID=" << aniID << ", Frame=" << frame << std::endl;
-            }
-std::cout << "\n";*/
             //npcModel->startAniInt(342, 0); // ######################################
-            OCWorld::addVob(npc->oCNpc);
-
-            /*count++;*/
-
-
-            /*void * aniFromID = npcModel->getAniFromAniID(8);
-            npcModel->startAni(aniFromID, 0);*/
-
-            //std::cout << "isAnimActive: " << npcModel->isAnimationActive("S_RUNL") << "\n";
-            //npc->oCNpc->initHumanAI();
-            
-            //mainPlayer->oCNpc->move(mainPlayer->getX(), mainPlayer->getZ(), mainPlayer->getY()-1);
-            //int ret = npc->oCNpc->applyOverlay("Humans_Militia.mds"); //(HUMANS_MILITIA.MDS),
-            //npcModel->startAnimation("S_RUNL");
-
-            //std::cout << "anim: " << ret << "\n";
+            //OCWorld::addVob(npc->oCNpc);
+            //npc->oCNpc->setSleepingMode(0);
+            OCWorld::insertInLists(npc->oCNpc);
             delete mainPlayer;
     }
 }

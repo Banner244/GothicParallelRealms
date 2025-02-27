@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <unordered_map>
-#include <vector>
+#include <queue>
 
 #include "../Models/GlobalFunctions.h"
 
@@ -26,11 +26,11 @@ class MessageGameThreadManager {
         void processMessages();
 
         void addTask(std::string task);
-        void removeTask(std::vector<std::string>::iterator it);
+        void removeTask(std::string item);
 
         void setClientForHandler(Client &client);
     private:
-        std::vector<std::string> gameThreadTasks;
+        std::queue<std::string> gameThreadTasks;
         MessageHandler * messageHandler;
 
 };
