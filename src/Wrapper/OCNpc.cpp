@@ -38,6 +38,8 @@ void OCNpc::initializeFunctionPointers()
     applayOverlayRef = reinterpret_cast<_ApplyOverlay>(0x68ad40);
     setBodyStateRef = reinterpret_cast<_SetBodyState>(0x6b8000);
     initHumanAIRef = reinterpret_cast<_InitHumanAI>(0x68ce20);
+    preSaveGameProcessingRef = reinterpret_cast<_PreSaveGameProcessing>(0x6a4500);
+    postSaveGameProcessingRef = reinterpret_cast<_PostSaveGameProcessing>(0x6a4810);
 }
 
 OCNpc::OCNpc(void *existingAddress) : pThis(existingAddress)
@@ -67,6 +69,7 @@ uintptr_t OCNpc::getAddress2()
 
 void OCNpc::createNewNpc()
 {
+    //pThis = oCNpcCtorRef(pThis);
     pThis = (void *)oCObjectFactory.createNpc(oCObjectFactory.pThis, -1); // oCNpcCtorRef(this); //
     std::cout << "Pointer of NPC: " << pThis << std::endl;
     // return oCNpcCtorRef(this);

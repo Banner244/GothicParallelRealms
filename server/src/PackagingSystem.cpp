@@ -125,7 +125,7 @@ std::string PackagingSystem::serializePacket() {
     addItemAtBeginning(std::to_string(this->mPacketId));
     addItemAtBeginning("|");
 
-    int size = mPacket.length();
+    size_t size = mPacket.length();
     size += std::to_string(size).length();
 
     if(size < (mPacket.length() + std::to_string(size).length()))

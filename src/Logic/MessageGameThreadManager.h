@@ -3,10 +3,14 @@
 #include <iostream>
 #include <unordered_map>
 #include <vector>
-#include "../Network/Client.h"
+
+#include "../Models/GlobalFunctions.h"
 
 #include "../Wrapper/OCNpc.h"
 #include "../Wrapper/zCModel.h"
+#include "../Wrapper/OCWorld.h"
+
+#include "../Network/Client.h"
 #include "../Network/MessageHandler.h"
 
 class Client;

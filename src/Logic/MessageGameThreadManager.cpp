@@ -32,7 +32,7 @@ void MessageGameThreadManager::processMessages()
         messageHandler->managePacket(*firstTask);
         removeTask(firstTask);
     }
-
+    /* ############## Custom Shit ################### */
     if (GetAsyncKeyState(VK_RSHIFT) < 0)
     {
             Npc *mainPlayer = new Npc(ADDR_PLAYERBASE);
@@ -74,7 +74,9 @@ void MessageGameThreadManager::processMessages()
                     std::cout << "Animation " << i << ": ID=" << aniID << ", Frame=" << frame << std::endl;
             }
 std::cout << "\n";*/
-            npcModel->startAniInt(342, 0);
+            //npcModel->startAniInt(342, 0); // ######################################
+            OCWorld::addVob(npc->oCNpc);
+
             /*count++;*/
 
 

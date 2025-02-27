@@ -35,6 +35,8 @@ public:
     using _ApplyOverlay = int(__thiscall *)(void *pThis, zSTRING *anim); // style of walk? http://forenarchiv.worldofplayers.de/thread.php?id=242842
     using _SetBodyState = void(__thiscall *)(void *pThis, int param1);
     using _InitHumanAI = void(__thiscall *)(void *pThis);
+    using _PreSaveGameProcessing = void(__thiscall *)(void *pThis);
+    using _PostSaveGameProcessing = void(__thiscall *)(void *pThis);
 
     // function-pointer for the methods of the NPCs
     _OCNpcCtor oCNpcCtorRef;
@@ -63,6 +65,8 @@ public:
     _ApplyOverlay applayOverlayRef;
     _SetBodyState setBodyStateRef; 
     _InitHumanAI initHumanAIRef;
+    _PreSaveGameProcessing preSaveGameProcessingRef;
+    _PostSaveGameProcessing postSaveGameProcessingRef;
 
 private:
     void *pThis = nullptr; // Pointer to the NPC-Instance in memory
