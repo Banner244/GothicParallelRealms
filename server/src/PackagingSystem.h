@@ -7,7 +7,7 @@
 class PackagingSystem {
     public:
         PackagingSystem(int packetId);
-        ~PackagingSystem();
+
         void setPacketId(int packetId);
 
         void addInt(int value);
@@ -23,7 +23,6 @@ class PackagingSystem {
 
     private:
         std::string mPacket;
-        char * mPacketBufferPtr = nullptr;
 
         int mPacketId = 0;
 

@@ -6,6 +6,7 @@ namespace Packets {
         serverRequestHeartbeat,
         serverDistributePosition,
         serverDistributeAnimations,
+        serverRemoveDisconnectedClient
     
         //serverSendHeartbeatRequest = 200
     

@@ -81,10 +81,10 @@ int PackagingSystem::VerifyPacket(std::string &packet){ // STATIC PRIVATE
     packet.erase(packet.begin());
 
     int sizeOfPacket = std::stoi(size);
-    /*if(sizeReceived != sizeOfPacket) {
+    if(sizeReceived != sizeOfPacket) {
         std::cout << "\n\tERROR -- SIZE MISMATCH RECEIVED: "<< sizeReceived <<" CONTAINING: " << sizeOfPacket << "\n";
         return -1;
-    }*/
+    }
         
     return sizeOfPacket;
 }
@@ -125,7 +125,7 @@ std::string PackagingSystem::serializePacket() {
     addItemAtBeginning(std::to_string(this->mPacketId));
     addItemAtBeginning("|");
 
-    int size = mPacket.length();
+    size_t size = mPacket.length();
     size += std::to_string(size).length();
 
     if(size < (mPacket.length() + std::to_string(size).length()))
@@ -141,10 +141,6 @@ void PackagingSystem::addItemAtBeginning(std::string item) {
     std::string temp = item;
     item += mPacket;
     mPacket = item;
-}
-
-PackagingSystem::~PackagingSystem() {
-    delete[] mPacketBufferPtr;
 }
 
 template int PackagingSystem::ReadItem<int>(std::string&);
