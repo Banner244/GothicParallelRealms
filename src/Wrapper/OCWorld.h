@@ -5,10 +5,12 @@
 class OCWorld {
 
     public:
-        static void insertInLists(void * vob);
-        static void vobAddedToWorld(void * vob);
-        static void addVob(void * vob);
-        static void removeVob(void * vob);
-        static void * getOCWorldAddress();
+        static int ShouldAddThisVobToBsp(void * vob);
+        static void EnableVob(void * vob1, void * vob2);
+        static void InsertInLists(void * vob);
+        static void VobAddedToWorld(void * vob);
+        static void AddVob(void * vob);
+        static void RemoveVob(void * vob);
+        static void * GetOCWorldAddress();
 
 };
