@@ -39,6 +39,10 @@ public:
     using _PostSaveGameProcessing = void(__thiscall *)(void *pThis);
     using _SetSleepingMode = void(__thiscall *)(void *pThis, int param1);
     using _SetSleeping = void(__thiscall *)(void *pThis, int param1);
+    using _AddRefVobSubtree = void(__thiscall *)(void *pThis, void * param1);
+    using _SetVobPresentName = void(__thiscall *)(void *pThis, zSTRING * name);
+    using _GetVobPresentName = zSTRING * (__thiscall *)(void *pThis);
+    using _InsertInVobList = void(__thiscall *)(void *pThis, void * vob);
 
     // function-pointer for the methods of the NPCs
     _OCNpcCtor oCNpcCtorRef;
@@ -71,6 +75,10 @@ public:
     _PostSaveGameProcessing postSaveGameProcessingRef;
     _SetSleepingMode setSleepingModeRef;
     _SetSleeping setSleepingRef;
+    _AddRefVobSubtree addRefVobSubtreeRef;
+    _SetVobPresentName setVobPresentNameRef;
+    _GetVobPresentName getVobPresentNameRef;
+    _InsertInVobList insertInVobListRef;
 
 private:
     void *pThis = nullptr; // Pointer to the NPC-Instance in memory
@@ -132,4 +140,14 @@ public:
 
     void setSleepingMode(int param1);
     void setSleeping(int param1);
+
+    void addRefVobSubtree(void * zCTree);
+
+    void setStaticVob(int param);
+
+    void setVobPresentName(char * name);
+
+    zSTRING * getVobPresentName();
+
+    void insertInVobList(void * vob);
 };

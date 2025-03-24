@@ -39,8 +39,12 @@ void OCNpc::initializeFunctionPointers()
     setBodyStateRef = reinterpret_cast<_SetBodyState>(0x6b8000);
     initHumanAIRef = reinterpret_cast<_InitHumanAI>(0x68ce20);
     preSaveGameProcessingRef = reinterpret_cast<_PreSaveGameProcessing>(0x6a4500);
-    setSleepingModeRef = reinterpret_cast<_SetSleepingMode>(0x6a4810);
+    setSleepingModeRef = reinterpret_cast<_SetSleepingMode>(0x5d7280);
     setSleepingRef = reinterpret_cast<_SetSleeping>(0x5d7250);
+    addRefVobSubtreeRef = reinterpret_cast<_AddRefVobSubtree>(0x5d66f0);
+    setVobPresentNameRef = reinterpret_cast<_SetVobPresentName>(0x5d3780);
+    getVobPresentNameRef = reinterpret_cast<_GetVobPresentName>(0x5d3790);
+    insertInVobListRef = reinterpret_cast<_InsertInVobList>(0x6b6f30);
 }
 
 OCNpc::OCNpc(void *existingAddress) : pThis(existingAddress)
@@ -177,5 +181,27 @@ void OCNpc::setSleepingMode(int param1) {
 void OCNpc::setSleeping(int param1) {
     setSleepingRef(pThis, param1);
 }
+
+void OCNpc::addRefVobSubtree(void * zCTree) {
+    addRefVobSubtreeRef(pThis, zCTree);
+}
+
+void OCNpc::setStaticVob(int param) {
+    setStaticVobRef(pThis, param);
+}
+
+void OCNpc::setVobPresentName(char * name) {
+    zSTRING myName(name);
+    setVobPresentNameRef(pThis, &myName);
+}
+
+zSTRING * OCNpc::getVobPresentName(){
+    return getVobPresentNameRef(pThis);
+}
+
+void OCNpc::insertInVobList(void * vob){
+    insertInVobListRef(pThis, vob);
+}
+
 /*    _Enable enableRef;
     _SetAdditionalVisuals setAdditionalVisualsRef;*/

@@ -26,7 +26,7 @@ class MessageGameThreadManager {
         void processMessages();
 
         void addTask(std::string task);
-        void removeTask(std::string item);
+        void removeTask();
 
         void setClientForHandler(Client &client);
     private:

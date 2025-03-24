@@ -16,7 +16,7 @@ void MessageGameThreadManager::addTask(std::string task)
     gameThreadTasks.push(task);
 }
 
-void MessageGameThreadManager::removeTask(std::string item)
+void MessageGameThreadManager::removeTask()
 {
     if (!gameThreadTasks.empty())
         gameThreadTasks.pop();
@@ -29,21 +29,46 @@ void MessageGameThreadManager::processMessages()
     if (!gameThreadTasks.empty())
     {
         messageHandler->managePacket(gameThreadTasks.front());
-        removeTask(gameThreadTasks.front());
+        removeTask();
     }
 
     /* ############## Custom Shit ################### */
     if (GetAsyncKeyState(VK_RSHIFT) < 0)
     {
-
+        //std::cout << "Pressed Button!\n";
         if (npc != nullptr)
         {
-            int result = OCWorld::ShouldAddThisVobToBsp(npc);
-            std::cout << "Prints: " << std::to_string(result) << "\n";
+            /*std::cout << "World Address: " << OCWorld::GetOCWorldAddress() << std::endl;
+            //OCWorld::InsertInLists(npc->oCNpc);
+            void *add = OCWorld::AddVob(npc->oCNpc);
+            std::cout << "Add Address: " << add << "\n";*/
+
+            //npc->oCNpc->setSleeping(1);
+            //npc->oCNpc->setSleepingMode(0);
+
+            if(npc->oCNpc != nullptr ) {
+                void * add = OCWorld::AddVob(npc->oCNpc);
+                std::cout << "Add Address: " << add << "\n";
+            } else {
+                std::cout << "NPC is NULL" << "\n";
+            }
+
+            //npc->oCNpc->setVobPresentName("Steve");
+            //OCWorld::PrintStatus();
+            //std::cout << "Tree Address: " << OCWorld::GetOCWorldGlobalVobTree() << std::endl;
             
-            //OCWorld::EnableVob(mainPlayer, npc);
+
+            //void * tree = nullptr;
+            //OCWorld::PrintGlobalVobTree(tree, 0);
+            //std::cout << "Tree Address: " << tree << std::endl;
+
+/*
+            std::cout << "VobHashInd NPC: " << std::to_string( OCWorld::GetVobHashIndex(npc->oCNpc)) << std::endl;
+            OCWorld::PrintStatus();*/
             return;
         }
+
+        
 
         mainPlayer = new Npc(ADDR_PLAYERBASE);
         ZVec3 tempPosition;
@@ -65,10 +90,23 @@ void MessageGameThreadManager::processMessages()
         zCModel *npcModel = new zCModel(npc->oCNpc->getModel());
         std::cout << "zCModel Addr: " << npcModel->getAddress() << "\n";
 
-        // npcModel->startAniInt(342, 0); // ######################################
-        // OCWorld::addVob(npc->oCNpc);
-        // npc->oCNpc->setSleepingMode(0);
-        // OCWorld::InsertInLists(npc->oCNpc);
+        // ################### RENDER FIX TESTS ###################
+        //npc->oCNpc->setSleepingMode(0); // Works kinda... it sleeps
+        //npc->oCNpc->addRefVobSubtree(OCWorld::GetOCWorldGlobalVobTree());
+        //OCWorld::InserIntoGlobalVobTree(npc->oCNpc);
+
+
+        /*void * tree = OCWorld::AddVob(npc->oCNpc);
+        std::cout << "Tree: " << tree << "\n"; /// WHY 0000000F ???????????????????
+        npc->oCNpc->addRefVobSubtree(tree);
+
+        using _CountNodes = int(__thiscall *)(void *pThis);
+        _CountNodes countNodes = (_CountNodes)(0x5f9ea0);
+        int nodes= countNodes(tree);
+
+        std::cout << "Nodes: " << std::to_string(nodes) << "\n";*/
+        //OCWorld::RemoveVob(npc->oCNpc);
+        //std::cout << "Removed Vob..." << "\n";
         delete mainPlayer;
     }
 }
