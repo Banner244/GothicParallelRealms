@@ -2,14 +2,14 @@
 
 
 Npc::Npc(){
-	oCNpc = new OCNpc();
+	oCNpc = OCNpc::CreateNewNpc();//new OCNpc();
 	npcBaseAddress = oCNpc->getAddress2();
 }
 
 Npc::Npc(uintptr_t npcAddress/*, bool toPointer*/){
 
 	/*if(toPointer)*/{
-		oCNpc = new OCNpc(*(void**)npcAddress);
+		oCNpc = OCNpc::CreateFromPointer(*(void**)npcAddress); //new OCNpc(*(void**)npcAddress);
 		this->npcBaseAddress = oCNpc->getAddress2();
 	}
 	/*oCNpc = new OCNpc(*(void**)npcAddress);

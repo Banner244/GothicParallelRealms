@@ -46,12 +46,12 @@ void MessageGameThreadManager::processMessages()
             //npc->oCNpc->setSleeping(1);
             //npc->oCNpc->setSleepingMode(0);
 
-            if(npc->oCNpc != nullptr ) {
-                void * add = OCWorld::AddVob(npc->oCNpc);
+            /*if(npc->oCNpc != nullptr ) {
+                void * add = OCWorld::AddVob(npc->oCNpc->getAddress());
                 std::cout << "Add Address: " << add << "\n";
             } else {
                 std::cout << "NPC is NULL" << "\n";
-            }
+            }*/
 
             //npc->oCNpc->setVobPresentName("Steve");
             //OCWorld::PrintStatus();
@@ -71,7 +71,7 @@ void MessageGameThreadManager::processMessages()
         
 
         mainPlayer = new Npc(ADDR_PLAYERBASE);
-        ZVec3 tempPosition;
+        /*ZVec3 tempPosition;
         mainPlayer->oCNpc->getPositionWorld(&tempPosition);
 
         // Npc *npc = new Npc();
@@ -88,7 +88,7 @@ void MessageGameThreadManager::processMessages()
         npc->oCNpc->setTrafo(&matrix);
 
         zCModel *npcModel = new zCModel(npc->oCNpc->getModel());
-        std::cout << "zCModel Addr: " << npcModel->getAddress() << "\n";
+        std::cout << "zCModel Addr: " << npcModel->getAddress() << "\n";*/
 
         // ################### RENDER FIX TESTS ###################
         //npc->oCNpc->setSleepingMode(0); // Works kinda... it sleeps

@@ -8,7 +8,7 @@
 
 class OCNpc
 {
-public:
+private:
     using _OCNpcCtor = void *(__thiscall *)(void *pThis);
     using _InitModel = void(__thiscall *)(void *pThis);
     using _SetOnFloor = void *(__thiscall *)(void *pThis, ZVec3 *vec);
@@ -81,25 +81,27 @@ public:
     _InsertInVobList insertInVobListRef;
 
 private:
-    void *pThis = nullptr; // Pointer to the NPC-Instance in memory
+//    void *pThis = nullptr; // Pointer to the NPC-Instance in memory
     ZVec3 *pos = nullptr;
 
 
 public:
     // Constructor for the already existing Objekt
-    OCNpc(void *existingAddress);
+    /*OCNpc(void *existingAddress);
 
     // Konstruktor für neue Objekte
-    OCNpc();
+    OCNpc();*/
+    static OCNpc * CreateNewNpc();
+    static OCNpc * CreateFromPointer(void* address);
 
     // Method to initialise memory-addresses
     void initializeFunctionPointers();
 
     // Method to create a new NPC-Instance
-    void createNewNpc();
+    //void createNewNpc();
 
     // returns pThis
-    void *getAddress() const;
+    void *getAddress();
 
     uintptr_t getAddress2();
 
