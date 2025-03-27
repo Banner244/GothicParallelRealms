@@ -5,19 +5,18 @@
 #include <memory>
 #include <functional>
 
-#include "../Models/Addresses.h"
 #include "../server/src/PackagingSystem.h"
 #include "../server/src/Packets.h"
 
-#include "../Logic/MessageGameThreadManager.h"
+#include "../Logic/GameThreadWorker.h"
 #include "../Models/Npc.h"
-class MessageGameThreadManager;
+class GameThreadWorker;
 
 using boost::asio::ip::udp;
 
 class Client {
 public:
-    Client(boost::asio::io_context& io_context, const std::string& host, const std::string& port, MessageGameThreadManager *gameThreadManager);
+    Client(boost::asio::io_context& io_context, const std::string& host, const std::string& port, GameThreadWorker *gameThreadWorker);
     ~Client();
     
     void send_message(const std::string &message);
@@ -32,7 +31,7 @@ public:
     Npc * getMainPlayer();
 
 private:
-    MessageGameThreadManager *gameThreadManager;
+    GameThreadWorker *gameThreadWorker;
     Npc *mainPlayer = new Npc(ADDR_PLAYERBASE);
 
     udp::socket socket_;

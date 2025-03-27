@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 
-#include "Addresses.h"
 #include "DataStructures.h"
 #include "../Wrapper/OCNpc.h"
 #include "../Wrapper/zCModel.h"
@@ -23,7 +22,7 @@ class Npc
 		Npc(uintptr_t npcAddress);
 
 		OCNpc *oCNpc;
-
+		
 		void healPlayerBy(int HP);
 		void tpToOldCamp();
 		void superJump();

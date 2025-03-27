@@ -6,19 +6,15 @@
 class OCWorld {
 
     public:
-        /* ############ Custom Calls ############ */
-        static void InserIntoGlobalVobTree(void * vob);
+        static void AddVobAsChild(void * vob, void * zCTree);   
 
-        /* ############ END Custom Calls ############ */
-
-        
-
+        static void UpdateVobTreeBspDependencies(void * vob);
 
         static void PrintStatus();
 
         static void PrintGlobalVobTree(void * zCTree, int param2);
 
-        static void * GetOwnerSession(); // Strange, this works...
+        static void * GetOwnerSession();
 
         static unsigned long GetVobHashIndex(void * vob);
         static void InsertVobHashTable(void * vob);

@@ -5,20 +5,20 @@ struct AnimationInformation {
     float frame;
 };
 
-Client::Client(boost::asio::io_context &io_context, const std::string &host, const std::string &port, MessageGameThreadManager *gameThreadManager)
+Client::Client(boost::asio::io_context &io_context, const std::string &host, const std::string &port, GameThreadWorker *gameThreadWorker)
     : socket_(io_context), resolver_(io_context), server_endpoint_(*resolver_.resolve(udp::v4(), host, port).begin())
 {
-    this->gameThreadManager = gameThreadManager;
+    this->gameThreadWorker = gameThreadWorker;
 
     socket_.open(udp::v4());
     start_receive();
-    gameThreadManager->setClientForHandler(*this);
+    gameThreadWorker->setClientForHandler(*this);
 }
 
 Client::~Client()
 {
     delete mainPlayer;
-    delete gameThreadManager;
+    delete gameThreadWorker;
 }
 
 Npc * Client::getMainPlayer(){
@@ -63,7 +63,7 @@ void Client::start_receive()
                 std::fill(recv_buffer_.begin(), recv_buffer_.end(), 0);
 
                 // Paket verarbeiten
-                this->gameThreadManager->addTask(receivedPackage);
+                this->gameThreadWorker->addTask(receivedPackage);
             }
             else
             {

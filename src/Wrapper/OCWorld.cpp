@@ -1,29 +1,18 @@
 #include "OCWorld.h"
 #include <cstdint>
 
-/* ############ Custom Calls ############ */
-void OCWorld::InserIntoGlobalVobTree(void *vob)
-{ // STATIC
-
-    std::cout << "InserIntoGlobalVobTree: " << GetOCWorldGlobalVobTree() << "\n";
-    void *tree = nullptr;
-    using _PrintGlobalVobTree = void(__thiscall *)(void *pThis, void *zCTree, int param2);
-    _PrintGlobalVobTree printGlobalVobTreeRef = (_PrintGlobalVobTree)(0x5f74c0);
-    printGlobalVobTreeRef(GetOCWorldGlobalVobTree(), tree, 0);
-    std::cout << "InserIntoGlobalVobTree: " << tree << "\n";
-    /*using _AddChildGlobal = void * (__thiscall *)(void *pThis, void *vobParam);
-    _AddChildGlobal addChildGlobalRef = (_AddChildGlobal)(0x5f9e40);
-    addChildGlobalRef(GetOCWorldGlobalVobTree(), vob);
-
-    std::cout << "InserIntoGlobalVobTree HALF "  << "\n";
-    using _CountNodes = int(__thiscall *)(void *pThis);
-    _CountNodes countNodes = (_CountNodes)(0x5f9ea0);
-    int nodes= countNodes(GetOCWorldGlobalVobTree());
-
-    std::cout << "Nodes: " << std::to_string(nodes) << "\n";*/
+void OCWorld::AddVobAsChild(void * vob, void * zCTree){ // STATIC
+    using _AddVobAsChild = void(__thiscall *)(void *pThis, void *vob, void *zCTree);
+    _AddVobAsChild addVobAsChildRef = (_AddVobAsChild)(0x5f60d0);
+    addVobAsChildRef(GetOCWorldAddress(), vob, zCTree);
 }
 
-/* ############ END Custom Calls ############ */
+void OCWorld::UpdateVobTreeBspDependencies(void * vob){
+    /*using _GetVobHashIndex = unsigned long(__thiscall *)(void *pThis, void *vobParam);
+    _GetVobHashIndex getVobHashIndexRef = (_GetVobHashIndex)(0x5f9720);
+    return getVobHashIndexRef(GetOCWorldAddress(), vob);*/
+}
+
 
 void OCWorld::PrintStatus()
 { // STATIC
@@ -81,7 +70,7 @@ void OCWorld::InsertInLists(void *vob)
     insertInListsRef(vob);
 }
 
-void OCWorld::VobAddedToWorld(void *vob)
+void OCWorld::VobAddedToWorld(void *vob) // Keeps the VOB in the world but as Object
 { // STATIC
     using _VobAddedToWorld = void(__thiscall *)(void *pThis, void *vobParam);
     _VobAddedToWorld addVobRef = (_VobAddedToWorld)(0x5f6360);

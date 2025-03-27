@@ -17,13 +17,14 @@ class Client;
 class Npc;
 class MessageHandler;
 
-class MessageGameThreadManager {
+class GameThreadWorker {
 
     public:
-        MessageGameThreadManager();
+        GameThreadWorker();
         std::unordered_map<std::string, Npc*> *clients;
         //std::mutex clientsMutex;
         void processMessages();
+        void checkGameState();
 
         void addTask(std::string task);
         void removeTask();

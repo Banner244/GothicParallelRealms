@@ -13,7 +13,7 @@
 #include <d3d11.h>
 #pragma comment(lib, "d3d11.lib")
 
-#include "../Models/Player.h"
+#include "../Models/NPC.h"
 #include "../Models/ImGuiData.h"
 
 class ImGuiManager {
@@ -21,8 +21,8 @@ class ImGuiManager {
         ID3D11Device* p_device;
         ID3D11DeviceContext* p_context;
 
-        Player *player = new Player();
-
+        //Player *player = new Player();
+        Npc *player = new Npc(ADDR_PLAYERBASE);
         bool showGui = true;
     public:
         ImGuiManager(ID3D11Device* p_device, ID3D11DeviceContext* p_context, HWND &window);

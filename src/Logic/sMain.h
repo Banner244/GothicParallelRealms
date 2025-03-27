@@ -8,8 +8,6 @@
 
 #include "../Network/Client.h"
 
-#include "../Models/Addresses.h"
-#include "../Models/Player.h"
 #include "../Models/Npc.h"
 #include "../Models/GlobalFunctions.h"
 

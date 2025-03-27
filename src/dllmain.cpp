@@ -7,7 +7,7 @@
 #include <d3d11.h>
 #pragma comment(lib, "d3d11.lib")
 
-#include "Logic/MessageGameThreadManager.h"
+#include "Logic/GameThreadWorker.h"
 #include "Models/ImGuiData.h"
 #include "Logic/ImGuiManager.h"
 #include "Logic/sMain.h"
@@ -75,7 +75,7 @@ LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 ImGuiData imGuiData;
 ImGuiManager *guiManager;
 sMain *mainLoop = new sMain();
-MessageGameThreadManager *gameThreadManager = new MessageGameThreadManager();
+GameThreadWorker *gameThreadWorker = new GameThreadWorker();
 
 bool visibleGui = true;
 
@@ -110,7 +110,10 @@ HRESULT __stdcall detour_present(IDXGISwapChain *p_swap_chain, UINT sync_interva
 			return p_present(p_swap_chain, sync_interval, flags);
 	}
 
-	gameThreadManager->processMessages();
+	// Handling Tasks from Server 
+	gameThreadWorker->processMessages();
+	// Handling Game things, like Rendering of NPCs
+	gameThreadWorker->checkGameState();
 
 	guiManager->startOfMainLoop();
 	guiManager->showContent(imGuiData);
@@ -178,7 +181,7 @@ DWORD WINAPI MainThread()
 
 	boost::asio::io_context io_context;
 	// create Client
-	Client client(io_context, "127.0.0.1", "12345", gameThreadManager);
+	Client client(io_context, "127.0.0.1", "12345", gameThreadWorker);
 	// mainloop for receiving messages
 	std::thread io_thread([&io_context]()
 						  { io_context.run(); });
@@ -187,7 +190,10 @@ DWORD WINAPI MainThread()
 	DataChangeNotifier notifier(&client);
 	while (!GetAsyncKeyState(VK_END) & 1)
 	{
-		notifier.sendChanges();
+		if (GetAsyncKeyState(VK_DOWN) < 0){
+			notifier.sendChanges();
+		}
+		//notifier.sendChanges();
 
 		// give imGui the players Information
 		//imGuiData.clients = *gameThreadManager->clients;

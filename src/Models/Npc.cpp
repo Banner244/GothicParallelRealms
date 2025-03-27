@@ -3,32 +3,22 @@
 
 Npc::Npc(){
 	oCNpc = OCNpc::CreateNewNpc();//new OCNpc();
-	npcBaseAddress = oCNpc->getAddress2();
+	//npcBaseAddress = oCNpc->getAddress2();
 }
 
 Npc::Npc(uintptr_t npcAddress/*, bool toPointer*/){
-
 	/*if(toPointer)*/{
 		oCNpc = OCNpc::CreateFromPointer(*(void**)npcAddress); //new OCNpc(*(void**)npcAddress);
-		this->npcBaseAddress = oCNpc->getAddress2();
+		//this->npcBaseAddress = oCNpc->getAddress2();
 	}
 	/*oCNpc = new OCNpc(*(void**)npcAddress);
 
 	std::cout << "Addr of player: " << npcAddress<< std::endl;*/
 }
 
-template <typename T>
-T *Npc::getPointer(uintptr_t offset)
-{
-	if (npcBaseAddress == 0)
-		return NULL; // Keine gültige Basisadresse
-
-	return reinterpret_cast<T *>(npcBaseAddress + offset);
-}
-
 bool Npc::isPlayerLoaded()
 {
-	if (npcBaseAddress == 0)
+	if (oCNpc == nullptr)
 		return false;
 	return true;
 }
@@ -38,11 +28,11 @@ std::string Npc::getCoordinates()
 	if (!isPlayerLoaded())
 		return "NULL";
 
-	float *x = getPointer<float>(OFFSET_PosX);
-	float *y = getPointer<float>(OFFSET_PosY);
-	float *z = getPointer<float>(OFFSET_PosZ);
+	float x = oCNpc->callVariable<float>(OCNpc::Offset::POS_X);
+	float z = oCNpc->callVariable<float>(OCNpc::Offset::POS_Z);
+	float y = oCNpc->callVariable<float>(OCNpc::Offset::POS_Y);
 
-	return "X: " + std::to_string(*x) + " Y: " + std::to_string(*y) + " Z: " + std::to_string(*z);
+	return "X: " + std::to_string(x) + " Z: " + std::to_string(z) + " Y: " + std::to_string(y);
 }
 
 void Npc::setPlayerPosition(float x, float y, float z)
@@ -71,7 +61,8 @@ int Npc::getCurrentLevel()
 {
 	if (!isPlayerLoaded())
 		return 0;
-	return *getPointer<int>(OFFSET_Level);
+
+	return oCNpc->callVariable<int>(OCNpc::Offset::LEVEL);;
 }
 
 int Npc::getExperienceNextLevel()
@@ -79,7 +70,7 @@ int Npc::getExperienceNextLevel()
 	if (!isPlayerLoaded())
 		return 0;
 
-	return *getPointer<int>(OFFSET_ExperienceNextLevel);
+	return oCNpc->callVariable<int>(OCNpc::Offset::EXPERIENCE_NEXT_LEVEL);
 }
 
 int Npc::getCurrentExperience()
@@ -87,7 +78,7 @@ int Npc::getCurrentExperience()
 	if (!isPlayerLoaded())
 		return 0;
 
-	return *getPointer<int>(OFFSET_CurrentExperience);
+	return oCNpc->callVariable<int>(OCNpc::Offset::CURRENT_EXPERIENCE);
 }
 
 int Npc::getMaxHealth()
@@ -95,7 +86,7 @@ int Npc::getMaxHealth()
 	if (!isPlayerLoaded())
 		return 0;
 
-	return *getPointer<int>(OFFSET_MaxHealth);
+	return oCNpc->callVariable<int>(OCNpc::Offset::MAX_HEALTH);
 }
 
 void Npc::setMaxHealth(int maxHealth)
@@ -103,16 +94,14 @@ void Npc::setMaxHealth(int maxHealth)
 	if (!isPlayerLoaded())
 		return;
 
-	int *tempMaxHealth =getPointer<int>(OFFSET_MaxHealth);
-	*tempMaxHealth = maxHealth;
+	oCNpc->callVariable<int>(OCNpc::Offset::MAX_HEALTH) = maxHealth;
 }
 
 int Npc::getCurrentHealth()
 {
 	if (!isPlayerLoaded())
 		return 0;
-
-	return *getPointer<int>(OFFSET_CurrentHealth);
+	return oCNpc->callVariable<int>(OCNpc::Offset::CURRENT_HEALTH);
 }
 
 void Npc::setCurrentHealth(int currentHealth)
@@ -120,8 +109,7 @@ void Npc::setCurrentHealth(int currentHealth)
 	if (!isPlayerLoaded())
 		return;
 
-	int *tempCurrentHealth =getPointer<int>(OFFSET_CurrentHealth);
-	*tempCurrentHealth = currentHealth;
+	oCNpc->callVariable<int>(OCNpc::Offset::CURRENT_HEALTH) = currentHealth;
 }
 
 int Npc::getMaxMana()
@@ -129,7 +117,7 @@ int Npc::getMaxMana()
 	if (!isPlayerLoaded())
 		return 0;
 
-	return *getPointer<int>(OFFSET_MaxMana);
+	return oCNpc->callVariable<int>(OCNpc::Offset::MAX_MANA);
 }
 
 int Npc::getCurrentMana()
@@ -137,7 +125,7 @@ int Npc::getCurrentMana()
 	if (!isPlayerLoaded())
 		return 0;
 
-	return *getPointer<int>(OFFSET_CurrentMana);
+	return oCNpc->callVariable<int>(OCNpc::Offset::CURRENT_MANA);
 }
 
 int Npc::getStrength()
@@ -145,7 +133,7 @@ int Npc::getStrength()
 	if (!isPlayerLoaded())
 		return 0;
 
-	return *getPointer<int>(OFFSET_Strength);
+	return oCNpc->callVariable<int>(OCNpc::Offset::STRENGTH);
 }
 
 int Npc::getExpertise()
@@ -153,7 +141,7 @@ int Npc::getExpertise()
 	if (!isPlayerLoaded())
 		return 0;
 
-	return *getPointer<int>(OFFSET_Expertise);
+	return oCNpc->callVariable<int>(OCNpc::Offset::EXPERTISE);
 }
 
 float Npc::getX()
@@ -161,7 +149,7 @@ float Npc::getX()
 	if (!isPlayerLoaded())
 		return 0;
 
-	return *getPointer<float>(OFFSET_PosX);
+	return oCNpc->callVariable<float>(OCNpc::Offset::POS_X);
 }
 
 void Npc::setX(float posX)
@@ -169,8 +157,7 @@ void Npc::setX(float posX)
 	if (!isPlayerLoaded())
 		return;
 
-	float *tempPosX =getPointer<float>(OFFSET_PosX);
-	*tempPosX = posX;
+	oCNpc->callVariable<float>(OCNpc::Offset::POS_X) = posX;
 }
 
 float Npc::getY()
@@ -178,7 +165,7 @@ float Npc::getY()
 	if (!isPlayerLoaded())
 		return 0;
 
-	return *getPointer<float>(OFFSET_PosY);
+	return oCNpc->callVariable<float>(OCNpc::Offset::POS_Y);
 }
 
 void Npc::setY(float posY)
@@ -186,8 +173,7 @@ void Npc::setY(float posY)
 	if (!isPlayerLoaded())
 		return;
 
-	float *tempPosY =getPointer<float>(OFFSET_PosY);
-	*tempPosY = posY;
+	oCNpc->callVariable<float>(OCNpc::Offset::POS_Y) = posY;
 }
 
 float Npc::getZ()
@@ -195,15 +181,15 @@ float Npc::getZ()
 	if (!isPlayerLoaded())
 		return 0;
 
-	return *getPointer<float>(OFFSET_PosZ);
+	return oCNpc->callVariable<float>(OCNpc::Offset::POS_Z);
 }
 
 void Npc::setZ(float posZ)
 {
 	if (!isPlayerLoaded())
 		return;
-	float *tempPosZ =getPointer<float>(OFFSET_PosZ);
-	*tempPosZ = posZ;
+
+	oCNpc->callVariable<float>(OCNpc::Offset::POS_Z) = posZ;
 }
 
 void Npc::setInterpolatePosition(float x, float z, float y){

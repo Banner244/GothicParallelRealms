@@ -6,105 +6,44 @@
 #include "zSTRING.h"
 #include "zMAT4.h"
 
+
+constexpr uintptr_t ADDR_PLAYERBASE = 0x8DBBB0;
+
 class OCNpc
 {
 private:
-    using _OCNpcCtor = void *(__thiscall *)(void *pThis);
-    using _InitModel = void(__thiscall *)(void *pThis);
-    using _SetOnFloor = void *(__thiscall *)(void *pThis, ZVec3 *vec);
-    using _SetPositionWorld = void(__thiscall *)(void *pThis, ZVec3 *param1);
-    using _GetPositionWorld = void(__thiscall *)(void *pThis, ZVec3 *param1);
-    using _SetVisual = void(__thiscall *)(void *pThis, void *visual);
-    using _SetVisualWithString = void(__thiscall *)(void *pThis, zSTRING *visual);
-    using _GetVisual = void *(__thiscall *)(void *pThis);
-    using _SetStaticVob = void(__thiscall *)(void *pThis, int param1);
-    using _SetDrawBBox3D = void(__thiscall *)(void *pThis, int param1);
-    using _SetPhysicsEnabled = void(__thiscall *)(void *pThis, int param1);
-    using _SetVobID = void(__thiscall *)(void *pThis, unsigned long ID);
-    using _AddVobToWorld = void *(__thiscall *)(void *pThis);
-    using _Enable = void(__thiscall *)(void *pThis, ZVec3 *param1);
-    using _SetAdditionalVisuals = void(__thiscall *)(void *pThis, zSTRING *textureBody, int param2, int param3, zSTRING *textureHead, int param5, int param6, int param7);
-    using _SetVobName = void(__thiscall *)(void *pThis, zSTRING *vobName);
-    using _SetByScriptInstance = int(__thiscall *)(void *pThis, zSTRING *visual, int param2);
-    using _BeginMovement = void(__thiscall *)(void *pThis);
-    using _GetTrafoModelNodeToWorld = zMAT4*(__thiscall *)(void *pThis, zMAT4 * matrix, int param2);
-    using _SetTrafo = void(__thiscall *)(void *pThis, zMAT4 * matrix);
-    using _SetVobInMovement = void(__thiscall *)(void *pThis, int param1);
-    using _Move = void(__thiscall *)(void *pThis, float x, float z, float y);
-    using _GetModel = void*(__thiscall *)(void *pThis);
-    using _ApplyOverlay = int(__thiscall *)(void *pThis, zSTRING *anim); // style of walk? http://forenarchiv.worldofplayers.de/thread.php?id=242842
-    using _SetBodyState = void(__thiscall *)(void *pThis, int param1);
-    using _InitHumanAI = void(__thiscall *)(void *pThis);
-    using _PreSaveGameProcessing = void(__thiscall *)(void *pThis);
-    using _PostSaveGameProcessing = void(__thiscall *)(void *pThis);
-    using _SetSleepingMode = void(__thiscall *)(void *pThis, int param1);
-    using _SetSleeping = void(__thiscall *)(void *pThis, int param1);
-    using _AddRefVobSubtree = void(__thiscall *)(void *pThis, void * param1);
-    using _SetVobPresentName = void(__thiscall *)(void *pThis, zSTRING * name);
-    using _GetVobPresentName = zSTRING * (__thiscall *)(void *pThis);
-    using _InsertInVobList = void(__thiscall *)(void *pThis, void * vob);
-
-    // function-pointer for the methods of the NPCs
-    _OCNpcCtor oCNpcCtorRef;
-    _InitModel initModelRef;
-    _SetOnFloor setOnFloorRef;
-    _SetPositionWorld setPositionWorldRef;
-    _GetPositionWorld getPositionWorldRef;
-    _SetVisual setVisualRef;
-    _SetVisualWithString setVisualWithStringRef;
-    _GetVisual getVisualRef;
-    _SetStaticVob setStaticVobRef;
-    _SetDrawBBox3D setDrawBBox3DRef;
-    _SetPhysicsEnabled setPhysicsEnabledRef;
-    _SetVobID setVobIDRef;
-    _AddVobToWorld addVobToWorldRef;
-    _Enable enableRef;
-    _SetAdditionalVisuals setAdditionalVisualsRef;
-    _SetVobName setVobNameRef;
-    _SetByScriptInstance setByScriptInstanceRef;
-    _BeginMovement beginMovementRef;
-    _GetTrafoModelNodeToWorld getTrafoModelNodeToWorldRef;
-    _SetTrafo setTrafoRef;
-    _SetVobInMovement setVobInMovementRef;
-    _Move moveRef;
-    _GetModel getModelRef;
-    _ApplyOverlay applayOverlayRef;
-    _SetBodyState setBodyStateRef; 
-    _InitHumanAI initHumanAIRef;
-    _PreSaveGameProcessing preSaveGameProcessingRef;
-    _PostSaveGameProcessing postSaveGameProcessingRef;
-    _SetSleepingMode setSleepingModeRef;
-    _SetSleeping setSleepingRef;
-    _AddRefVobSubtree addRefVobSubtreeRef;
-    _SetVobPresentName setVobPresentNameRef;
-    _GetVobPresentName getVobPresentNameRef;
-    _InsertInVobList insertInVobListRef;
-
-private:
-//    void *pThis = nullptr; // Pointer to the NPC-Instance in memory
-    ZVec3 *pos = nullptr;
 
 
 public:
-    // Constructor for the already existing Objekt
-    /*OCNpc(void *existingAddress);
+    class Offset {
+        public:
+            static constexpr uintptr_t POS_X = 0x48; // float
+            static constexpr uintptr_t POS_Z = 0x58; // float
+            static constexpr uintptr_t POS_Y = 0x68; // float
 
-    // Konstruktor für neue Objekte
-    OCNpc();*/
+
+            static constexpr uintptr_t CURRENT_HEALTH = 0x184; // int
+            static constexpr uintptr_t MAX_HEALTH = 0x188; // int
+
+            static constexpr uintptr_t MAX_MANA = 0x190; // int
+            static constexpr uintptr_t CURRENT_MANA = 0x18C; // int
+
+            static constexpr uintptr_t STRENGTH = 0x194; // int
+            static constexpr uintptr_t EXPERTISE = 0x198; // int
+
+            static constexpr uintptr_t LEVEL = 0x1EC; // int
+            static constexpr uintptr_t EXPERIENCE_NEXT_LEVEL = 0x31C; // int
+            static constexpr uintptr_t CURRENT_EXPERIENCE = 0x320; // int
+    };
+
     static OCNpc * CreateNewNpc();
     static OCNpc * CreateFromPointer(void* address);
 
-    // Method to initialise memory-addresses
-    void initializeFunctionPointers();
 
-    // Method to create a new NPC-Instance
-    //void createNewNpc();
-
-    // returns pThis
-    void *getAddress();
-
-    uintptr_t getAddress2();
-
+    template<typename T>
+    T &callVariable(uintptr_t offset){
+        return *reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(this) + offset);
+    }
 
     void setVisualWithString(char *visual);
 
@@ -134,7 +73,16 @@ public:
 
     void* getModel();
 
-    int applyOverlay(char * animName);
+    void * getHomeWorld();
+
+    float getDistanceToVob(void * vob);
+    void insertInVobList(void * vob);
+
+    zSTRING * getSectorNameVobIsIn();
+
+    void addVobToWorld_CorrectParentDependencies();
+
+    /*int applyOverlay(char * animName);
 
     void setBodyState(int param1);
 
@@ -151,5 +99,5 @@ public:
 
     zSTRING * getVobPresentName();
 
-    void insertInVobList(void * vob);
+    */
 };
