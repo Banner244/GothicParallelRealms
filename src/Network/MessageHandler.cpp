@@ -1,6 +1,6 @@
 #include "MessageHandler.h"
 
-MessageHandler::MessageHandler(std::unordered_map<std::string, Npc *> *clients) : clients(clients)
+MessageHandler::MessageHandler(std::unordered_map<std::string, Npc *> *pClients) : pClients(pClients)
 {
 }
 void MessageHandler::setClient(Client &client) {
@@ -61,8 +61,8 @@ void MessageHandler::handleServerDistributePosition(std::string &buffer)
     float roll = PackagingSystem::ReadItem<float>(buffer);
 
     std::lock_guard<std::mutex> lock(clientsMutex);
-    auto it = clients->find(receivedKey);
-    if (it != clients->end())
+    auto it = pClients->find(receivedKey);
+    if (it != pClients->end())
         playerExists = true;
 
     if (playerExists)
@@ -89,7 +89,7 @@ void MessageHandler::handleServerDistributePosition(std::string &buffer)
     value->oCNpc->enableWithdCoords(x, z, y);
 
     // Füge das Paar in die Map ein
-    clients->insert({receivedKey, value});
+    pClients->insert({receivedKey, value});
 }
 
 void MessageHandler::handleServerDistributeAnimations(std::string &buffer)
@@ -97,8 +97,8 @@ void MessageHandler::handleServerDistributeAnimations(std::string &buffer)
     bool playerExists = false;
     std::string receivedKey = PackagingSystem::ReadItem<std::string>(buffer); //data.names.at(0);
     std::lock_guard<std::mutex> lock(clientsMutex);
-    auto it = clients->find(receivedKey);
-    if (it != clients->end())
+    auto it = pClients->find(receivedKey);
+    if (it != pClients->end())
         playerExists = true;
 
     if (!playerExists)

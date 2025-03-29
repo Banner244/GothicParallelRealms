@@ -112,6 +112,7 @@ HRESULT __stdcall detour_present(IDXGISwapChain *p_swap_chain, UINT sync_interva
 
 	// Handling Tasks from Server 
 	gameThreadWorker->processMessages();
+	
 	// Handling Game things, like Rendering of NPCs
 	gameThreadWorker->checkGameState();
 

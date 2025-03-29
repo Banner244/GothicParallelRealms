@@ -49,7 +49,6 @@ void GameThreadWorker::checkGameState(){
             void *add = OCWorld::AddVob(pair.second->oCNpc);
             std::cout << "Add Address: " << add << "\n";
         }
-        //std::cout << pair.first << " -> " << pair.second << std::endl;
     }
 
     /* ################ Custom Shit Here################# */

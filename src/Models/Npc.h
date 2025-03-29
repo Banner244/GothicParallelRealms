@@ -11,11 +11,7 @@
 class Npc
 {
 	private:
-		template<typename T>
-		T* getPointer(uintptr_t offset);
-
 		bool isPlayerLoaded();
-		uintptr_t npcBaseAddress;
 
 	public:
 		Npc();
