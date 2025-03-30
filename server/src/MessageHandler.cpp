@@ -1,7 +1,7 @@
 #include "MessageHandler.h"
 
 MessageHandler::MessageHandler(std::unordered_map<std::string, CommonStructures::ClientInfo> &clients, udp::socket &socket)
-{   
+{
     this->clients = &clients;
     this->pSocket = &socket;
 }
@@ -10,13 +10,10 @@ void MessageHandler::handleBuffer(udp::endpoint &clientEndpoint, std::string buf
 {
     addNewClient(clientEndpoint);
     updateLastResponse(clientEndpoint);
-    /*Data data;
-    data.deserialize(buffer);*/
-    //PackagingSystem::ReadPacketId
+
     int id = PackagingSystem::ReadPacketId(buffer);
     Packets::ClientPacket packetId = static_cast<Packets::ClientPacket>(id);
 
-    //Packets:: packetId = data.id;
     std::cout << "ID: " << id << std::endl;
     std::cout << "Message: " << buffer << std::endl;
 
@@ -38,7 +35,8 @@ void MessageHandler::handleBuffer(udp::endpoint &clientEndpoint, std::string buf
     }
 }
 
-void MessageHandler::clientRepondsHeartbeat(udp::endpoint &clientEndpoint, std::string &buffer) {
+void MessageHandler::clientRepondsHeartbeat(udp::endpoint &clientEndpoint, std::string &buffer)
+{
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
     std::cout << clientPortIp << " responded to Heartbeat Request\n";
 }
@@ -58,14 +56,7 @@ void MessageHandler::clientSharesPosition(udp::endpoint &clientEndpoint, std::st
 
     std::string serializedPacket = positionPacket.serializePacket();
 
-    {
-        std::lock_guard<std::mutex> lock(clients_mutex);
-        for (auto it = clients->begin(); it != clients->end(); ++it)
-        {
-            if(clientEndpoint != it->second.endpoint)
-                sendMessage(it->second.endpoint, serializedPacket);
-        }
-    }
+    sendToAllExceptSender(clientEndpoint, serializedPacket);
 }
 void MessageHandler::clientSharesAnimations(udp::endpoint &clientEndpoint, std::string &buffer)
 {
@@ -77,16 +68,7 @@ void MessageHandler::clientSharesAnimations(udp::endpoint &clientEndpoint, std::
     animationPacket.addString(clientPortIp);
     animationPacket.addInt(PackagingSystem::ReadItem<int>(*safeBuffer));
 
-    std::string serializedPacket = animationPacket.serializePacket();
-    {
-        std::lock_guard<std::mutex> lock(clients_mutex);
-        for (auto it = clients->begin(); it != clients->end(); ++it)
-        {
-            
-            if(clientEndpoint != it->second.endpoint)
-                sendMessage(it->second.endpoint, serializedPacket);
-        }
-    }
+    sendToAllExceptSender(clientEndpoint, animationPacket.serializePacket());
 }
 
 void MessageHandler::sendMessage(udp::endpoint &clientEndpoint, std::string buffer)
@@ -108,22 +90,32 @@ void MessageHandler::sendMessage(udp::endpoint &clientEndpoint, std::string buff
             }
         });
 }
-
+void MessageHandler::sendToAllExceptSender(udp::endpoint &senderEndpoint, std::string buffer)
+{
+    std::lock_guard<std::mutex> lock(clients_mutex);
+    for (auto it = clients->begin(); it != clients->end(); ++it)
+    {
+        //if (senderEndpoint != it->second.endpoint) // Single Computer Debugging
+            sendMessage(it->second.endpoint, buffer);
+    }
+}
 void MessageHandler::removeClient(udp::endpoint &clientEndpoint)
 {
     std::lock_guard<std::mutex> lock(clients_mutex);
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
 
     auto it = clients->find(clientPortIp);
-    if (it != clients->end()){
+    if (it != clients->end())
+    {
         clients->erase(it);
     }
 
     // Telling the Clients to remove unreachable client
-    for (const auto& pair : *clients) {
+    for (auto &pair : *clients)
+    {
         PackagingSystem clientToRemove(Packets::ServerPacket::serverRemoveClient);
         clientToRemove.addString(clientPortIp);
-        sendMessage(it->second.endpoint, clientToRemove.serializePacket());
+        sendMessage(pair.second.endpoint, clientToRemove.serializePacket());
     }
 
     updateConsoleTitle();
@@ -145,10 +137,11 @@ void MessageHandler::addNewClient(udp::endpoint &clientEndpoint)
     updateConsoleTitle();
 }
 
-void MessageHandler::updateLastResponse(udp::endpoint &clientEndpoint) {
+void MessageHandler::updateLastResponse(udp::endpoint &clientEndpoint)
+{
     std::lock_guard<std::mutex> lock(clients_mutex);
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
-    
+
     auto it = clients->find(clientPortIp);
     if (it != clients->end())
         it->second.lastResponse = std::chrono::high_resolution_clock::now();

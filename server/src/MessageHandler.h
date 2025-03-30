@@ -22,10 +22,11 @@ public:
     void removeClient(udp::endpoint &clientEndpoint);
 
     void sendMessage(udp::endpoint &clientEndpoint, std::string buffer);
+    void sendToAllExceptSender(udp::endpoint &senderEndpoint, std::string buffer);
+    std::mutex clients_mutex;
 private:
     std::unordered_map<std::string, CommonStructures::ClientInfo> *clients;
     udp::socket * pSocket;
-    std::mutex clients_mutex;
 
     void clientRepondsHeartbeat(udp::endpoint &clientEndpoint, std::string &buffer);
     void clientSharesPosition(udp::endpoint &clientEndpoint, std::string &buffer);

@@ -9,8 +9,6 @@ void MessageHandler::setClient(Client &client) {
 
 void MessageHandler::managePacket(std::string stringPacket)
 {
-    /*Data receivedData;
-    receivedData.deserialize(stringPacket);*/
     Packets::ServerPacket packetId = static_cast<Packets::ServerPacket>(PackagingSystem::ReadPacketId(stringPacket));
 
     switch (packetId)
@@ -28,7 +26,7 @@ void MessageHandler::managePacket(std::string stringPacket)
         handleServerDistributeAnimations(stringPacket);
         break;    
     case Packets::ServerPacket::serverRemoveClient:
-        handleServerDistributeAnimations(stringPacket);
+        handleServerRemoveClient(stringPacket);
         break;
     /*case Packets::ServerPacket::serverDistributeRotation:
         handleServerDistributeRotations(stringPacket);
@@ -47,7 +45,6 @@ void MessageHandler::handleServerRequestsHeartbeat(std::string &buffer) {
     PackagingSystem packetAnim(Packets::ClientPacket::clientResponseHeartbeat);
 
     std::string bufferStr = packetAnim.serializePacket();
-    //this->send_message(bufferStr);
     this->pClient->send_message(bufferStr);
 }
 
@@ -139,8 +136,11 @@ void MessageHandler::handleServerRemoveClient(std::string &buffer)
     std::string receivedKey = PackagingSystem::ReadItem<std::string>(buffer); //data.names.at(0);
     std::lock_guard<std::mutex> lock(clientsMutex);
     auto it = pClients->find(receivedKey);
-    if (it != pClients->end())
-       pClients->erase(receivedKey);
+    if (it != pClients->end()){
+        OCWorld::RemoveVob(it->second->oCNpc);
+        pClients->erase(receivedKey);
+        std::cout << "Removed VOB\n";
+    }
 }
 
 void MessageHandler::handleServerDistributeRotations(std::string &buffer)

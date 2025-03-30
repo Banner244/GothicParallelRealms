@@ -191,7 +191,7 @@ DWORD WINAPI MainThread()
 	DataChangeNotifier notifier(&client);
 	while (!GetAsyncKeyState(VK_END) & 1)
 	{
-		if (GetAsyncKeyState(VK_DOWN) < 0){
+		/*if (GetAsyncKeyState(VK_DOWN) < 0)*/{
 			notifier.sendChanges();
 		}
 		//notifier.sendChanges();

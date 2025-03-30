@@ -1,4 +1,5 @@
 #include "ServerManager.h"
+#include <queue>
 
 ServerManager::ServerManager(boost::asio::io_context &io_context, boost::asio::io_context &processing_context) : socket(io_context, udp::endpoint(udp::v4(), 12345)){
 
@@ -45,18 +46,19 @@ void ServerManager::start_receive()
 
 void ServerManager::watchingHeartbeat() {
     while(serverRunning) {
+        std::queue<udp::endpoint> endpointsToRemove;
         {
+            std::lock_guard<std::mutex> lock(messageHandler->clients_mutex);
             for (auto it = clients.begin(); it != clients.end(); ++it)
             {
                 auto currentTime = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double, std::milli> elapsed = currentTime - it->second.lastResponse;
                 int durrationInSec = static_cast<int>(elapsed.count()/1000);
 
-                if(durrationInSec >= 25) {
-                    messageHandler->removeClient(it->second.endpoint);
-                }
-
-                if( durrationInSec >= 5) {
+                if(durrationInSec >= 10/*25*/) {
+                    endpointsToRemove.push(it->second.endpoint);
+                    //messageHandler->removeClient(it->second.endpoint);
+                } else if( durrationInSec >= 5) {
                     std::cout << "Elapsed Time: " << durrationInSec << " seconds" << std::endl;
 
                     // Sending every 5 Seconds a Heartbeat request
@@ -65,11 +67,14 @@ void ServerManager::watchingHeartbeat() {
                         messageHandler->sendMessage(it->second.endpoint, heartbeatRequest.serializePacket());
                     }   
                 }
-
-
             }
         }
 
+        while (!endpointsToRemove.empty()) {
+            udp::endpoint endpoint = endpointsToRemove.front(); 
+            endpointsToRemove.pop(); 
+            messageHandler->removeClient(endpoint); 
+        }
         Sleep(1000);
     }
 

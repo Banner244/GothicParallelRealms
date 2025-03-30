@@ -23,6 +23,4 @@ class ServerManager {
 
         MessageHandler *messageHandler;
         void start_receive();
-        
-
 };
