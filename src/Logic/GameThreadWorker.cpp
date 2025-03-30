@@ -42,10 +42,8 @@ void GameThreadWorker::checkGameState(){
     // Checks if player is in range of an other player to render him
     for (const auto& pair : *clients) {
         if (mainPlayer->oCNpc->getDistanceToVob(pair.second->oCNpc) < 4500 && pair.second->oCNpc->getHomeWorld() == 0)
-        //if(pair.second->oCNpc->getDistanceToVob())
         {
             
-            //std::cout << "This Case\n";
             void *add = OCWorld::AddVob(pair.second->oCNpc);
             std::cout << "Add Address: " << add << "\n";
         }

@@ -49,4 +49,5 @@ private:
     void handleServerDistributePosition(std::string &buffer);
     void handleServerDistributeAnimations(std::string &buffer);
     void handleServerDistributeRotations(std::string &buffer);
+    void handleServerRemoveClient(std::string &buffer);
 };

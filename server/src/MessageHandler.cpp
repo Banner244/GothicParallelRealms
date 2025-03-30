@@ -62,7 +62,8 @@ void MessageHandler::clientSharesPosition(udp::endpoint &clientEndpoint, std::st
         std::lock_guard<std::mutex> lock(clients_mutex);
         for (auto it = clients->begin(); it != clients->end(); ++it)
         {
-            sendMessage(it->second.endpoint, serializedPacket);
+            if(clientEndpoint != it->second.endpoint)
+                sendMessage(it->second.endpoint, serializedPacket);
         }
     }
 }
@@ -81,7 +82,9 @@ void MessageHandler::clientSharesAnimations(udp::endpoint &clientEndpoint, std::
         std::lock_guard<std::mutex> lock(clients_mutex);
         for (auto it = clients->begin(); it != clients->end(); ++it)
         {
-            sendMessage(it->second.endpoint, serializedPacket);
+            
+            if(clientEndpoint != it->second.endpoint)
+                sendMessage(it->second.endpoint, serializedPacket);
         }
     }
 }
@@ -110,9 +113,18 @@ void MessageHandler::removeClient(udp::endpoint &clientEndpoint)
 {
     std::lock_guard<std::mutex> lock(clients_mutex);
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
+
     auto it = clients->find(clientPortIp);
-    if (it != clients->end())
+    if (it != clients->end()){
         clients->erase(it);
+    }
+
+    // Telling the Clients to remove unreachable client
+    for (const auto& pair : *clients) {
+        PackagingSystem clientToRemove(Packets::ServerPacket::serverRemoveClient);
+        clientToRemove.addString(clientPortIp);
+        sendMessage(it->second.endpoint, clientToRemove.serializePacket());
+    }
 
     updateConsoleTitle();
 }

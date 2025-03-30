@@ -13,7 +13,8 @@
  */
 constexpr uintptr_t ADDR_PLAYERBASE = 0x8DBBB0;
 
-/** * @class OCNpc
+/** 
+ * @class OCNpc
  * @brief Wrapper Class of OCNpc in the game.
  *
  * This class provides various methods to manipulate an NPC, including position control,

@@ -81,10 +81,10 @@ int PackagingSystem::VerifyPacket(std::string &packet){ // STATIC PRIVATE
     packet.erase(packet.begin());
 
     int sizeOfPacket = std::stoi(size);
-    /*if(sizeReceived != sizeOfPacket) {
+    if(sizeReceived != sizeOfPacket) {
         std::cout << "\n\tERROR -- SIZE MISMATCH RECEIVED: "<< sizeReceived <<" CONTAINING: " << sizeOfPacket << "\n";
         return -1;
-    }*/
+    }
         
     return sizeOfPacket;
 }

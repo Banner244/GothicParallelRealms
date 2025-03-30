@@ -26,6 +26,9 @@ void MessageHandler::managePacket(std::string stringPacket)
         break;
     case Packets::ServerPacket::serverDistributeAnimations:
         handleServerDistributeAnimations(stringPacket);
+        break;    
+    case Packets::ServerPacket::serverRemoveClient:
+        handleServerDistributeAnimations(stringPacket);
         break;
     /*case Packets::ServerPacket::serverDistributeRotation:
         handleServerDistributeRotations(stringPacket);
@@ -128,6 +131,16 @@ void MessageHandler::handleServerDistributeAnimations(std::string &buffer)
         if (!aniActive)
             npcModel->startAniInt(animID, 0);
     }*/
+}
+/*##################### TODO:  TEST IF THIS WORKS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+void MessageHandler::handleServerRemoveClient(std::string &buffer)
+{
+    bool playerExists = false;
+    std::string receivedKey = PackagingSystem::ReadItem<std::string>(buffer); //data.names.at(0);
+    std::lock_guard<std::mutex> lock(clientsMutex);
+    auto it = pClients->find(receivedKey);
+    if (it != pClients->end())
+       pClients->erase(receivedKey);
 }
 
 void MessageHandler::handleServerDistributeRotations(std::string &buffer)
