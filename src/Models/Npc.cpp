@@ -62,7 +62,7 @@ int Npc::getCurrentLevel()
 	if (!isPlayerLoaded())
 		return 0;
 
-	return oCNpc->callVariable<int>(OCNpc::Offset::LEVEL);;
+	return oCNpc->callVariable<int>(OCNpc::Offset::LEVEL);
 }
 
 int Npc::getExperienceNextLevel()

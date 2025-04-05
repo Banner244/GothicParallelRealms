@@ -4,6 +4,14 @@ GameThreadWorker::GameThreadWorker()
 {
     clients = new std::unordered_map<std::string, Npc *>();
     messageHandler = new MessageHandler(clients);
+    pMainPlayer = new Npc(ADDR_PLAYERBASE);
+}
+
+GameThreadWorker::~GameThreadWorker()
+{
+    delete clients;
+    delete messageHandler;
+    delete pMainPlayer;
 }
 
 void GameThreadWorker::setClientForHandler(Client &client)
@@ -30,20 +38,12 @@ void GameThreadWorker::processMessages()
         removeTask();
     }
 }
-
-int count = 0;
-Npc *mainPlayer;
-Npc *npc;
-
+//Npc *npc;
 void GameThreadWorker::checkGameState(){
-    if(mainPlayer == nullptr) {
-        mainPlayer = new Npc(ADDR_PLAYERBASE);
-    }
     // Checks if player is in range of an other player to render him
     for (const auto& pair : *clients) {
-        if (mainPlayer->oCNpc->getDistanceToVob(pair.second->oCNpc) < 4500 && pair.second->oCNpc->getHomeWorld() == 0)
+        if (pMainPlayer->oCNpc->getDistanceToVob(pair.second->oCNpc) < 4500 && pair.second->oCNpc->getHomeWorld() == 0)
         {
-            
             void *add = OCWorld::AddVob(pair.second->oCNpc);
             std::cout << "Add Address: " << add << "\n";
         }
@@ -52,33 +52,13 @@ void GameThreadWorker::checkGameState(){
     /* ################ Custom Shit Here################# */
     if (GetAsyncKeyState(VK_RSHIFT) < 0)
     {
-        // std::cout << "Pressed Button!\n";
-        if (npc != nullptr)
-        {
-            //OCWorld::EnableVob(mainPlayer->oCNpc, npc->oCNpc);
-            //mainPlayer->oCNpc->insertInVobList(npc->oCNpc);
+        zCModel *npcModel = new zCModel(pMainPlayer->oCNpc->getModel());
+        std::cout << "zCModel Addr: " << npcModel->getAddress() << "\n";
+        npcModel->showAniList(0);
 
-            //OCWorld::InsertInLists(npc->oCNpc);
-            std::cout << "Distance to NPC: " << std::to_string(mainPlayer->oCNpc->getDistanceToVob(npc->oCNpc)) << "\n";
-
-            if(npc->oCNpc != nullptr ) {
-                std::cout << "World Address: " << OCWorld::GetOCWorldAddress() << "\n";
-                
-
-                //OCWorld::VobAddedToWorld(npc->oCNpc);
-                //npc->oCNpc->addVobToWorld_CorrectParentDependencies();
-                //void * add = OCWorld::AddVob(npc->oCNpc);
-                //std::cout << "Add Address: " << add << "\n";
-            } else {
-                std::cout << "NPC is NULL" << "\n";
-            }
-
-            return;
-        }
-
-        mainPlayer = new Npc(ADDR_PLAYERBASE);
+        /*
         ZVec3 tempPosition;
-        mainPlayer->oCNpc->getPositionWorld(&tempPosition);
+        pMainPlayer->oCNpc->getPositionWorld(&tempPosition);
         // Npc *npc = new Npc();
         npc = new Npc();
         npc->setCurrentHealth(10);
@@ -89,12 +69,11 @@ void GameThreadWorker::checkGameState(){
 
         // Set same View direction as player
         zMAT4 matrix;
-        mainPlayer->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
+        pMainPlayer->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
         npc->oCNpc->setTrafo(&matrix);
 
         zCModel *npcModel = new zCModel(npc->oCNpc->getModel());
-        std::cout << "zCModel Addr: " << npcModel->getAddress() << "\n";
+        std::cout << "zCModel Addr: " << npcModel->getAddress() << "\n";*/
 
-        // delete mainPlayer;
     }
 }
