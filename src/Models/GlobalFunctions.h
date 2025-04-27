@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Wrapper/zSTRING.h"
+#include "../Wrapper/OCNpc.h"
 
 struct GlobalFunctions {
     typedef void(__stdcall * _FuncA)();
@@ -13,10 +14,13 @@ struct GlobalFunctions {
     _StdPrintwin stdPrintWin;
 
     typedef void(__cdecl * _CheatConsole)();
-    _CheatConsole openCheatConsole;
+    _CheatConsole openCheatConsole = (GlobalFunctions::_CheatConsole)(0x647129);
 
     typedef void(__cdecl * _PrintDebug)(char * str, int param2 ); 
     _PrintDebug printDebug;
+
+    typedef void(__cdecl * _GlobAddRefVobSubtree)(OCNpc * npc);
+    _GlobAddRefVobSubtree addRefVobSubtree = reinterpret_cast<_GlobAddRefVobSubtree>(0x6a4490);;
 
 };
 
