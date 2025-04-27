@@ -100,7 +100,7 @@ void MessageHandler::sendToAllExceptSender(udp::endpoint &senderEndpoint, std::s
     std::lock_guard<std::mutex> lock(clients_mutex);
     for (auto it = clients->begin(); it != clients->end(); ++it)
     {
-        //if (senderEndpoint != it->second.endpoint) // Single Computer Debugging
+        if (senderEndpoint != it->second.endpoint)
             sendMessage(it->second.endpoint, buffer);
     }
 }

@@ -240,19 +240,6 @@ DataStructures::LastAnimation Npc::getLastAnimation() {
 		retLastAnim.animationIds.push_back(*pp3);
 	}
 
-    /*for (int i = 0; i < 1000; i++)
-    {
-        void *aniActive = npcModel->getActiveAni(i);
-        if (!aniActive)
-            continue;
-
-        //int aniID = *(int *)((uintptr_t)aniActive + 0x4C);
-        //float frame = *(float *)((uintptr_t)aniActive + 0x30);
-
-        retLastAnim.animation = i;
-        retLastAnim.frame = 0;//static_cast<int>(frame);
-        break;
-    }*/
 	return retLastAnim;
 }
 
