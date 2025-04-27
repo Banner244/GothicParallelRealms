@@ -62,7 +62,7 @@ int Npc::getCurrentLevel()
 	if (!isPlayerLoaded())
 		return 0;
 
-	return oCNpc->callVariable<int>(OCNpc::Offset::LEVEL);;
+	return oCNpc->callVariable<int>(OCNpc::Offset::LEVEL);
 }
 
 int Npc::getExperienceNextLevel()
@@ -224,7 +224,23 @@ DataStructures::LastAnimation Npc::getLastAnimation() {
 	DataStructures::LastAnimation retLastAnim;
 	zCModel *npcModel = new zCModel(oCNpc->getModel());
 
-    for (int i = 0; i < 550; i++)
+	int animCount = *reinterpret_cast<int *>(reinterpret_cast<uintptr_t>(npcModel->getAddress()) + 0x34);
+	retLastAnim.animationCount = animCount;
+	
+	for(int i = 0; i < animCount; i++) {
+		uintptr_t addr = reinterpret_cast<uintptr_t>(npcModel->getAddress())+ 0x38 + (i * 4) ;
+		void * pp = reinterpret_cast<void*> (addr);
+
+		uintptr_t addr2 = *reinterpret_cast<uintptr_t*>(pp);
+		void * pp2 = reinterpret_cast<void*> (addr2);
+
+		uintptr_t addr3 = *reinterpret_cast<uintptr_t*>(pp2);
+		addr3 += 0x4c;
+		int * pp3 = reinterpret_cast<int*> (addr3);
+		retLastAnim.animationIds.push_back(*pp3);
+	}
+
+    /*for (int i = 0; i < 1000; i++)
     {
         void *aniActive = npcModel->getActiveAni(i);
         if (!aniActive)
@@ -236,7 +252,7 @@ DataStructures::LastAnimation Npc::getLastAnimation() {
         retLastAnim.animation = i;
         retLastAnim.frame = 0;//static_cast<int>(frame);
         break;
-    }
+    }*/
 	return retLastAnim;
 }
 

@@ -43,7 +43,10 @@ class GameThreadWorker {
          * @brief Pointer to a map containing active NPC clients, indexed by their IP/Port combination.
         */
         std::unordered_map<std::string, Npc*> *clients;
-        
+
+
+        ~GameThreadWorker();
+
         
         /**
          * @brief Processes incoming network messages.
@@ -91,4 +94,5 @@ class GameThreadWorker {
         */
         MessageHandler * messageHandler;
 
+        Npc *pMainPlayer;
 };

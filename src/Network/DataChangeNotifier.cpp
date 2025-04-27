@@ -8,8 +8,8 @@ DataChangeNotifier::DataChangeNotifier(Client *client) : pClient(client){
 
 void DataChangeNotifier::initListValues() {
     playerState.push_back( [this]() { 
-        DataStructures::LastPosition retLastAnim = pMainPlayer->getLastPosition();
-        if(!playerLastPos.isSame(retLastAnim)) {
+        DataStructures::LastPosition retLastPos = pMainPlayer->getLastPosition();
+        if(!playerLastPos.isSame(retLastPos)) {
             pClient->sendPlayerPosition();
         }
     });

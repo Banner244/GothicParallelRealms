@@ -1,10 +1,5 @@
 #include "Client.h"
 
-struct AnimationInformation {
-    int id;
-    float frame;
-};
-
 Client::Client(boost::asio::io_context &io_context, const std::string &host, const std::string &port, GameThreadWorker *gameThreadWorker)
     : socket_(io_context), resolver_(io_context), server_endpoint_(*resolver_.resolve(udp::v4(), host, port).begin())
 {
@@ -95,46 +90,16 @@ void Client::sendPlayerPosition()
 void Client::sendPlayerAnimation()
 {
     DataStructures::LastAnimation lastAnim =  mainPlayer->getLastAnimation();
+
     PackagingSystem packetAnim(Packets::ClientPacket::clientShareAnimations);
-    packetAnim.addInt(lastAnim.animation);
+    packetAnim.addInt(lastAnim.animationCount);
+
+    for(const auto &id : lastAnim.animationIds) {
+        packetAnim.addInt(id);
+    }
 
     std::string bufferStr = packetAnim.serializePacket();
     this->send_message(bufferStr);
-    /*zCModel *npcModel = new zCModel(mainPlayer->oCNpc->getModel());
-    auto animList = std::make_shared<std::vector<AnimationInformation>>();
-
-
-    for (int i = 0; i < 550; i++)
-    {
-        void *aniActive = npcModel->getActiveAni(i);
-        if (!aniActive)
-            continue; // Sobald eine NULL kommt, abbrechen
-
-
-        //int aniID = *(int *)((uintptr_t)aniActive + 0x4C);
-        float frame = *(float *)((uintptr_t)aniActive + 0x30);
-
-        AnimationInformation animInfo;
-        animInfo.id = i;
-        animInfo.frame = frame;
-
-        animList->push_back(animInfo);
-        break;
-    }
-
-    int animCount = animList->size();
-
-    Data data;
-    data.id = ClientPacket::clientShareAnimations;
-    data.names.push_back( std::to_string(animCount));
-    
-    for(int i = 0; i< animCount; i++) {
-        data.names.push_back(std::to_string(animList->at(i).id));
-        //data.names.push_back(std::to_string(animList.at(i).frame));
-    }
-
-    std::string bufferStr = data.serialize();
-    this->send_message(bufferStr);*/
 }
 
 void Client::sendPlayerRotation() {
