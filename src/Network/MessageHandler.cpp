@@ -3,7 +3,8 @@
 MessageHandler::MessageHandler(std::unordered_map<std::string, Npc *> *pClients) : pClients(pClients)
 {
 }
-void MessageHandler::setClient(Client &client) {
+void MessageHandler::setClient(Client &client)
+{
     this->pClient = &client;
 }
 
@@ -24,7 +25,7 @@ void MessageHandler::managePacket(std::string stringPacket)
         break;
     case Packets::ServerPacket::serverDistributeAnimations:
         handleServerDistributeAnimations(stringPacket);
-        break;    
+        break;
     case Packets::ServerPacket::serverRemoveClient:
         handleServerRemoveClient(stringPacket);
         break;
@@ -38,10 +39,10 @@ void MessageHandler::managePacket(std::string stringPacket)
 
 void MessageHandler::handleServerHandshakeAccept(std::string &buffer)
 {
-    
 }
 
-void MessageHandler::handleServerRequestsHeartbeat(std::string &buffer) {
+void MessageHandler::handleServerRequestsHeartbeat(std::string &buffer)
+{
     PackagingSystem packetAnim(Packets::ClientPacket::clientResponseHeartbeat);
 
     std::string bufferStr = packetAnim.serializePacket();
@@ -80,7 +81,8 @@ void MessageHandler::handleServerDistributePosition(std::string &buffer)
         return;
     }
 
-    Npc *value = new Npc(); // Npc ist ein Zeiger auf dein NPC-Objekt
+    // Creating a new Npc 
+    Npc *value = new Npc();
     value->setCurrentHealth(10);
     value->setMaxHealth(10);
     value->oCNpc->setVisualWithString("HUMANS.MDS");
@@ -88,14 +90,14 @@ void MessageHandler::handleServerDistributePosition(std::string &buffer)
 
     value->oCNpc->enableWithdCoords(x, z, y);
 
-    // Füge das Paar in die Map ein
+    // New Client inserted
     pClients->insert({receivedKey, value});
 }
 
 void MessageHandler::handleServerDistributeAnimations(std::string &buffer)
 {
     bool playerExists = false;
-    std::string receivedKey = PackagingSystem::ReadItem<std::string>(buffer); //data.names.at(0);
+    std::string receivedKey = PackagingSystem::ReadItem<std::string>(buffer); // data.names.at(0);
     std::lock_guard<std::mutex> lock(clientsMutex);
     auto it = pClients->find(receivedKey);
     if (it != pClients->end())
@@ -105,38 +107,47 @@ void MessageHandler::handleServerDistributeAnimations(std::string &buffer)
         return;
 
     Npc *value = it->second;
+    DataStructures::LastAnimation npcLastAnim = value->getLastAnimation();
+    DataStructures::LastAnimation npcNewAnim;
     zCModel *npcModel = new zCModel(value->oCNpc->getModel());
 
-    int animID = PackagingSystem::ReadItem<int>(buffer);
-
-
-    for(int i = 0; i < 550; i++){
-        void *aniActive = npcModel->getActiveAni(i);
-        if (aniActive)
-            npcModel->stopAnimationInt(i);
+    int animCount = PackagingSystem::ReadItem<int>(buffer);
+    npcNewAnim.animationCount = animCount;
+    for (int i = 0; i < animCount; i++)
+    {
+        npcNewAnim.animationIds.push_back(PackagingSystem::ReadItem<int>(buffer));
     }
 
-    //void *aniActive = npcModel->getActiveAni(animID);
-    //if (!aniActive)
-    npcModel->startAniInt(animID, 0);
-    /*int animCount = std::stoi(data.names.at(1));
-    if (animCount != 0)
-    {
-        int animID = std::stoi(data.names.at(2));
+    for (auto &newId : npcNewAnim.animationIds) {
+        npcModel->startAniInt(newId, 0);
+    }
 
-        void *aniActive = npcModel->getActiveAni(animID);
-        if (!aniActive)
-            npcModel->startAniInt(animID, 0);
-    }*/
+    for (auto &lastId : npcLastAnim.animationIds)
+    {
+        bool found = false;
+        for (auto &newId : npcNewAnim.animationIds)
+        {
+            if(lastId == newId) {
+                found = true;
+            }
+        }
+        if(!found) {
+            void *aniActive = npcModel->getActiveAni(lastId);
+            if (aniActive)
+                npcModel->stopAnimationInt(lastId);
+        }
+    }
 }
+
 /*##################### TODO:  TEST IF THIS WORKS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
 void MessageHandler::handleServerRemoveClient(std::string &buffer)
 {
     bool playerExists = false;
-    std::string receivedKey = PackagingSystem::ReadItem<std::string>(buffer); //data.names.at(0);
+    std::string receivedKey = PackagingSystem::ReadItem<std::string>(buffer); // data.names.at(0);
     std::lock_guard<std::mutex> lock(clientsMutex);
     auto it = pClients->find(receivedKey);
-    if (it != pClients->end()){
+    if (it != pClients->end())
+    {
         OCWorld::RemoveVob(it->second->oCNpc);
         pClients->erase(receivedKey);
         std::cout << "Removed VOB\n";

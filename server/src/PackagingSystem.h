@@ -62,7 +62,7 @@ public:
      */
     static int ReadPacketId(std::string &packet);
     /**
-     * @brief Reads an item of type T from the given packet string.
+     * @brief Reads an item of type T from the given packet string, returns it and removes it from buffer.
      * @tparam T The type of the item to read.
      * @param packet The packet string containing the item data.
      * @return The item of type T extracted from the packet.

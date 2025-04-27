@@ -16,6 +16,7 @@ class zCModel {
         using _SearchAniIndex = int(__thiscall *)(zSTRING * animName);// Static Function
         using _GetActiveAni = void*(__thiscall *)(void *pThis, int id);
         using _ShowAniList = void(__thiscall *)(void *pThis, int param);
+        using _GetAnyAnimation = zSTRING * (__thiscall *)(void *pThis);
 
         _StartAnimation startAnimationRef;
         _IsAnimationActive isAnimationActiveRef;
@@ -28,7 +29,7 @@ class zCModel {
         _SearchAniIndex searchAniINdexRef;
         _GetActiveAni getActiveAniRef;
         _ShowAniList showAniListRef;
-
+        _GetAnyAnimation getAnyAnimationRef;
 
         zCModel(void *pThis);
 
@@ -48,6 +49,8 @@ class zCModel {
         void * getActiveAni(int id);
 
         void showAniList(int param);
+
+        std::string getAnyAnimation();
 
     private:
         void initializeFunctionPointers();

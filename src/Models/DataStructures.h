@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 namespace DataStructures {
     struct LastPosition {
@@ -30,17 +31,24 @@ namespace DataStructures {
     };
 
     struct LastAnimation {
-        int animation = 0;
-        int frame = 0;
+        int animationCount = 0;
+        std::vector<int> animationIds;
 
-        bool isSame(LastAnimation lastAnim) {
-            if(this->animation == lastAnim.animation /*&& this->frame == frame*/) 
-                return true;
-
-            this->animation = lastAnim.animation;
-            this->frame = lastAnim.frame;
-            
-            return false;
+        bool isSame(const LastAnimation& lastAnim) {
+            if (lastAnim.animationCount != animationCount || lastAnim.animationIds.size() != animationIds.size()) {
+                this->animationCount = lastAnim.animationCount;
+                this->animationIds = lastAnim.animationIds;
+                return false;
+            }
+        
+            for (int i = 0; i < animationCount; i++) {
+                if (lastAnim.animationIds[i] != animationIds[i]) {
+                    this->animationIds = lastAnim.animationIds;
+                    return false;
+                }
+            }
+        
+            return true;
         }
     };
 

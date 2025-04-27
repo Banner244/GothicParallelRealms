@@ -66,7 +66,12 @@ void MessageHandler::clientSharesAnimations(udp::endpoint &clientEndpoint, std::
     PackagingSystem animationPacket(Packets::ServerPacket::serverDistributeAnimations);
 
     animationPacket.addString(clientPortIp);
-    animationPacket.addInt(PackagingSystem::ReadItem<int>(*safeBuffer));
+    int animationCount = PackagingSystem::ReadItem<int>(*safeBuffer);
+    animationPacket.addInt(animationCount);
+
+    for(int i = 0; i< animationCount; i++) {
+        animationPacket.addInt(PackagingSystem::ReadItem<int>(*safeBuffer));
+    }
 
     sendToAllExceptSender(clientEndpoint, animationPacket.serializePacket());
 }

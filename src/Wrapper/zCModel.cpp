@@ -15,6 +15,7 @@ void zCModel::initializeFunctionPointers(){
     searchAniINdexRef = reinterpret_cast<_SearchAniIndex>(0x56f850);
     getActiveAniRef = reinterpret_cast<_GetActiveAni>(0x560d90);
     showAniListRef = reinterpret_cast<_ShowAniList>(0x5682c0);
+    getAnyAnimationRef = reinterpret_cast<_GetAnyAnimation>(0x561050);
 }
 
 void *zCModel::getAddress() const
@@ -62,4 +63,7 @@ void * zCModel::getActiveAni(int id){
 
 void zCModel::showAniList(int param){
     showAniListRef(pThis, param);
+}
+std::string zCModel::getAnyAnimation(){
+    return getAnyAnimationRef(pThis)->getStr();
 }

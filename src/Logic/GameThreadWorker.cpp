@@ -55,7 +55,50 @@ void GameThreadWorker::checkGameState(){
         zCModel *npcModel = new zCModel(pMainPlayer->oCNpc->getModel());
         std::cout << "zCModel Addr: " << npcModel->getAddress() << "\n";
         npcModel->showAniList(0);
+        std::cout << "Animatin: " << npcModel->getAnyAnimation() << "\n";
 
+        int animCount = *reinterpret_cast<int *>(reinterpret_cast<uintptr_t>(npcModel->getAddress()) + 0x34);
+        std::cout << "Active Anims: " << std::to_string(animCount) << "\n";
+
+
+        for(int i = 0; i < animCount; i++) {
+            uintptr_t addr = reinterpret_cast<uintptr_t>(npcModel->getAddress())+ 0x38 + (i * 4) ;
+            void * pp = reinterpret_cast<void*> (addr);
+
+            uintptr_t addr2 = *reinterpret_cast<uintptr_t*>(pp);
+            void * pp2 = reinterpret_cast<void*> (addr2);
+
+            uintptr_t addr3 = *reinterpret_cast<uintptr_t*>(pp2);
+            addr3 += 0x4c;
+            int * pp3 = reinterpret_cast<int*> (addr3);
+            
+            std::cout << "Index: " << std::to_string(i) << ", AnimId: " << std::to_string(*pp3) << "\n";
+        }
+
+        /*uintptr_t addr = reinterpret_cast<uintptr_t>(npcModel->getAddress())+ 0x38 ;
+        void * pp = reinterpret_cast<void*> (addr);
+
+        uintptr_t addr2 = *reinterpret_cast<uintptr_t*>(pp);
+        addr2+=0x4;
+        void * pp2 = reinterpret_cast<void*> (addr2);
+
+        uintptr_t addr3 = *reinterpret_cast<uintptr_t*>(pp2);
+        addr3 += 0x4c;
+        int * pp3 = reinterpret_cast<int*> (addr3);
+
+        
+        std::cout << "Addr: " << std::to_string(*pp3) << "\n";*/
+        /*for(int i = 0; i < animCount; i++) {
+            uintptr_t addr = reinterpret_cast<uintptr_t>(npcModel->getAddress())+ 0x38 ;
+
+        }*/
+
+
+        /*for(int i = 0; i < 2000; i++){
+            void *aniActive = npcModel->getActiveAni(i);
+            if (aniActive)
+                std::cout << "AnimID: " << std::to_string(i) << "\n";
+        }*/
         /*
         ZVec3 tempPosition;
         pMainPlayer->oCNpc->getPositionWorld(&tempPosition);
