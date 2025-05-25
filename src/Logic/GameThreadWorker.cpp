@@ -2,7 +2,7 @@
 
 GameThreadWorker::GameThreadWorker()
 {
-    clients = new std::unordered_map<std::string, Npc *>();
+    clients = new AsyncUnorderedMap<std::string, Npc *>();
     messageHandler = new MessageHandler(clients);
     pMainPlayer = new Npc(ADDR_PLAYERBASE);
 }
@@ -39,9 +39,12 @@ void GameThreadWorker::processMessages()
     }
 }
 //Npc *npc;
+//int *ii = new int;
 void GameThreadWorker::checkGameState(){
     // Checks if player is in range of an other player to render him
-    for (const auto& pair : *clients) {
+    std::unordered_map<std::string, Npc*> copyOfClients = *clients->getUnorderedMap();
+
+    for (const auto& pair : copyOfClients) {
         if (pMainPlayer->oCNpc->getDistanceToVob(pair.second->oCNpc) < 4500 && pair.second->oCNpc->getHomeWorld() == 0)
         {
             void *add = OCWorld::AddVob(pair.second->oCNpc);
@@ -52,6 +55,9 @@ void GameThreadWorker::checkGameState(){
     /* ################ Custom Shit Here################# */
     if (GetAsyncKeyState(VK_RSHIFT) < 0)
     {
-
+        std::cout << "# PRINTING "   << "\n";
+        zSTRING * str = new zSTRING("");
+        str = pMainPlayer->oCNpc->getName(0);
+        std::cout << "NAME: " << str->getStr() << "\n";
     }
 }

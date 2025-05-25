@@ -170,6 +170,13 @@ void OCNpc::addVobToWorld_CorrectParentDependencies(){
 
     addVobToWorld_CorrectParentDependenciesRef(this);
 }
+
+zSTRING *OCNpc::getName(int value){
+    using _GetName = zSTRING *(__thiscall *)(void *pThis, int value);
+    _GetName getNameRef = reinterpret_cast<_GetName>(0x68d0b0);
+    return getNameRef(this, value);
+
+}
 /*int OCNpc::applyOverlay(char *animName)
 {
     zSTRING *name = new zSTRING(animName);

@@ -1,6 +1,6 @@
 #include "MessageHandler.h"
 
-MessageHandler::MessageHandler(std::unordered_map<std::string, Npc *> *pClients) : pClients(pClients)
+MessageHandler::MessageHandler(AsyncUnorderedMap<std::string, Npc *> *pClients) : pClients(pClients)
 {
 }
 void MessageHandler::setClient(Client &client)
@@ -51,7 +51,6 @@ void MessageHandler::handleServerRequestsHeartbeat(std::string &buffer)
 
 void MessageHandler::handleServerDistributePosition(std::string &buffer)
 {
-    bool playerExists = false;
     std::string receivedKey = PackagingSystem::ReadItem<std::string>(buffer);
     float x = PackagingSystem::ReadItem<float>(buffer);
     float z = PackagingSystem::ReadItem<float>(buffer);
@@ -61,14 +60,9 @@ void MessageHandler::handleServerDistributePosition(std::string &buffer)
     float pitch = PackagingSystem::ReadItem<float>(buffer);
     float roll = PackagingSystem::ReadItem<float>(buffer);
 
-    std::lock_guard<std::mutex> lock(clientsMutex);
-    auto it = pClients->find(receivedKey);
-    if (it != pClients->end())
-        playerExists = true;
-
-    if (playerExists)
-    {
-        Npc *value = it->second;
+   auto it = pClients->find(receivedKey);
+   if(it) {
+        Npc *value = it.value();
         zMAT4 matrix;
         value->oCNpc->getTrafoModelNodeToWorld(&matrix, 0);
 
@@ -79,7 +73,7 @@ void MessageHandler::handleServerDistributePosition(std::string &buffer)
         value->setZ(z);
         value->setY(y);
         return;
-    }
+   } 
 
     // Creating a new Npc 
     Npc *value = new Npc();
@@ -91,22 +85,19 @@ void MessageHandler::handleServerDistributePosition(std::string &buffer)
     value->oCNpc->enableWithdCoords(x, z, y);
 
     // New Client inserted
-    pClients->insert({receivedKey, value});
+    pClients->append(receivedKey, value);
 }
 
 void MessageHandler::handleServerDistributeAnimations(std::string &buffer)
 {
-    bool playerExists = false;
-    std::string receivedKey = PackagingSystem::ReadItem<std::string>(buffer); // data.names.at(0);
-    std::lock_guard<std::mutex> lock(clientsMutex);
+    std::string receivedKey = PackagingSystem::ReadItem<std::string>(buffer);
+
     auto it = pClients->find(receivedKey);
-    if (it != pClients->end())
-        playerExists = true;
-
-    if (!playerExists)
+    if(!it) {
         return;
+    }
 
-    Npc *value = it->second;
+    Npc *value = it.value();
     DataStructures::LastAnimation npcLastAnim = value->getLastAnimation();
     DataStructures::LastAnimation npcNewAnim;
     zCModel *npcModel = new zCModel(value->oCNpc->getModel());
@@ -139,19 +130,17 @@ void MessageHandler::handleServerDistributeAnimations(std::string &buffer)
     }
 }
 
-/*##################### TODO:  TEST IF THIS WORKS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+
 void MessageHandler::handleServerRemoveClient(std::string &buffer)
 {
-    bool playerExists = false;
     std::string receivedKey = PackagingSystem::ReadItem<std::string>(buffer); // data.names.at(0);
-    std::lock_guard<std::mutex> lock(clientsMutex);
-    auto it = pClients->find(receivedKey);
-    if (it != pClients->end())
-    {
-        OCWorld::RemoveVob(it->second->oCNpc);
-        pClients->erase(receivedKey);
+
+   auto it = pClients->find(receivedKey);
+   if(it) {
+        OCWorld::RemoveVob(it.value());
+        pClients->remove(receivedKey);
         std::cout << "Removed VOB\n";
-    }
+   }
 }
 
 void MessageHandler::handleServerDistributeRotations(std::string &buffer)

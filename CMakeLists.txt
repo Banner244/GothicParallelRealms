@@ -51,12 +51,12 @@ endif()
 set(MINHOOK_DIR ${CMAKE_SOURCE_DIR}/MinHook)
 
 # Suche alle .cpp-Dateien im aktuellen Verzeichnis
-file(GLOB SOURCES "src/*.cpp")
-file(GLOB MODELS_SOURCES "src/Models/*.cpp")
-file(GLOB LOGIC_SOURCES "src/Logic/*.cpp")
-file(GLOB WRAPPER_SOURCES "src/Wrapper/*.cpp")
-file(GLOB NETWORK_SOURCES "src/Network/*.cpp")
-file(GLOB PACKET_SOURCES "server/src/PackagingSystem.cpp") # Single file from server
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE COMMON_SOURCES "common/src/*.cpp")
+
+list(APPEND SOURCES ${COMMON_SOURCES})
+include_directories("common/src/")
+
 
 # Dear ImGui Quellen und Header definieren
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/imgui)
@@ -91,7 +91,7 @@ set(MINHOOK_LIB ${MINHOOK_DIR}/libMinHook.x86.lib)
 #endif()
 
 # Bibliothek erstellen (DLL)
-add_library(MyDLL SHARED ${SOURCES} ${IMGUI_SOURCES} ${MODELS_SOURCES} ${LOGIC_SOURCES} ${WRAPPER_SOURCES} ${NETWORK_SOURCES} ${PACKET_SOURCES})
+add_library(MyDLL SHARED ${SOURCES} ${IMGUI_SOURCES})
 
 # Include-Verzeichnisse hinzufügen
 target_include_directories(MyDLL PUBLIC

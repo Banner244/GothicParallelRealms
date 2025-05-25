@@ -26,6 +26,11 @@ endif()
 # Automatisch alle .cpp-Dateien aus src/ einbinden
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
+# Automatisch alle .cpp-Dateien aus ../common/ einbinden
+file(GLOB_RECURSE COMMON_SOURCES "../common/src/*.cpp")
+list(APPEND SOURCES ${COMMON_SOURCES})
+include_directories("../common/src/")
+
 # Füge das ausführbare Ziel hinzu
 add_executable(${PROJECT_NAME} ${SOURCES})
 

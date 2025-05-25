@@ -5,8 +5,8 @@
 #include <memory>
 #include <functional>
 
-#include "../server/src/PackagingSystem.h"
-#include "../server/src/Packets.h"
+#include "../common/src/Network/PackagingSystem.h"
+#include "../common/src/Network/Packets.h"
 
 #include "../Logic/GameThreadWorker.h"
 #include "../Models/Npc.h"

@@ -1,6 +1,6 @@
 #include "MessageHandler.h"
 
-MessageHandler::MessageHandler(std::unordered_map<std::string, CommonStructures::ClientInfo> &clients, udp::socket &socket)
+MessageHandler::MessageHandler(AsyncUnorderedMap<std::string, CommonStructures::ClientInfo> &clients, udp::socket &socket)
 {
     this->clients = &clients;
     this->pSocket = &socket;
@@ -14,8 +14,8 @@ void MessageHandler::handleBuffer(udp::endpoint &clientEndpoint, std::string buf
     int id = PackagingSystem::ReadPacketId(buffer);
     Packets::ClientPacket packetId = static_cast<Packets::ClientPacket>(id);
 
-    std::cout << "ID: " << id << std::endl;
-    std::cout << "Message: " << buffer << std::endl;
+    Async::PrintLn( "ID: " + std::to_string(id) );
+    Async::PrintLn( "Message: " + buffer );
 
     switch (packetId)
     {
@@ -29,8 +29,7 @@ void MessageHandler::handleBuffer(udp::endpoint &clientEndpoint, std::string buf
         clientSharesAnimations(clientEndpoint, buffer);
         break;
     default:
-        std::cout << "Unknown Paket...\n"
-                  << std::endl;
+        Async::PrintLn("Unknown Paket...");
         break;
     }
 }
@@ -38,7 +37,7 @@ void MessageHandler::handleBuffer(udp::endpoint &clientEndpoint, std::string buf
 void MessageHandler::clientRepondsHeartbeat(udp::endpoint &clientEndpoint, std::string &buffer)
 {
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
-    std::cout << clientPortIp << " responded to Heartbeat Request\n";
+    Async::PrintLn( clientPortIp + " responded to Heartbeat Request");
 }
 
 void MessageHandler::clientSharesPosition(udp::endpoint &clientEndpoint, std::string &buffer)
@@ -82,41 +81,37 @@ void MessageHandler::sendMessage(udp::endpoint &clientEndpoint, std::string buff
     pSocket->async_send_to(
         boost::asio::buffer(*packetPtr),
         clientEndpoint,
-        [packetPtr, clientEndpoint](boost::system::error_code ec, std::size_t bytes_sent)
+        [this, packetPtr, clientEndpoint](boost::system::error_code ec, std::size_t bytes_sent)
         {
-            if (ec)
-            {
-                std::cerr << "Async send error to " << clientEndpoint << ": " << ec.message() << std::endl;
-            }
-            else
-            {
-                std::cout << "Gesendet (" << bytes_sent << " Bytes) an " << clientEndpoint << std::endl;
-                std::cout << *packetPtr << std::endl;
+            if (ec){
+                //std::cerr << "Async send error to " << clientEndpoint << ": " << ec.message() << std::endl;
+                Async::Cerr ("Async send error to " + endpointToString(clientEndpoint) + ": " + ec.message());
+            } else {
+                Async::PrintLn ("Gesendet (" + std::to_string(bytes_sent) + " Bytes) an " + endpointToString(clientEndpoint));
+                Async::PrintLn(*packetPtr);
             }
         });
 }
 void MessageHandler::sendToAllExceptSender(udp::endpoint &senderEndpoint, std::string buffer)
 {
-    std::lock_guard<std::mutex> lock(clients_mutex);
-    for (auto it = clients->begin(); it != clients->end(); ++it)
+    std::lock_guard<std::mutex> lock(clients->getMutex());
+    for (auto it = clients->getUnorderedMap()->begin(); it != clients->getUnorderedMap()->end(); ++it)
     {
-        if (senderEndpoint != it->second.endpoint)
+        //if (senderEndpoint != it->second.endpoint) // Uncomment for main branch
             sendMessage(it->second.endpoint, buffer);
     }
 }
+
 void MessageHandler::removeClient(udp::endpoint &clientEndpoint)
 {
-    std::lock_guard<std::mutex> lock(clients_mutex);
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
 
-    auto it = clients->find(clientPortIp);
-    if (it != clients->end())
-    {
-        clients->erase(it);
-    }
+    if(clients->existsItem(clientPortIp))
+        clients->remove(clientPortIp);
 
+    std::lock_guard<std::mutex> lock(clients->getMutex());
     // Telling the Clients to remove unreachable client
-    for (auto &pair : *clients)
+    for (auto &pair : *clients->getUnorderedMap())
     {
         PackagingSystem clientToRemove(Packets::ServerPacket::serverRemoveClient);
         clientToRemove.addString(clientPortIp);
@@ -128,28 +123,31 @@ void MessageHandler::removeClient(udp::endpoint &clientEndpoint)
 
 void MessageHandler::addNewClient(udp::endpoint &clientEndpoint)
 {
-    std::lock_guard<std::mutex> lock(clients_mutex);
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
 
     CommonStructures::ClientInfo clientInfo;
     clientInfo.endpoint = clientEndpoint;
     clientInfo.lastResponse = std::chrono::high_resolution_clock::now();
 
-    auto [it, inserted] = clients->try_emplace(clientPortIp, clientInfo);
+    /*auto [it, inserted] = clients->try_emplace(clientPortIp, clientInfo);
     if (inserted)
-        std::cout << "Added new Client: " << clientPortIp << "\n";
+        Async::PrintLn( "Added new Client: " + clientPortIp );*/
+    if(clients->existsItem(clientPortIp))
+        return;
+
+    clients->append(clientPortIp, clientInfo);
+    Async::PrintLn( "Added new Client: " + clientPortIp );
 
     updateConsoleTitle();
 }
 
 void MessageHandler::updateLastResponse(udp::endpoint &clientEndpoint)
 {
-    std::lock_guard<std::mutex> lock(clients_mutex);
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
 
     auto it = clients->find(clientPortIp);
-    if (it != clients->end())
-        it->second.lastResponse = std::chrono::high_resolution_clock::now();
+    if (it)
+        it->get().lastResponse = std::chrono::high_resolution_clock::now();
 }
 
 std::string MessageHandler::getClientUniqueString(udp::endpoint &clientEndpoint)
@@ -161,6 +159,12 @@ std::string MessageHandler::getClientUniqueString(udp::endpoint &clientEndpoint)
 
 void MessageHandler::updateConsoleTitle()
 {
-    std::string title = "Players: " + std::to_string(clients->size());
+    std::string title = "Players: " + std::to_string(clients->getUnorderedMap()->size());
     SetConsoleTitle(title.c_str());
+}
+
+std::string MessageHandler::endpointToString(const udp::endpoint &clientEndpoint){
+    std::string endpointStr = clientEndpoint.address().to_string();
+    endpointStr += ":" + std::to_string(clientEndpoint.port());
+    return endpointStr;
 }

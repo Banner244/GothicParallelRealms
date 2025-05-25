@@ -191,13 +191,13 @@ DWORD WINAPI MainThread()
 	DataChangeNotifier notifier(&client);
 	while (!GetAsyncKeyState(VK_END) & 1)
 	{
-		/*if (GetAsyncKeyState(VK_DOWN) < 0)*/{
+		/*if (GetAsyncKeyState(VK_DOWN) < 0){
 			notifier.sendChanges();
-		}
-		//notifier.sendChanges();
+		}*/
+		notifier.sendChanges();
 
-		// give imGui the players Information
-		//imGuiData.clients = *gameThreadManager->clients;
+		// give imGui players Information
+		imGuiData.clients = *gameThreadWorker->clients->getUnorderedMap();
 		Sleep(80);
 	}
 	io_thread.join();

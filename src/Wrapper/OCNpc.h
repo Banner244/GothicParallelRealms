@@ -113,6 +113,7 @@ public:
 
     void addVobToWorld_CorrectParentDependencies();
 
+    zSTRING *getName(int value);
     /*int applyOverlay(char * animName);
 
     void setBodyState(int param1);
