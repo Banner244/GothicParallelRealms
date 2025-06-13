@@ -3,20 +3,31 @@
 #include <iostream>
 #include <string> 
 
+#include "basic_string.h"
+
 class zSTRING {
-    private:
-        unsigned int length;
-        unsigned int capacity;
-        char* data;
+private:
+    void* vftable;
+    basic_string basicStr;
 
-    public:
-        zSTRING();
-        zSTRING(char* str);
-        // Wrapper für den ursprünglichen Konstruktor
-        void initialize(char* str);
+    static void Assign(zSTRING* str, char* text);
+public:
+    static zSTRING* CreateNewzSTRING(char* str);
+    
+    zSTRING& operator=(char* str) {
+        Assign(this, str);
+        return *this;
+    }
 
-        std::string getStr();
+    const char* c_str() const {
+        return basicStr.data ? basicStr.data : "";
+    }
 
-        void setString(char * str);
+    const std::string stdString() const {
+        return basicStr.data ? basicStr.data : "";
+    }
 
+    const uint32_t length() const {
+        return basicStr.length;
+    }
 };

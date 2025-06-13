@@ -24,17 +24,17 @@ void *zCModel::getAddress() const
 }
 
 void zCModel::startAnimation(char * animName){
-    zSTRING * animNameZStr = new zSTRING(animName);
+    zSTRING * animNameZStr = zSTRING::CreateNewzSTRING(animName); //new zSTRING(animName);
     startAnimationRef(pThis, animNameZStr);
 }
 
 int zCModel::isAnimationActive(char * animName){
-    zSTRING * animNameZStr = new zSTRING(animName);
+    zSTRING * animNameZStr = zSTRING::CreateNewzSTRING(animName); //new zSTRING(animName);
     return isAnimationActiveRef(pThis, animNameZStr);
 }
 
 void zCModel::stopAnimation(char * animName){
-    zSTRING * animNameZStr = new zSTRING(animName);
+    zSTRING * animNameZStr = zSTRING::CreateNewzSTRING(animName); //new zSTRING(animName);
     stopAnimationRef(pThis, animNameZStr);
 }
 
@@ -53,7 +53,7 @@ void * zCModel::getAniFromAniID(int id){
 }
 
 int zCModel::SearchAniIndex(char * aniName){
-    zSTRING * aniNameZ = new zSTRING(aniName);
+    zSTRING * aniNameZ = zSTRING::CreateNewzSTRING(aniName); //new zSTRING(aniName);
     return searchAniINdexRef(aniNameZ);
 }
 
@@ -65,5 +65,5 @@ void zCModel::showAniList(int param){
     showAniListRef(pThis, param);
 }
 std::string zCModel::getAnyAnimation(){
-    return getAnyAnimationRef(pThis)->getStr();
+    return getAnyAnimationRef(pThis)->stdString();
 }

@@ -7,6 +7,8 @@
 #include "MessageHandler.h"
 #include "CommonStructures.h"
 
+#include "../../common/src/Async/AsyncUnorderedMap.h"
+
 using boost::asio::ip::udp;
 
 class ServerManager {
@@ -17,7 +19,7 @@ class ServerManager {
     private:
         udp::socket socket;
         boost::asio::io_context *processing_context;
-        std::unordered_map<std::string, CommonStructures::ClientInfo> clients;
+        AsyncUnorderedMap<std::string, CommonStructures::ClientInfo> clients;
 
         bool serverRunning = false;
 

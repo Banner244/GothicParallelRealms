@@ -144,7 +144,7 @@ void PackagingSystem::addItemAtBeginning(std::string item) {
 }
 
 PackagingSystem::~PackagingSystem() {
-    delete[] mPacketBufferPtr;
+    
 }
 
 template int PackagingSystem::ReadItem<int>(std::string&);

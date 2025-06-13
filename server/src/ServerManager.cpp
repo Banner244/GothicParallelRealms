@@ -22,7 +22,7 @@ void ServerManager::start_receive()
         {
             if (!error)
             {
-                std::cout << "Received something: " << bytes_received << " bytes\n";
+                Async::PrintLn( "Received something: " + std::to_string(bytes_received) + " bytes");
 
                 boost::asio::post(*processing_context, [this, buffer, sender_endpoint, bytes_received]() {
                     std::string receivedPackage(buffer->data(), bytes_received);
@@ -30,15 +30,16 @@ void ServerManager::start_receive()
                     messageHandler->handleBuffer(*sender_endpoint, receivedPackage);
                 });
 
-                // Starte den nächsten Empfang mit einem neuen Buffer!
+                // repeat receiving
                 start_receive();
             }
             else
             {
-                std::cerr << "\nError receiving: " << error.message() << "\n";
+                Async::PrintLn( "\nError receiving: " + error.message());
+                //std::cerr << "\nError receiving: " << error.message() << "\n";
                 messageHandler->removeClient(*sender_endpoint);
 
-                // Starte erneut den Empfang
+                // repeat receiving
                 start_receive();
             }
         });
@@ -48,8 +49,8 @@ void ServerManager::watchingHeartbeat() {
     while(serverRunning) {
         std::queue<udp::endpoint> endpointsToRemove;
         {
-            std::lock_guard<std::mutex> lock(messageHandler->clients_mutex);
-            for (auto it = clients.begin(); it != clients.end(); ++it)
+            std::lock_guard<std::mutex> lock(clients.getMutex());
+            for (auto it = clients.getUnorderedMap()->begin(); it != clients.getUnorderedMap()->end(); ++it)
             {
                 auto currentTime = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double, std::milli> elapsed = currentTime - it->second.lastResponse;
@@ -59,8 +60,8 @@ void ServerManager::watchingHeartbeat() {
                     endpointsToRemove.push(it->second.endpoint);
                     //messageHandler->removeClient(it->second.endpoint);
                 } else if( durrationInSec >= 5) {
-                    std::cout << "Elapsed Time: " << durrationInSec << " seconds" << std::endl;
-
+                    //std::cout << "Elapsed Time: " << durrationInSec << " seconds" << std::endl;
+                    Async::PrintLn( "Elapsed Time: " + std::to_string(durrationInSec) + " seconds");
                     // Sending every 5 Seconds a Heartbeat request
                     if(durrationInSec % 5 == 0){
                         PackagingSystem heartbeatRequest(Packets::ServerPacket::serverRequestHeartbeat);
