@@ -30,14 +30,15 @@ private:
     AsyncUnorderedMap<std::string, CommonStructures::ClientInfo> *clients;
     udp::socket * pSocket;
 
+    void clientHandshakeRequest(udp::endpoint &clientEndpoint, std::string &buffer);
     void clientRepondsHeartbeat(udp::endpoint &clientEndpoint, std::string &buffer);
     void clientSharesPosition(udp::endpoint &clientEndpoint, std::string &buffer);
     void clientSharesAnimations(udp::endpoint &clientEndpoint, std::string &buffer);
 
     
+    bool isClientRegistered(udp::endpoint &clientEndpoint);
 
-
-    void addNewClient(udp::endpoint &clientEndpoint);
+    bool addNewClient(udp::endpoint &clientEndpoint, std::string &username);
     void updateLastResponse(udp::endpoint &clientEndpoint);
 
     std::string getClientUniqueString(udp::endpoint &clientEndpoint);

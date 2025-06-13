@@ -8,17 +8,29 @@ MessageHandler::MessageHandler(AsyncUnorderedMap<std::string, CommonStructures::
 
 void MessageHandler::handleBuffer(udp::endpoint &clientEndpoint, std::string buffer)
 {
-    addNewClient(clientEndpoint);
-    updateLastResponse(clientEndpoint);
-
     int id = PackagingSystem::ReadPacketId(buffer);
     Packets::ClientPacket packetId = static_cast<Packets::ClientPacket>(id);
 
     Async::PrintLn( "ID: " + std::to_string(id) );
     Async::PrintLn( "Message: " + buffer );
 
+    // Add new Player
+    if(!isClientRegistered(clientEndpoint)){
+        if(packetId != Packets::ClientPacket::clientHandshakeRequest)
+            return;
+        
+        clientHandshakeRequest(clientEndpoint, buffer);
+        updateLastResponse(clientEndpoint);
+        return;
+    }
+    
+
+    updateLastResponse(clientEndpoint);
     switch (packetId)
     {
+    /*case Packets::ClientPacket::clientHandshakeRequest:
+        clientHandshakeRequest(clientEndpoint, buffer);
+        break;*/
     case Packets::ClientPacket::clientResponseHeartbeat:
         clientRepondsHeartbeat(clientEndpoint, buffer);
         break;
@@ -32,6 +44,45 @@ void MessageHandler::handleBuffer(udp::endpoint &clientEndpoint, std::string buf
         Async::PrintLn("Unknown Paket...");
         break;
     }
+}
+
+bool MessageHandler::isClientRegistered(udp::endpoint &clientEndpoint){
+    std::string clientPortIp = getClientUniqueString(clientEndpoint);
+    auto it = clients->find(clientPortIp);
+    if (it)
+        return true;
+    return false;
+}
+
+void MessageHandler::clientHandshakeRequest(udp::endpoint &clientEndpoint, std::string &buffer)
+{
+    std::string username = PackagingSystem::ReadItem<std::string>(buffer);
+    if(!addNewClient(clientEndpoint, username)) {
+        return;
+    }
+
+    std::string clientPortIp = getClientUniqueString(clientEndpoint);
+    Async::PrintLn( clientPortIp + ", " +username+" Handshake Success");
+
+    PackagingSystem handshakePacket(Packets::ServerPacket::serverHandshakeAccept);
+    handshakePacket.addString("success");
+
+    std::string serializedPacket = handshakePacket.serializePacket();
+    sendMessage(clientEndpoint, serializedPacket);
+
+    // TODO: Continue Here to share the Name of the new Client to the other clients!!
+    PackagingSystem helloInfo(Packets::ServerPacket::serverNewClientConnected);
+    
+    helloInfo.addString(clientPortIp);
+    helloInfo.addString(username);
+    helloInfo.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
+    helloInfo.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
+    helloInfo.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
+    helloInfo.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
+    helloInfo.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
+    helloInfo.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
+
+    sendToAllExceptSender(clientEndpoint, helloInfo.serializePacket());
 }
 
 void MessageHandler::clientRepondsHeartbeat(udp::endpoint &clientEndpoint, std::string &buffer)
@@ -121,24 +172,28 @@ void MessageHandler::removeClient(udp::endpoint &clientEndpoint)
     updateConsoleTitle();
 }
 
-void MessageHandler::addNewClient(udp::endpoint &clientEndpoint)
+bool MessageHandler::addNewClient(udp::endpoint &clientEndpoint, std::string &username)
 {
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
+
+    if(clients->existsItem(clientPortIp))
+        return false;
 
     CommonStructures::ClientInfo clientInfo;
     clientInfo.endpoint = clientEndpoint;
     clientInfo.lastResponse = std::chrono::high_resolution_clock::now();
+    clientInfo.username = username;
 
     /*auto [it, inserted] = clients->try_emplace(clientPortIp, clientInfo);
     if (inserted)
         Async::PrintLn( "Added new Client: " + clientPortIp );*/
-    if(clients->existsItem(clientPortIp))
-        return;
+
 
     clients->append(clientPortIp, clientInfo);
     Async::PrintLn( "Added new Client: " + clientPortIp );
 
     updateConsoleTitle();
+    return true;
 }
 
 void MessageHandler::updateLastResponse(udp::endpoint &clientEndpoint)

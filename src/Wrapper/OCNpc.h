@@ -34,28 +34,40 @@ public:
     class Offset
     {
     public:
-        static constexpr uintptr_t POS_X = 0x48; // float
-        static constexpr uintptr_t POS_Z = 0x58; // float
-        static constexpr uintptr_t POS_Y = 0x68; // float
+        // float
+        static constexpr uintptr_t POS_X = 0x48; 
+        // float
+        static constexpr uintptr_t POS_Z = 0x58; 
+        // float
+        static constexpr uintptr_t POS_Y = 0x68;
 
-        static constexpr uintptr_t CURRENT_HEALTH = 0x184; // int
-        static constexpr uintptr_t MAX_HEALTH = 0x188;     // int
+        // int
+        static constexpr uintptr_t CURRENT_HEALTH = 0x184; 
+        // int
+        static constexpr uintptr_t MAX_HEALTH = 0x188;
 
-        static constexpr uintptr_t MAX_MANA = 0x190;     // int
-        static constexpr uintptr_t CURRENT_MANA = 0x18C; // int
+        // int
+        static constexpr uintptr_t MAX_MANA = 0x190;     
+        // int
+        static constexpr uintptr_t CURRENT_MANA = 0x18C; 
 
-        static constexpr uintptr_t STRENGTH = 0x194;  // int
-        static constexpr uintptr_t EXPERTISE = 0x198; // int
+        // int
+        static constexpr uintptr_t STRENGTH = 0x194;  
+        // int
+        static constexpr uintptr_t EXPERTISE = 0x198; 
 
-        static constexpr uintptr_t LEVEL = 0x1EC;                 // int
-        static constexpr uintptr_t EXPERIENCE_NEXT_LEVEL = 0x31C; // int
-        static constexpr uintptr_t CURRENT_EXPERIENCE = 0x320;    // int
+        // int
+        static constexpr uintptr_t LEVEL = 0x1EC; 
+        // int                
+        static constexpr uintptr_t EXPERIENCE_NEXT_LEVEL = 0x31C; 
+        // int
+        static constexpr uintptr_t CURRENT_EXPERIENCE = 0x320;    
     };
+    
     /**
      * @brief Creates a new NPC instance.
      * @return Pointer to the newly created NPC.
      */
-
     static OCNpc *CreateNewNpc();
     /**
      * @brief Creates an NPC instance from an existing memory address.
@@ -113,7 +125,9 @@ public:
 
     void addVobToWorld_CorrectParentDependencies();
 
-    zSTRING *getName(int value);
+
+    //zSTRING *getName(zSTRING * name);
+
     /*int applyOverlay(char * animName);
 
     void setBodyState(int param1);

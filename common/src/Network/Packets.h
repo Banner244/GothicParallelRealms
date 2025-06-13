@@ -3,13 +3,12 @@
 namespace Packets {
     enum ServerPacket {
         serverHandshakeAccept = 100,
+        serverNewClientConnected,
         serverRequestHeartbeat,
         serverDistributePosition,
         serverDistributeAnimations,
         serverRemoveClient
-    
-        //serverSendHeartbeatRequest = 200
-    
+
     };
     
     enum ClientPacket {
@@ -17,11 +16,6 @@ namespace Packets {
         clientResponseHeartbeat,
         clientSharePosition,
         clientShareAnimations
-        //clientSendHeartbeat = 200
+        
     };
 }
-
-
-/*namespace ServerPacket {
-
-}*/

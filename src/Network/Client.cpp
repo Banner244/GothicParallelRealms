@@ -1,7 +1,7 @@
 #include "Client.h"
 
-Client::Client(boost::asio::io_context &io_context, const std::string &host, const std::string &port, GameThreadWorker *gameThreadWorker)
-    : socket_(io_context), resolver_(io_context), server_endpoint_(*resolver_.resolve(udp::v4(), host, port).begin())
+Client::Client(boost::asio::io_context &io_context, const std::string &username, const std::string &host, const std::string &port, GameThreadWorker *gameThreadWorker)
+    : socket_(io_context), resolver_(io_context), username(username), server_endpoint_(*resolver_.resolve(udp::v4(), host, port).begin())
 {
     this->gameThreadWorker = gameThreadWorker;
 
@@ -67,6 +67,31 @@ void Client::start_receive()
             // Nächstes Paket empfangen
             start_receive();
         });
+}
+
+void Client::setConnected() {
+    this->connected = true;
+}
+
+const bool Client::isConnected() const {
+    return connected;
+}
+
+void Client::sendHandshakeRequest() {
+    PackagingSystem packetHandshake(Packets::ClientPacket::clientHandshakeRequest);
+    packetHandshake.addString(this->username);
+
+    DataStructures::LastPosition lasPos = mainPlayer->getLastPosition();
+    packetHandshake.addFloatPointNumber(lasPos.x + 90, 2);
+    packetHandshake.addFloatPointNumber(lasPos.z, 2);
+    packetHandshake.addFloatPointNumber(lasPos.y + 90, 2);
+
+    packetHandshake.addFloatPointNumber(lasPos.yaw, 2);
+    packetHandshake.addFloatPointNumber(lasPos.pitch, 2);
+    packetHandshake.addFloatPointNumber(lasPos.roll, 2);
+
+    std::string bufferStr = packetHandshake.serializePacket();
+    this->send_message(bufferStr);
 }
 
 void Client::sendPlayerPosition()

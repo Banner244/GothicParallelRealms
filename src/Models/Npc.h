@@ -19,6 +19,9 @@ class Npc
 
 		OCNpc *oCNpc;
 		
+		void setName(std::string name);
+		std::string getName();
+
 		void healPlayerBy(int HP);
 		void tpToOldCamp();
 		void superJump();

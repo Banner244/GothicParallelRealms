@@ -12,6 +12,8 @@
 #include "Logic/ImGuiManager.h"
 #include "Logic/sMain.h"
 #include "Network/DataChangeNotifier.h"
+#include "../common/src/IniManager.h"
+
 
 // Globals
 HINSTANCE dll_handle;
@@ -153,6 +155,15 @@ DWORD WINAPI MainThread()
 {
 	SetupConsole();
 
+	// ######### INI STUFF #########
+	if(!IniManager::CreateConfigIfMissing(IniManager::CLIENT_CONFIG_FILE))
+		return -1;
+		
+	std::string username = IniManager::GetItem(IniManager::CLIENT_CONFIG_FILE, IniManager::Item::GENERAL_USERNAME);
+	std::string serverIp = IniManager::GetItem(IniManager::CLIENT_CONFIG_FILE, IniManager::Item::GENERAL_SERVER_IP);
+	std::string serverPort = IniManager::GetItem(IniManager::CLIENT_CONFIG_FILE, IniManager::Item::GENERAL_SERVER_PORT);
+	// ###########################
+
 	std::cout << "Starting MAIN...\n"
 			  << std::endl;
 
@@ -182,7 +193,7 @@ DWORD WINAPI MainThread()
 
 	boost::asio::io_context io_context;
 	// create Client
-	Client client(io_context, "127.0.0.1", "12345", gameThreadWorker);
+	Client client(io_context, username, serverIp, serverPort, gameThreadWorker);
 	// mainloop for receiving messages
 	std::thread io_thread([&io_context]()
 						  { io_context.run(); });
@@ -194,7 +205,14 @@ DWORD WINAPI MainThread()
 		/*if (GetAsyncKeyState(VK_DOWN) < 0){
 			notifier.sendChanges();
 		}*/
-		notifier.sendChanges();
+		if(client.isConnected()){
+			notifier.sendChanges();
+		} else {
+			client.sendHandshakeRequest();
+			while(!client.isConnected()){
+				Sleep(100);
+			}
+		}
 
 		// give imGui players Information
 		imGuiData.clients = *gameThreadWorker->clients->getUnorderedMap();

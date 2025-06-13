@@ -4,12 +4,13 @@
 #include <unordered_map>
 #include <mutex>
 
-#include "../Network/Client.h"
 #include "../Models/Npc.h"
 #include "../Wrapper/zCModel.h"
+#include "../Network/Client.h"
 #include "../common/src/Network/Packets.h"
 #include "../common/src/Network/PackagingSystem.h"
 #include "../common/src/Async/AsyncUnorderedMap.h"
+#include "../common/src/Async/Async.h"
 
 class Client;
 /**
@@ -43,8 +44,11 @@ public:
 private:
     AsyncUnorderedMap<std::string, Npc *> *pClients; ///< Pointer to the map storing NPCs currently in the game.
     Client *pClient;                                 ///< Pointer to the Client instance for sending and receiving messages.
+    
+    //bool isClientRegistered(udp::endpoint &clientEndpoint);
 
     void handleServerHandshakeAccept(std::string &buffer);
+    void handleServerNewClientConnected(std::string &buffer);
     void handleServerRequestsHeartbeat(std::string &buffer);
     void handleServerDistributePosition(std::string &buffer);
     void handleServerDistributeAnimations(std::string &buffer);

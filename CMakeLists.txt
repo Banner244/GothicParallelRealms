@@ -72,6 +72,11 @@ set(IMGUI_SOURCES
     ${IMGUI_BACKENDS_DIR}/imgui_impl_win32.cpp
 )
 
+# inih
+set(INIH_SOURCES
+    ${CMAKE_SOURCE_DIR}/common/lib/inih/ini.c
+)
+
 # MinHook Quellen und Bibliotheken
 set(MINHOOK_LIB ${MINHOOK_DIR}/libMinHook.x86.lib)
 
@@ -91,7 +96,7 @@ set(MINHOOK_LIB ${MINHOOK_DIR}/libMinHook.x86.lib)
 #endif()
 
 # Bibliothek erstellen (DLL)
-add_library(MyDLL SHARED ${SOURCES} ${IMGUI_SOURCES})
+add_library(MyDLL SHARED ${SOURCES} ${IMGUI_SOURCES} ${INIH_SOURCES})
 
 # Include-Verzeichnisse hinzufügen
 target_include_directories(MyDLL PUBLIC

@@ -31,21 +31,26 @@ public:
      * @param port The server port number.
      * @param gameThreadWorker Pointer to the game thread worker for processing game-related tasks.
      */
-    Client(boost::asio::io_context &io_context, const std::string &host, const std::string &port, GameThreadWorker *gameThreadWorker);
+    Client(boost::asio::io_context &io_context, const std::string &username, const std::string &host, const std::string &port, GameThreadWorker *gameThreadWorker);
     ~Client();
 
     void send_message(const std::string &message);
 
+
+    void sendHandshakeRequest();
     void sendPlayerPosition();
     void sendPlayerAnimation();
     void sendPlayerRotation();
 
     Npc *getMainPlayer();
 
+    void setConnected();
+    const bool isConnected() const;
+
 private:
     GameThreadWorker *gameThreadWorker;
     Npc *mainPlayer = new Npc(ADDR_PLAYERBASE);
-
+    std::string username;
     udp::socket socket_;
     udp::resolver resolver_;
     udp::endpoint server_endpoint_;

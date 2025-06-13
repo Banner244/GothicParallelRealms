@@ -1,4 +1,5 @@
 #include "GameThreadWorker.h"
+#include <iomanip>
 
 GameThreadWorker::GameThreadWorker()
 {
@@ -38,10 +39,10 @@ void GameThreadWorker::processMessages()
         removeTask();
     }
 }
-//Npc *npc;
-//int *ii = new int;
+
+Npc *npc;
 void GameThreadWorker::checkGameState(){
-    // Checks if player is in range of an other player to render him
+    /* ## Checks if player is in range of an other player to render him ## */
     std::unordered_map<std::string, Npc*> copyOfClients = *clients->getUnorderedMap();
 
     for (const auto& pair : copyOfClients) {
@@ -55,9 +56,15 @@ void GameThreadWorker::checkGameState(){
     /* ################ Custom Shit Here################# */
     if (GetAsyncKeyState(VK_RSHIFT) < 0)
     {
-        std::cout << "# PRINTING "   << "\n";
-        zSTRING * str = new zSTRING("");
-        str = pMainPlayer->oCNpc->getName(0);
-        std::cout << "NAME: " << str->getStr() << "\n";
+        if(npc == nullptr) {
+            npc = new Npc();
+            npc->setCurrentHealth(10);
+            npc->setMaxHealth(10);
+            npc->oCNpc->setVisualWithString("HUMANS.MDS");
+            npc->oCNpc->setAdditionalVisuals("hum_body_Naked0", 9, 0, "Hum_Head_Pony", 2, 0, -1);
+
+            npc->oCNpc->enableWithdCoords(pMainPlayer->getX(), pMainPlayer->getZ(), pMainPlayer->getY());
+
+        }
     }
 }

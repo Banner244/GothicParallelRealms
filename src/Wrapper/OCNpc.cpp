@@ -29,7 +29,7 @@ void OCNpc::setVisualWithString(char *visual)
     using _SetVisualWithString = void(__thiscall *)(void *pThis, zSTRING *visual);
     _SetVisualWithString setVisualWithStringRef = reinterpret_cast<_SetVisualWithString>(0x5d6fa0);
 
-    zSTRING *visualString = new zSTRING(visual);
+    zSTRING *visualString = zSTRING::CreateNewzSTRING(visual); //new zSTRING(visual);
     setVisualWithStringRef(this, visualString);
 }
 
@@ -38,8 +38,8 @@ void OCNpc::setAdditionalVisuals(char *textureBody, int param2, int param3, char
     using _SetAdditionalVisuals = void(__thiscall *)(void *pThis, zSTRING *textureBody, int param2, int param3, zSTRING *textureHead, int param5, int param6, int param7);
     _SetAdditionalVisuals setAdditionalVisualsRef = reinterpret_cast<_SetAdditionalVisuals>(0x694ef0);
 
-    zSTRING *body = new zSTRING(textureBody); // "Sca_Body", hum_body_Naked0
-    zSTRING *head = new zSTRING(textureHead); // "",         Hum_Head_Pony
+    zSTRING *body = zSTRING::CreateNewzSTRING(textureBody); //new zSTRING(textureBody); // "Sca_Body", hum_body_Naked0
+    zSTRING *head = zSTRING::CreateNewzSTRING(textureHead); //new zSTRING(textureHead); // "",         Hum_Head_Pony
 
     setAdditionalVisualsRef(this, body, param2, param3, head, param5, param6, param7);
 }
@@ -49,7 +49,7 @@ void OCNpc::setVobName(char *vobName)
     using _SetVobName = void(__thiscall *)(void *pThis, zSTRING *vobName);
     _SetVobName setVobNameRef = reinterpret_cast<_SetVobName>(0x5d4970);
 
-    zSTRING *name = new zSTRING(vobName);
+    zSTRING *name = zSTRING::CreateNewzSTRING(vobName);// new zSTRING(vobName);
     setVobNameRef(this, name);
 }
 
@@ -58,7 +58,7 @@ void OCNpc::setByScriptInstance(char *nameS, int param2)
     using _SetByScriptInstance = int(__thiscall *)(void *pThis, zSTRING *visual, int param2);
     _SetByScriptInstance setByScriptInstanceRef = reinterpret_cast<_SetByScriptInstance>(0x6a1bf0);
 
-    zSTRING *name = new zSTRING(nameS);
+    zSTRING *name = zSTRING::CreateNewzSTRING(nameS);//new zSTRING(nameS);
     setByScriptInstanceRef(this, name, param2);
 }
 
@@ -171,12 +171,15 @@ void OCNpc::addVobToWorld_CorrectParentDependencies(){
     addVobToWorld_CorrectParentDependenciesRef(this);
 }
 
-zSTRING *OCNpc::getName(int value){
-    using _GetName = zSTRING *(__thiscall *)(void *pThis, int value);
-    _GetName getNameRef = reinterpret_cast<_GetName>(0x68d0b0);
-    return getNameRef(this, value);
+/*zSTRING *OCNpc::getName(zSTRING * name){
+    zSTRING * nS = zSTRING::CreateNewzSTRING("");
+    using _GetName = zSTRING* (__thiscall *)(void* pThis, zSTRING* name);
+    _GetName getNameRef = reinterpret_cast<_GetName>(0x68D0B0);
+    return getNameRef(this, nS);
 
-}
+    //zSTRING* namePtr = (zSTRING*)((char*)this + 0x108);
+    //return namePtr;
+}*/
 /*int OCNpc::applyOverlay(char *animName)
 {
     zSTRING *name = new zSTRING(animName);
