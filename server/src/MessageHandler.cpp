@@ -57,11 +57,33 @@ bool MessageHandler::isClientRegistered(udp::endpoint &clientEndpoint){
 void MessageHandler::clientHandshakeRequest(udp::endpoint &clientEndpoint, std::string &buffer)
 {
     std::string username = PackagingSystem::ReadItem<std::string>(buffer);
-    if(!addNewClient(clientEndpoint, username)) {
-        return;
-    }
 
+   // ###### ADD NEW CLIENT ######
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
+
+    if(clients->existsItem(clientPortIp))
+        return;
+
+    CommonStructures::ClientInfo clientInfo;
+    clientInfo.endpoint = clientEndpoint;
+    clientInfo.lastResponse = std::chrono::high_resolution_clock::now();
+    clientInfo.username = username;
+
+    clientInfo.position.posX = PackagingSystem::ReadItem<double>(buffer);
+    clientInfo.position.posZ = PackagingSystem::ReadItem<double>(buffer);
+    clientInfo.position.posY = PackagingSystem::ReadItem<double>(buffer);
+    clientInfo.rotation.yaw = PackagingSystem::ReadItem<double>(buffer);
+    clientInfo.rotation.pitch = PackagingSystem::ReadItem<double>(buffer);
+    clientInfo.rotation.roll = PackagingSystem::ReadItem<double>(buffer);
+
+    clients->append(clientPortIp, clientInfo);
+    Async::PrintLn( "Added new Client: " + clientPortIp );
+
+    updateConsoleTitle();
+
+    // ###################################
+
+    // ###### SEND CLIENT THAT CONNECTION IS ESTABLISHED ######
     Async::PrintLn( clientPortIp + ", " +username+" Handshake Success");
 
     PackagingSystem handshakePacket(Packets::ServerPacket::serverHandshakeAccept);
@@ -69,20 +91,48 @@ void MessageHandler::clientHandshakeRequest(udp::endpoint &clientEndpoint, std::
 
     std::string serializedPacket = handshakePacket.serializePacket();
     sendMessage(clientEndpoint, serializedPacket);
+    // ###################################
 
+    // ###### SEND CLIENT EVERYONE ELSE ######
     // TODO: Continue Here to share the Name of the new Client to the other clients!!
     PackagingSystem helloInfo(Packets::ServerPacket::serverNewClientConnected);
     
     helloInfo.addString(clientPortIp);
     helloInfo.addString(username);
-    helloInfo.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
-    helloInfo.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
-    helloInfo.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
-    helloInfo.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
-    helloInfo.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
-    helloInfo.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
+    helloInfo.addFloatPointNumber(clientInfo.position.posX, 2);
+    helloInfo.addFloatPointNumber(clientInfo.position.posZ, 2);
+    helloInfo.addFloatPointNumber(clientInfo.position.posY, 2);
+    helloInfo.addFloatPointNumber(clientInfo.rotation.yaw, 2);
+    helloInfo.addFloatPointNumber(clientInfo.rotation.pitch, 2);
+    helloInfo.addFloatPointNumber(clientInfo.rotation.roll, 2);
 
     sendToAllExceptSender(clientEndpoint, helloInfo.serializePacket());
+
+    // ###################################
+
+    // ###### SEND EVERYONE ELSE TO CLIENT ######
+    {
+        std::lock_guard<std::mutex> lock(clients->getMutex());
+        for (auto it = clients->getUnorderedMap()->begin(); it != clients->getUnorderedMap()->end(); ++it)
+        {
+            if(it->first == clientPortIp)
+                continue;
+
+            PackagingSystem playerInfo(Packets::ServerPacket::serverNewClientConnected);
+
+            playerInfo.addString(it->first);
+            playerInfo.addString(it->second.username);
+            playerInfo.addFloatPointNumber(it->second.position.posX, 2);
+            playerInfo.addFloatPointNumber(it->second.position.posZ, 2);
+            playerInfo.addFloatPointNumber(it->second.position.posY, 2);
+            playerInfo.addFloatPointNumber(it->second.rotation.yaw, 2);
+            playerInfo.addFloatPointNumber(it->second.rotation.pitch, 2);
+            playerInfo.addFloatPointNumber(it->second.rotation.roll, 2);
+
+            sendMessage(clientEndpoint, playerInfo.serializePacket());
+        }
+    }
+    // ###################################
 }
 
 void MessageHandler::clientRepondsHeartbeat(udp::endpoint &clientEndpoint, std::string &buffer)
@@ -95,14 +145,24 @@ void MessageHandler::clientSharesPosition(udp::endpoint &clientEndpoint, std::st
 {
     std::string clientPortIp = getClientUniqueString(clientEndpoint);
 
+    auto it = clients->find(clientPortIp);
+    if (!it)
+        return;
+    it->get().position.posX = PackagingSystem::ReadItem<double>(buffer);
+    it->get().position.posZ = PackagingSystem::ReadItem<double>(buffer);
+    it->get().position.posY = PackagingSystem::ReadItem<double>(buffer);
+    it->get().rotation.yaw = PackagingSystem::ReadItem<double>(buffer);
+    it->get().rotation.pitch = PackagingSystem::ReadItem<double>(buffer);
+    it->get().rotation.roll = PackagingSystem::ReadItem<double>(buffer);
+
     PackagingSystem positionPacket(Packets::ServerPacket::serverDistributePosition);
     positionPacket.addString(clientPortIp);
-    positionPacket.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
-    positionPacket.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
-    positionPacket.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
-    positionPacket.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
-    positionPacket.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
-    positionPacket.addFloatPointNumber(PackagingSystem::ReadItem<double>(buffer), 2);
+    positionPacket.addFloatPointNumber(it->get().position.posX, 2);
+    positionPacket.addFloatPointNumber(it->get().position.posZ, 2);
+    positionPacket.addFloatPointNumber(it->get().position.posY, 2);
+    positionPacket.addFloatPointNumber(it->get().rotation.yaw, 2);
+    positionPacket.addFloatPointNumber(it->get().rotation.pitch, 2);
+    positionPacket.addFloatPointNumber(it->get().rotation.roll, 2);
 
     std::string serializedPacket = positionPacket.serializePacket();
 
@@ -143,6 +203,8 @@ void MessageHandler::sendMessage(udp::endpoint &clientEndpoint, std::string buff
             }
         });
 }
+
+/// NEEDS A REWORK
 void MessageHandler::sendToAllExceptSender(udp::endpoint &senderEndpoint, std::string buffer)
 {
     std::lock_guard<std::mutex> lock(clients->getMutex());

@@ -49,6 +49,7 @@ void MessageHandler::handleServerHandshakeAccept(std::string &buffer)
         return;
     }
     Async::PrintLn("HANDSHAKE SUCCESS!!");
+
     this->pClient->setConnected();
 }
 

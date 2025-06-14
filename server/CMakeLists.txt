@@ -23,6 +23,11 @@ else()
     message(FATAL_ERROR "Boost konnte nicht gefunden werden")
 endif()
 
+# inih
+set(INIH_SOURCES
+    ${CMAKE_SOURCE_DIR}/../common/lib/inih/ini.c
+)
+
 # Automatisch alle .cpp-Dateien aus src/ einbinden
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
@@ -32,7 +37,7 @@ list(APPEND SOURCES ${COMMON_SOURCES})
 include_directories("../common/src/")
 
 # Füge das ausführbare Ziel hinzu
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES} ${INIH_SOURCES})
 
 # Boost einbinden
 target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
