@@ -1,17 +1,18 @@
 #include "OCNpc.h"
 
-struct OCObjectFactory
+/*struct OCObjectFactory
 {
     typedef void *(__thiscall *_CreateNPC)(void *pThis, int param);
     _CreateNPC createNpc;
 
     void *pThis = *(void **)0x82c114;
-} oCObjectFactory;
+} oCObjectFactory;*/
 
 OCNpc * OCNpc::CreateNewNpc() // STATIC 
 {
-    oCObjectFactory.createNpc = (OCObjectFactory::_CreateNPC)(0x6c8560);
-    OCNpc * npc = (OCNpc *)oCObjectFactory.createNpc(oCObjectFactory.pThis, -1);
+    /*oCObjectFactory.createNpc = (OCObjectFactory::_CreateNPC)(0x6c8560);
+    OCNpc * npc = (OCNpc *)oCObjectFactory.createNpc(oCObjectFactory.pThis, -1);*/
+    OCNpc * npc = oCObjectFactory::CreateNpc();
     std::cout << "Pointer of NPC: " << npc << "\n";
     return npc;
 }
@@ -171,11 +172,123 @@ void OCNpc::addVobToWorld_CorrectParentDependencies(){
     addVobToWorld_CorrectParentDependenciesRef(this);
 }
 
-/*zSTRING *OCNpc::getName(zSTRING * name){
+oCItem * OCNpc::getEquippedArmor() {
+    using _GetEquippedArmor = oCItem*(__thiscall *)(void *pThis);
+    _GetEquippedArmor getEquippedArmorRef = reinterpret_cast<_GetEquippedArmor>(0x6947a0);
+
+    return getEquippedArmorRef(this);
+}
+
+oCItem * OCNpc::getEquippedMeleeWeapon(){
+    using _GetEquippedMeleeWeapon = oCItem*(__thiscall *)(void *pThis);
+    _GetEquippedMeleeWeapon getEquippedMeleeWeaponRef = reinterpret_cast<_GetEquippedMeleeWeapon>(0x694580);
+
+    return getEquippedMeleeWeaponRef(this);
+}
+
+oCItem * OCNpc::getEquippedRangedWeapon(){
+    using _GetEquippedRangedWeapon = oCItem*(__thiscall *)(void *pThis);
+    _GetEquippedRangedWeapon getEquippedRangedWeaponRef = reinterpret_cast<_GetEquippedRangedWeapon>(0x694690);
+
+    return getEquippedRangedWeaponRef(this);
+}
+
+void OCNpc::equipArmor(oCItem * armor)
+{
+    using _EquipArmor = void(__thiscall *)(void *pThis, oCItem * armor);
+    _EquipArmor equipArmorRef = reinterpret_cast<_EquipArmor>(0x697080);
+    equipArmorRef(this, armor);
+}
+
+void OCNpc::equipItem(oCItem * item)
+{
+    using _EquipItem = void(__thiscall *)(void *pThis, oCItem * item);
+    _EquipItem equipItemRef = reinterpret_cast<_EquipItem>(0x68f940);
+    equipItemRef(this, item);
+}
+
+void OCNpc::equip(oCItem * item)
+{
+    using _Equip = void(__thiscall *)(void *pThis, oCItem * item);
+    _Equip equipRef = reinterpret_cast<_Equip>(0x6968f0);
+    equipRef(this, item);
+}
+
+void OCNpc::equipWeapon(oCItem * weapon)
+{
+    using _EquipItem = void(__thiscall *)(void *pThis, oCItem * item);
+    _EquipItem equipItemRef = reinterpret_cast<_EquipItem>(0x696c20);
+    equipItemRef(this, weapon);
+}
+
+void OCNpc::equipBestWeapon(int param1)
+{
+    using _EquipBestWeapon = void(__thiscall *)(void *pThis, int param1);
+    _EquipBestWeapon equipBestWeaponRef = reinterpret_cast<_EquipBestWeapon>(0x6aa220);
+    equipBestWeaponRef(this, param1);
+}
+
+void OCNpc::equipFarWeapon(oCItem * weapon)
+{
+    using _EquipItem = void(__thiscall *)(void *pThis, oCItem * item);
+    _EquipItem equipItemRef = reinterpret_cast<_EquipItem>(0x696f00);
+    equipItemRef(this, weapon);
+}
+
+void OCNpc::unequipItem(oCItem * item)
+{
+    using _UnequipItem = void(__thiscall *)(void *pThis, oCItem * item);
+    _UnequipItem unequipItemRef = reinterpret_cast<_UnequipItem>(0x68fbc0);
+    unequipItemRef(this, item);
+}
+
+
+oCItem * OCNpc::putInInv(oCItem * item)
+{
+    using _PutInInv = oCItem*(__thiscall *)(void *pThis, oCItem * item);
+    _PutInInv putInInvRef = reinterpret_cast<_PutInInv>(0x6a4ff0);
+
+    return putInInvRef(this, item);
+
+}
+
+int OCNpc::EV_DrawWeapon1(oCMsgWeapon * msgWeapon)
+{
+    using _EV_DrawWeapon1 = int(__thiscall *)(void *pThis, oCMsgWeapon * msgWeapon);
+    _EV_DrawWeapon1 EV_DrawWeapon1Ref = reinterpret_cast<_EV_DrawWeapon1>(0x6a8b80);
+
+    return EV_DrawWeapon1Ref(this, msgWeapon);
+}
+
+// returns the weapon in the fighting slot
+oCItem * OCNpc::getWeapon()
+{
+    using _GetWeapon = oCItem*(__thiscall *)(void *pThis);
+    _GetWeapon getWeaponRef = reinterpret_cast<_GetWeapon>(0x6943f0);
+
+    return getWeaponRef(this);
+}
+
+int OCNpc::useItem(oCItem * item)
+{
+    using _UseItem = int(__thiscall *)(void *pThis, oCItem * item);
+    _UseItem useItemRef = reinterpret_cast<_UseItem>(0x698810);
+
+    return useItemRef(this, item);
+}
+
+void OCNpc::setTalentValue(int talentIndex, int value)
+{
+    using _SetTalentValue = void(__thiscall *)(void *pThis, int talentIndex, int value);
+    _SetTalentValue setTalentValueRef = reinterpret_cast<_SetTalentValue>(0x68e370);
+    setTalentValueRef(this, talentIndex, value);
+}
+
+/*zSTRING *OCNpc::getName2(){
     zSTRING * nS = zSTRING::CreateNewzSTRING("");
-    using _GetName = zSTRING* (__thiscall *)(void* pThis, zSTRING* name);
+    using _GetName = zSTRING* (__thiscall *)(void* pThis);
     _GetName getNameRef = reinterpret_cast<_GetName>(0x68D0B0);
-    return getNameRef(this, nS);
+    return getNameRef(this);
 
     //zSTRING* namePtr = (zSTRING*)((char*)this + 0x108);
     //return namePtr;

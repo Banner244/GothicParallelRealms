@@ -47,5 +47,6 @@ private:
 
     DataStructures::LastPosition playerLastPos;
     DataStructures::LastAnimation playerLastAnim;
+    DataStructures::LastEquip playerLastEquip;
     DataStructures::LastRotation playerLastRotation;
 };

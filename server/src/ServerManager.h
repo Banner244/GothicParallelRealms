@@ -7,6 +7,8 @@
 #include "MessageHandler.h"
 #include "CommonStructures.h"
 
+#include "Monitoring/MonitoringClient.h"
+
 #include "../../common/src/Async/AsyncUnorderedMap.h"
 
 using boost::asio::ip::udp;
@@ -25,4 +27,6 @@ class ServerManager {
 
         MessageHandler *messageHandler;
         void start_receive();
+
+        std::unique_ptr<MonitoringClient> monitor;
 };

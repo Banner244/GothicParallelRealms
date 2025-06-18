@@ -12,7 +12,7 @@ private:
 
     static void Assign(zSTRING* str, char* text);
 public:
-    static zSTRING* CreateNewzSTRING(char* str);
+    static zSTRING* CreateNewzSTRING(const char* str);
     
     zSTRING& operator=(char* str) {
         Assign(this, str);

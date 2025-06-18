@@ -40,6 +40,7 @@ public:
     void sendHandshakeRequest();
     void sendPlayerPosition();
     void sendPlayerAnimation();
+    void sendPlayerEquip();
     void sendPlayerRotation();
 
     Npc *getMainPlayer();

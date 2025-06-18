@@ -40,6 +40,9 @@ void MessageHandler::handleBuffer(udp::endpoint &clientEndpoint, std::string buf
     case Packets::ClientPacket::clientShareAnimations:
         clientSharesAnimations(clientEndpoint, buffer);
         break;
+    case Packets::ClientPacket::clientShareEquip:
+        clientSharesEquip(clientEndpoint, buffer);
+        break;
     default:
         Async::PrintLn("Unknown Paket...");
         break;
@@ -76,6 +79,10 @@ void MessageHandler::clientHandshakeRequest(udp::endpoint &clientEndpoint, std::
     clientInfo.rotation.pitch = PackagingSystem::ReadItem<double>(buffer);
     clientInfo.rotation.roll = PackagingSystem::ReadItem<double>(buffer);
 
+    clientInfo.equip.meleeWeaponInstanceName = PackagingSystem::ReadItem<std::string>(buffer);
+    clientInfo.equip.rangedWeaponInstanceName = PackagingSystem::ReadItem<std::string>(buffer);
+    clientInfo.equip.armorInstanceName = PackagingSystem::ReadItem<std::string>(buffer);
+
     clients->append(clientPortIp, clientInfo);
     Async::PrintLn( "Added new Client: " + clientPortIp );
 
@@ -105,6 +112,9 @@ void MessageHandler::clientHandshakeRequest(udp::endpoint &clientEndpoint, std::
     helloInfo.addFloatPointNumber(clientInfo.rotation.yaw, 2);
     helloInfo.addFloatPointNumber(clientInfo.rotation.pitch, 2);
     helloInfo.addFloatPointNumber(clientInfo.rotation.roll, 2);
+    helloInfo.addString(clientInfo.equip.meleeWeaponInstanceName);
+    helloInfo.addString(clientInfo.equip.rangedWeaponInstanceName);
+    helloInfo.addString(clientInfo.equip.armorInstanceName);
 
     sendToAllExceptSender(clientEndpoint, helloInfo.serializePacket());
 
@@ -128,6 +138,9 @@ void MessageHandler::clientHandshakeRequest(udp::endpoint &clientEndpoint, std::
             playerInfo.addFloatPointNumber(it->second.rotation.yaw, 2);
             playerInfo.addFloatPointNumber(it->second.rotation.pitch, 2);
             playerInfo.addFloatPointNumber(it->second.rotation.roll, 2);
+            playerInfo.addString(it->second.equip.meleeWeaponInstanceName);
+            playerInfo.addString(it->second.equip.rangedWeaponInstanceName);
+            playerInfo.addString(it->second.equip.armorInstanceName);
 
             sendMessage(clientEndpoint, playerInfo.serializePacket());
         }
@@ -185,6 +198,29 @@ void MessageHandler::clientSharesAnimations(udp::endpoint &clientEndpoint, std::
 
     sendToAllExceptSender(clientEndpoint, animationPacket.serializePacket());
 }
+
+void MessageHandler::clientSharesEquip(udp::endpoint &clientEndpoint, std::string &buffer)
+{
+    auto safeBuffer = std::make_shared<std::string>(buffer);
+    std::string clientPortIp = getClientUniqueString(clientEndpoint);
+
+    auto it = clients->find(clientPortIp);
+    if (!it)
+        return;
+
+    it->get().equip.meleeWeaponInstanceName = PackagingSystem::ReadItem<std::string>(buffer);
+    it->get().equip.rangedWeaponInstanceName = PackagingSystem::ReadItem<std::string>(buffer);
+    it->get().equip.armorInstanceName = PackagingSystem::ReadItem<std::string>(buffer);
+
+    PackagingSystem equipPacket(Packets::ServerPacket::serverDistributeEquip);
+    equipPacket.addString(clientPortIp);
+    equipPacket.addString(it->get().equip.meleeWeaponInstanceName);
+    equipPacket.addString(it->get().equip.rangedWeaponInstanceName);
+    equipPacket.addString(it->get().equip.armorInstanceName);
+
+    sendToAllExceptSender(clientEndpoint, equipPacket.serializePacket());
+}
+
 
 void MessageHandler::sendMessage(udp::endpoint &clientEndpoint, std::string buffer)
 {

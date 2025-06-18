@@ -5,7 +5,11 @@
 #include "ZVec3.h"
 #include "zSTRING.h"
 #include "zMAT4.h"
+#include "oCObjectFactory.h"
+#include "oCItem.h"
+#include "oCMsgWeapon.h"
 
+class oCItem;
 /**
  * @brief Base memory address for the main player's NPC instance.
  *
@@ -54,7 +58,7 @@ public:
         // int
         static constexpr uintptr_t STRENGTH = 0x194;  
         // int
-        static constexpr uintptr_t EXPERTISE = 0x198; 
+        static constexpr uintptr_t DEXTERITY = 0x198; 
 
         // int
         static constexpr uintptr_t LEVEL = 0x1EC; 
@@ -125,8 +129,29 @@ public:
 
     void addVobToWorld_CorrectParentDependencies();
 
+    oCItem * getEquippedArmor();
+    oCItem * getEquippedMeleeWeapon();
+    oCItem * getEquippedRangedWeapon();
 
-    //zSTRING *getName(zSTRING * name);
+    void equipArmor(oCItem * armor);
+    void equipItem(oCItem * item);
+    void equipWeapon(oCItem * weapon); 
+    void equipFarWeapon(oCItem * weapon); 
+    void equip(oCItem * item);
+    void equipBestWeapon(int param1);
+
+    void unequipItem(oCItem * item);
+
+    oCItem * putInInv(oCItem * item);
+
+    int EV_DrawWeapon1(oCMsgWeapon * msgWeapon);
+
+    oCItem * getWeapon();
+
+    int useItem(oCItem * item);
+
+    void setTalentValue(int talentIndex, int value);
+    //zSTRING *getName2();
 
     /*int applyOverlay(char * animName);
 

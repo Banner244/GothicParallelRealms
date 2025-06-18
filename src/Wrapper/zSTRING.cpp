@@ -1,11 +1,13 @@
 #include "zSTRING.h"
 
-zSTRING* zSTRING::CreateNewzSTRING(char * str){ // STATIC
+zSTRING* zSTRING::CreateNewzSTRING(const char * str){ // STATIC
     void* raw = ::operator new(sizeof(zSTRING));
 
     using _CTor = zSTRING*(__thiscall *)(void *pThis, char * text);
     _CTor ctor = reinterpret_cast<_CTor>(0x004013A0);
-     ctor(raw, str);
+
+    char * nameNotConst = _strdup(str);
+    ctor(raw, nameNotConst);
 
     //return u;
     return reinterpret_cast<zSTRING*>(raw);

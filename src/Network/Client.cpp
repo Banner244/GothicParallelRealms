@@ -90,6 +90,11 @@ void Client::sendHandshakeRequest() {
     packetHandshake.addFloatPointNumber(lasPos.pitch, 2);
     packetHandshake.addFloatPointNumber(lasPos.roll, 2);
 
+    DataStructures::LastEquip lastEquip =  mainPlayer->getLastEquip();
+    packetHandshake.addString(lastEquip.meleeWeaponInstanceName);
+    packetHandshake.addString(lastEquip.rangedWeaponInstanceName);
+    packetHandshake.addString(lastEquip.armorInstanceName);
+
     std::string bufferStr = packetHandshake.serializePacket();
     this->send_message(bufferStr);
 }
@@ -124,6 +129,20 @@ void Client::sendPlayerAnimation()
     }
 
     std::string bufferStr = packetAnim.serializePacket();
+    this->send_message(bufferStr);
+}
+
+void Client::sendPlayerEquip()
+{
+    DataStructures::LastEquip lastEquip =  mainPlayer->getLastEquip();
+
+    PackagingSystem packetEquip(Packets::ClientPacket::clientShareEquip);
+    
+    packetEquip.addString(lastEquip.meleeWeaponInstanceName);
+    packetEquip.addString(lastEquip.rangedWeaponInstanceName);
+    packetEquip.addString(lastEquip.armorInstanceName);
+
+    std::string bufferStr = packetEquip.serializePacket();
     this->send_message(bufferStr);
 }
 

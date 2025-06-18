@@ -9,6 +9,9 @@ ServerManager::ServerManager(boost::asio::io_context &io_context, boost::asio::i
     messageHandler = new MessageHandler(clients, socket);
 
     start_receive();
+
+    
+    monitor = std::make_unique<MonitoringClient>(&clients);
 }
 
 void ServerManager::start_receive()

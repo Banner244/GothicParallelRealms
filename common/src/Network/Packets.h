@@ -7,6 +7,7 @@ namespace Packets {
         serverRequestHeartbeat,
         serverDistributePosition,
         serverDistributeAnimations,
+        serverDistributeEquip,
         serverRemoveClient
 
     };
@@ -15,7 +16,8 @@ namespace Packets {
         clientHandshakeRequest = 100,
         clientResponseHeartbeat,
         clientSharePosition,
-        clientShareAnimations
+        clientShareAnimations,
+        clientShareEquip
         
     };
 }

@@ -4,6 +4,12 @@
 using boost::asio::ip::udp;
 
 namespace CommonStructures {
+    struct PlayerEquipment {
+        std::string meleeWeaponInstanceName;
+        std::string rangedWeaponInstanceName;
+        std::string armorInstanceName;
+    };
+
     struct PlayerPosition {
         float posX;
         float posZ;
@@ -14,7 +20,6 @@ namespace CommonStructures {
         float yaw;
         float pitch;
         float roll;
-
     };
 
     struct ClientInfo {
@@ -24,5 +29,6 @@ namespace CommonStructures {
 
         PlayerPosition position;
         PlayerRotaion rotation;
+        PlayerEquipment equip;
     };
 }

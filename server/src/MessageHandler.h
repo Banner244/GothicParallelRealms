@@ -34,7 +34,7 @@ private:
     void clientRepondsHeartbeat(udp::endpoint &clientEndpoint, std::string &buffer);
     void clientSharesPosition(udp::endpoint &clientEndpoint, std::string &buffer);
     void clientSharesAnimations(udp::endpoint &clientEndpoint, std::string &buffer);
-
+    void clientSharesEquip(udp::endpoint &clientEndpoint, std::string &buffer);
     
     bool isClientRegistered(udp::endpoint &clientEndpoint);
 
