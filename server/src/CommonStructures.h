@@ -4,6 +4,17 @@
 using boost::asio::ip::udp;
 
 namespace CommonStructures {
+
+    struct Ini {
+        std::string serverIp = "127.0.0.1";
+        int serverPort = 12345;
+
+        bool monitoringActive = false;
+        std::string monitoringIp = "127.0.0.1";
+        int monitoringPort = 18080;
+    };
+
+
     struct PlayerEquipment {
         std::string meleeWeaponInstanceName;
         std::string rangedWeaponInstanceName;

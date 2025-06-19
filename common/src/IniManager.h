@@ -15,11 +15,6 @@
 class IniManager {
     public:    
         /**
-         * @brief Default filename for the client configuration file.
-         */
-        static constexpr char * CLIENT_CONFIG_FILE = "gpr_config.ini";   
-
-        /**
          * @brief Retrieves a specific configuration item from an INI file.
          * 
          * @param file Path to the INI file.
@@ -27,25 +22,6 @@ class IniManager {
          * @return The corresponding value as a string, or an empty string if not found.
          */
         static std::string GetItem(const char * file, std::string item);
-
-        /**
-         * @brief Creates a default Config if it is missing. 
-         * @return Returns a false if Config could not be created.
-         */
-        static bool CreateConfigIfMissing(const std::string& path);
-
-        /**
-         * @class Item
-         * @brief Contains predefined keys for accessing configuration values.
-         */
-        class Item
-        {
-            public:
-                static constexpr char * GENERAL_USERNAME = "General.username"; 
-                static constexpr char * GENERAL_SERVER_IP = "General.server_ip"; 
-                static constexpr char * GENERAL_SERVER_PORT = "General.server_port"; 
-        };
-        
     private:    
         /**
          * @brief Internal handler used as a callback for the INIH parser.
@@ -57,11 +33,4 @@ class IniManager {
          * @return 1 on success, 0 on failure.
          */
         static int handler(void* user, const char* section, const char* name, const char* value);
-        
-        /**
-         * @brief Writes a default configuration to the specified file if it does not already exist.
-         * 
-         * @param path Path to the configuration file.
-         */
-        static void writeConfig(const std::string& path);
 };

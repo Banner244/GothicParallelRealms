@@ -1,17 +1,33 @@
 #include "ServerManager.h"
 #include <queue>
+#include <boost/asio/ip/address.hpp>
+#include "IniData.h"
 
-ServerManager::ServerManager(boost::asio::io_context &io_context, boost::asio::io_context &processing_context) : socket(io_context, udp::endpoint(udp::v4(), 12345)){
+#include <boost/asio/ip/address.hpp>
+using boost::asio::ip::address;
+
+ServerManager::ServerManager(boost::asio::io_context &io_context, boost::asio::io_context &processing_context, CommonStructures::Ini config) 
+    : configData(config), socket(io_context, udp::endpoint(boost::asio::ip::make_address(config.serverIp), config.serverPort)) {
 
     this->processing_context = &processing_context;
-    std::cout << "UDP-Server started on Port 12345..." << std::endl;
+    std::cout << "UDP-Server started on "<< configData.serverIp << ":" << std::to_string(configData.serverPort) << "..." << std::endl;
     serverRunning = true;
     messageHandler = new MessageHandler(clients, socket);
 
     start_receive();
 
-    
-    monitor = std::make_unique<MonitoringClient>(&clients);
+    // Task with Heartbeat
+    boost::asio::post(io_context, [this]() {
+        watchingHeartbeat();
+    });
+
+    // If activated then sending server status to rest-server
+    if(configData.monitoringActive) {
+        boost::asio::post(io_context, [&]() {
+            std::cout << "Monitoring Client connected to " << configData.monitoringIp << ":"  << std::to_string(configData.monitoringPort) <<"..."<< std::endl;
+            monitor = std::make_unique<MonitoringClient>(configData.monitoringIp, configData.monitoringPort, &clients, serverRunning);
+        });
+    }
 }
 
 void ServerManager::start_receive()

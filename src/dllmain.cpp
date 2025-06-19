@@ -13,7 +13,7 @@
 #include "Logic/sMain.h"
 #include "Network/DataChangeNotifier.h"
 #include "../common/src/IniManager.h"
-
+#include "Models/IniData.h"
 
 // Globals
 HINSTANCE dll_handle;
@@ -156,12 +156,12 @@ DWORD WINAPI MainThread()
 	SetupConsole();
 
 	// ######### INI STUFF #########
-	if(!IniManager::CreateConfigIfMissing(IniManager::CLIENT_CONFIG_FILE))
+	if(!IniData::CreateConfigIfMissing(IniData::CLIENT_CONFIG_FILE))
 		return -1;
 		
-	std::string username = IniManager::GetItem(IniManager::CLIENT_CONFIG_FILE, IniManager::Item::GENERAL_USERNAME);
-	std::string serverIp = IniManager::GetItem(IniManager::CLIENT_CONFIG_FILE, IniManager::Item::GENERAL_SERVER_IP);
-	std::string serverPort = IniManager::GetItem(IniManager::CLIENT_CONFIG_FILE, IniManager::Item::GENERAL_SERVER_PORT);
+	std::string username = IniManager::GetItem(IniData::CLIENT_CONFIG_FILE, IniData::Item::GENERAL_USERNAME);
+	std::string serverIp = IniManager::GetItem(IniData::CLIENT_CONFIG_FILE, IniData::Item::GENERAL_SERVER_IP);
+	std::string serverPort = IniManager::GetItem(IniData::CLIENT_CONFIG_FILE, IniData::Item::GENERAL_SERVER_PORT);
 	// ###########################
 
 	std::cout << "Starting MAIN...\n"

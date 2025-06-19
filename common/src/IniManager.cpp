@@ -20,25 +20,3 @@ int IniManager::handler(void *user, const char *section, const char *name, const
     (*config)[key] = value;
     return 1;
 }
-
-bool IniManager::CreateConfigIfMissing(const std::string& path) // STATIC
-{
-    writeConfig(path);
-
-    if (std::filesystem::exists(path))
-        return true;
-    
-    return false;
-}
-
-void IniManager::writeConfig(const std::string& path) // STATIC
-{
-    if (std::filesystem::exists(path))
-        return;
-    
-    std::ofstream out(path);
-    out << "[General]\n";
-    out << "username = Player1\n";
-    out << "server_ip = 127.0.0.1\n";
-    out << "server_port = 12345\n";
-}
