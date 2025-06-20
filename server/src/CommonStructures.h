@@ -5,10 +5,41 @@ using boost::asio::ip::udp;
 
 namespace CommonStructures {
 
-    struct ClientInfo {
-        udp::endpoint endpoint;
-        //std::time_t lastResponse;
-        std::chrono::steady_clock::time_point lastResponse;
+    struct Ini {
+        std::string serverIp = "127.0.0.1";
+        int serverPort = 12345;
+
+        bool monitoringActive = false;
+        std::string monitoringIp = "127.0.0.1";
+        int monitoringPort = 18080;
     };
 
+
+    struct PlayerEquipment {
+        std::string meleeWeaponInstanceName;
+        std::string rangedWeaponInstanceName;
+        std::string armorInstanceName;
+    };
+
+    struct PlayerPosition {
+        float posX;
+        float posZ;
+        float posY;
+    };
+
+    struct PlayerRotaion {
+        float yaw;
+        float pitch;
+        float roll;
+    };
+
+    struct ClientInfo {
+        udp::endpoint endpoint;
+        std::chrono::steady_clock::time_point lastResponse;
+        std::string username;
+
+        PlayerPosition position;
+        PlayerRotaion rotation;
+        PlayerEquipment equip;
+    };
 }

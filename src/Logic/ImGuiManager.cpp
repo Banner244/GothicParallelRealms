@@ -42,7 +42,7 @@ void ImGuiManager::showContent(ImGuiData imGuiData)
             std::string posZ = std::to_string(valueNpc->getZ());
             std::string posY = std::to_string(valueNpc->getY());
 
-            ImGui::Text(valueKey.c_str());
+            ImGui::Text(valueNpc->getName().c_str());
             ImGui::Text(("\t" + posX).c_str());
             ImGui::Text(("\t" + posZ).c_str());
             ImGui::Text(("\t" + posY).c_str());

@@ -19,6 +19,9 @@ class Npc
 
 		OCNpc *oCNpc;
 		
+		void setName(std::string name);
+		std::string getName();
+
 		void healPlayerBy(int HP);
 		void tpToOldCamp();
 		void superJump();
@@ -54,5 +57,6 @@ class Npc
 
 		DataStructures::LastPosition getLastPosition();
 		DataStructures::LastAnimation getLastAnimation();
+		DataStructures::LastEquip getLastEquip();
 		DataStructures::LastRotation getLastRotation();
 };
