@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../IniData.h"
+
 #include "../CommonStructures.h"
 #include "../../../common/src/Async/AsyncUnorderedMap.h"
 #include "../../../common/lib/cpp-httplib/httplib.h"
@@ -9,13 +11,11 @@
 class MonitoringClient {
 
     public:
-        MonitoringClient(std::string ip, int port, AsyncUnorderedMap<std::string, CommonStructures::ClientInfo> *clients, bool &serverRunning);
-        MonitoringClient();
+        MonitoringClient(IniData::Ini config, AsyncUnorderedMap<std::string, CommonStructures::ClientInfo> *clients, bool &serverRunning);
         void startingMonitoringClient();
     private:
         AsyncUnorderedMap<std::string, CommonStructures::ClientInfo> *pClients;
         bool *pServerRunning;
         
-        std::string ip = "127.0.0.1";
-        int port = 18080;
+        IniData::Ini configData;
 };

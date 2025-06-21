@@ -25,7 +25,7 @@ OCNpc * OCNpc::CreateFromPointer(void* address) // STATIC
     return reinterpret_cast<OCNpc*>(address);
 }
 
-void OCNpc::setVisualWithString(char *visual)
+void OCNpc::setVisualWithString(const char *visual)
 {
     using _SetVisualWithString = void(__thiscall *)(void *pThis, zSTRING *visual);
     _SetVisualWithString setVisualWithStringRef = reinterpret_cast<_SetVisualWithString>(0x5d6fa0);
@@ -34,7 +34,7 @@ void OCNpc::setVisualWithString(char *visual)
     setVisualWithStringRef(this, visualString);
 }
 
-void OCNpc::setAdditionalVisuals(char *textureBody, int param2, int param3, char *textureHead, int param5, int param6, int param7)
+void OCNpc::setAdditionalVisuals(const char *textureBody, int param2, int param3, const char *textureHead, int param5, int param6, int param7)
 {
     using _SetAdditionalVisuals = void(__thiscall *)(void *pThis, zSTRING *textureBody, int param2, int param3, zSTRING *textureHead, int param5, int param6, int param7);
     _SetAdditionalVisuals setAdditionalVisualsRef = reinterpret_cast<_SetAdditionalVisuals>(0x694ef0);
@@ -45,7 +45,7 @@ void OCNpc::setAdditionalVisuals(char *textureBody, int param2, int param3, char
     setAdditionalVisualsRef(this, body, param2, param3, head, param5, param6, param7);
 }
 
-void OCNpc::setVobName(char *vobName)
+void OCNpc::setVobName(const char *vobName)
 {
     using _SetVobName = void(__thiscall *)(void *pThis, zSTRING *vobName);
     _SetVobName setVobNameRef = reinterpret_cast<_SetVobName>(0x5d4970);
@@ -54,7 +54,7 @@ void OCNpc::setVobName(char *vobName)
     setVobNameRef(this, name);
 }
 
-void OCNpc::setByScriptInstance(char *nameS, int param2)
+void OCNpc::setByScriptInstance(const char *nameS, int param2)
 {
     using _SetByScriptInstance = int(__thiscall *)(void *pThis, zSTRING *visual, int param2);
     _SetByScriptInstance setByScriptInstanceRef = reinterpret_cast<_SetByScriptInstance>(0x6a1bf0);

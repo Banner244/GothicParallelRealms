@@ -22,23 +22,14 @@ std::string ascii = R"(
 )";
 
 
-CommonStructures::Ini getConfigData() {
-    CommonStructures::Ini ret;
+IniData::Ini getConfigData() {
+    IniData::Ini ret;
     // #### LOADIN INI ####
-    IniManager manager;
     if(!IniData::CreateConfigIfMissing(IniData::CONFIG_FILE))
         return ret;
-    else 
-        std::cout << "-- Config loaded --" << "\n";
 
-    ret.serverIp = manager.GetItem(IniData::CONFIG_FILE, IniData::Item::GENERAL_SERVER_IP);
-    ret.serverPort = std::stoi(manager.GetItem(IniData::CONFIG_FILE, IniData::Item::GENERAL_SERVER_PORT));
-
-    std::string active = manager.GetItem(IniData::CONFIG_FILE, IniData::Item::MONITORING_ACTIVE);
-    if(active == "true")
-        ret.monitoringActive = true;
-    ret.monitoringIp = manager.GetItem(IniData::CONFIG_FILE, IniData::Item::MONITORING_IP);
-    ret.monitoringPort = std::stoi(manager.GetItem(IniData::CONFIG_FILE, IniData::Item::MONITORING_PORT));
+    ret = IniData::LoadIni();
+    std::cout << "-- Config loaded --" << "\n";
 
     return ret;
 }
@@ -48,7 +39,7 @@ int main()
     std::cout << ascii << "\n\n";
     try
     {
-        CommonStructures::Ini configData = getConfigData();
+        IniData::Ini configData = getConfigData();
 
         boost::asio::io_context io_context;
         boost::asio::io_context processing_context;

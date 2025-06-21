@@ -159,9 +159,8 @@ DWORD WINAPI MainThread()
 	if(!IniData::CreateConfigIfMissing(IniData::CLIENT_CONFIG_FILE))
 		return -1;
 		
-	std::string username = IniManager::GetItem(IniData::CLIENT_CONFIG_FILE, IniData::Item::GENERAL_USERNAME);
-	std::string serverIp = IniManager::GetItem(IniData::CLIENT_CONFIG_FILE, IniData::Item::GENERAL_SERVER_IP);
-	std::string serverPort = IniManager::GetItem(IniData::CLIENT_CONFIG_FILE, IniData::Item::GENERAL_SERVER_PORT);
+	IniData::Ini config = IniData::LoadIni();
+
 	// ###########################
 
 	std::cout << "Starting MAIN...\n"
@@ -186,21 +185,21 @@ DWORD WINAPI MainThread()
 	Sleep(200);
 	// ################## START ############################
 	std::cout << "Press RControl to connect...\n";
-	while (!GetAsyncKeyState(VK_RCONTROL) & 1)
+	while (!(GetAsyncKeyState(VK_RCONTROL) & 1))
 	{
 		Sleep(100);
 	}
 
 	boost::asio::io_context io_context;
 	// create Client
-	Client client(io_context, username, serverIp, serverPort, gameThreadWorker);
+	Client client(io_context, config.username, config.serverIp, config.serverPort, gameThreadWorker);
 	// mainloop for receiving messages
 	std::thread io_thread([&io_context]()
 						  { io_context.run(); });
 
 	
 	DataChangeNotifier notifier(&client);
-	while (!GetAsyncKeyState(VK_END) & 1)
+	while (!(GetAsyncKeyState(VK_END) & 1))
 	{
 		/*if (GetAsyncKeyState(VK_DOWN) < 0){
 			notifier.sendChanges();

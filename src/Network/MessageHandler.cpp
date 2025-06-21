@@ -158,7 +158,7 @@ void MessageHandler::handleServerDistributeAnimations(std::string &buffer)
     Npc *value = it.value();
     DataStructures::LastAnimation npcLastAnim = value->getLastAnimation();
     DataStructures::LastAnimation npcNewAnim;
-    zCModel *npcModel = new zCModel(value->oCNpc->getModel());
+    std::unique_ptr<zCModel> npcModel = std::make_unique<zCModel>(value->oCNpc->getModel());
 
     int animCount = PackagingSystem::ReadItem<int>(buffer);
     npcNewAnim.animationCount = animCount;

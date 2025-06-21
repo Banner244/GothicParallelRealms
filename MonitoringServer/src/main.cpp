@@ -1,14 +1,10 @@
 #include <iostream>
 #include <mutex>
 
-#include "../../common/src/IniManager.h"
-
 #include "IniData.h"
 
 #include "crow.h"
 //#include "crow_all.h"
-
-class IniManager;
 
 std::string ascii = R"(
   ____  _____ ____ _____   __  __             _ _             
@@ -20,10 +16,7 @@ std::string ascii = R"(
 
 std::mutex mtx_serverData;
 
-struct Ini {
-    std::string serverIp = "127.0.0.1";
-    int serverPort = 18080;
-} config;
+IniData::Ini config;
 
 struct GothicServerData {
     std::string status = "offline";
@@ -31,7 +24,7 @@ struct GothicServerData {
 
 } serverData;
 
-Ini getConfigData();
+IniData::Ini getConfigData();
 
 
 /*This RestAPI receives every 5 Seconds a Message from the GothicServer, if there is no answer for more than 7 Seconds,
@@ -40,7 +33,7 @@ this RestAPI-Sever answers with an Offline-Status.
 int main()
 {
     std::cout << ascii << "\n\n";
-    Ini configData = getConfigData();
+    config = getConfigData();
 
     crow::SimpleApp app; //define your crow application
 
@@ -67,6 +60,10 @@ int main()
 
     // PUT /status
     CROW_ROUTE(app, "/status").methods("PUT"_method)([&lastResponse](const crow::request& req) {
+        if (req.get_header_value("X-Auth-Token") != config.secret){
+            return crow::response(403, "Forbidden");
+        }
+        
         auto body = crow::json::load(req.body);
         if (!body || !body.has("status")) {
             return crow::response(400, "Missing 'status' field");
@@ -79,19 +76,17 @@ int main()
         return crow::response(200, "Updated");
     });
 
-    app.port(18080).multithreaded().run();
+    app.bindaddr(config.serverIp).port(config.serverPort).multithreaded().run();
 }
 
-Ini getConfigData() {
-    Ini ret;
+IniData::Ini getConfigData() {
+    IniData::Ini ret;
+
     // #### LOADIN INI ####
-    IniManager manager;
     if(!IniData::CreateConfigIfMissing(IniData::CONFIG_FILE))
         return ret;
-    else 
-        std::cout << "-- Config loaded --" << "\n";
 
-    ret.serverIp = manager.GetItem(IniData::CONFIG_FILE, IniData::Item::GENERAL_SERVER_IP);
-    ret.serverPort = std::stoi(manager.GetItem(IniData::CONFIG_FILE, IniData::Item::GENERAL_SERVER_PORT));
+    ret = IniData::LoadIni();
+    std::cout << "-- Config loaded --" << "\n";
     return ret;
 }

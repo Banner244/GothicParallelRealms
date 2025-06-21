@@ -6,10 +6,15 @@
 
 class IniData {
     public:
+        struct Ini {
+            std::string username = "Player";
+            std::string serverIp = "127.0.0.1";
+            std::string serverPort = "12345";
+        };
         /**
          * @brief Default filename for the client configuration file.
          */
-        static constexpr char * CLIENT_CONFIG_FILE = "gpr_config.ini";   
+        static constexpr const char * CLIENT_CONFIG_FILE = "gpr_config.ini";   
 
         /**
          * @class Item
@@ -18,10 +23,19 @@ class IniData {
         class Item
         {
             public:
-                static constexpr char * GENERAL_USERNAME = "General.username"; 
-                static constexpr char * GENERAL_SERVER_IP = "General.server_ip"; 
-                static constexpr char * GENERAL_SERVER_PORT = "General.server_port"; 
+                static constexpr const char * GENERAL_USERNAME = "General.username"; 
+                static constexpr const char * GENERAL_SERVER_IP = "General.server_ip"; 
+                static constexpr const char * GENERAL_SERVER_PORT = "General.server_port"; 
         };
+
+        static Ini LoadIni()
+        {
+            Ini retIni;
+            retIni.username = IniManager::GetItem(CLIENT_CONFIG_FILE, Item::GENERAL_USERNAME);
+            retIni.serverIp = IniManager::GetItem(CLIENT_CONFIG_FILE, Item::GENERAL_SERVER_IP);
+            retIni.serverPort = IniManager::GetItem(CLIENT_CONFIG_FILE, Item::GENERAL_SERVER_PORT);
+            return retIni;
+        }
 
         static bool CreateConfigIfMissing(const std::string& path) // STATIC
         {
@@ -39,11 +53,12 @@ class IniData {
             if (std::filesystem::exists(path))
                 return;
             
+            Ini tempIni;
             std::ofstream out(path);
             out << "[General]\n";
-            out << "username = Player\n";
-            out << "server_ip = 127.0.0.1\n";
-            out << "server_port = 12345\n";
+            out << "username = " << tempIni.username << "\n";
+            out << "server_ip = " << tempIni.serverIp << "\n";
+            out << "server_port = " << tempIni.serverPort << "\n\n";
         }
 
 };

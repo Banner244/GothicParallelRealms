@@ -92,13 +92,13 @@ public:
         return *reinterpret_cast<T *>(reinterpret_cast<uintptr_t>(this) + offset);
     }
 
-    void setVisualWithString(char *visual);
+    void setVisualWithString(const char *visual);
 
-    void setAdditionalVisuals(char *textureBody, int param2, int param3, char *textureHead, int param5, int param6, int param7);
+    void setAdditionalVisuals(const char *textureBody, int param2, int param3, const char *textureHead, int param5, int param6, int param7);
 
-    void setVobName(char *vobName);
+    void setVobName(const char *vobName);
 
-    void setByScriptInstance(char *name, int param2);
+    void setByScriptInstance(const char *name, int param2);
 
     void enable(ZVec3 *pos);
 

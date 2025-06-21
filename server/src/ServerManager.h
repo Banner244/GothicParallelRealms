@@ -8,6 +8,7 @@
 #include "CommonStructures.h"
 
 #include "Monitoring/MonitoringClient.h"
+#include "IniData.h"
 
 #include "../../common/src/Async/AsyncUnorderedMap.h"
 #include "../../common/src/IniManager.h"
@@ -16,7 +17,7 @@ using boost::asio::ip::udp;
 class ServerManager {
 
     public:
-        ServerManager(boost::asio::io_context &io_context, boost::asio::io_context &processing_context, CommonStructures::Ini configData);
+        ServerManager(boost::asio::io_context &io_context, boost::asio::io_context &processing_context, IniData::Ini configData);
         void watchingHeartbeat();
     private:
         udp::socket socket;
@@ -28,7 +29,7 @@ class ServerManager {
         MessageHandler *messageHandler;
         void start_receive();
 
-        CommonStructures::Ini configData;
+        IniData::Ini configData;
         std::unique_ptr<MonitoringClient> monitor;
 
 };
