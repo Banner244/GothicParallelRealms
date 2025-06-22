@@ -21,6 +21,12 @@ void DataChangeNotifier::initListValues() {
         }
     });
 
+    playerState.push_back( [this]() { 
+        DataStructures::LastEquip retLastEquip = pMainPlayer->getLastEquip();
+        if(!playerLastEquip.isSame(retLastEquip)) {
+            pClient->sendPlayerEquip();
+        }
+    });
     /*playerState.push_back( [this]() { 
         DataStructures::LastRotation retLastRot = pMainPlayer->getLastRotation();
         if(!playerLastRotation.isSame(retLastRot)) {

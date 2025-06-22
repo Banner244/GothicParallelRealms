@@ -13,6 +13,8 @@
 #include "../Network/Client.h"
 #include "../Network/MessageHandler.h"
 
+#include "../common/src/Async/AsyncUnorderedMap.h"
+
 class Client;
 class Npc;
 class MessageHandler;
@@ -42,8 +44,7 @@ class GameThreadWorker {
         /**
          * @brief Pointer to a map containing active NPC clients, indexed by their IP/Port combination.
         */
-        std::unordered_map<std::string, Npc*> *clients;
-
+        AsyncUnorderedMap<std::string, Npc*> *clients;
 
         ~GameThreadWorker();
 

@@ -4,11 +4,13 @@
 #include <unordered_map>
 #include <mutex>
 
-#include "../Network/Client.h"
 #include "../Models/Npc.h"
 #include "../Wrapper/zCModel.h"
-#include "../../server/src/Packets.h"
-#include "../../server/src/PackagingSystem.h"
+#include "../Network/Client.h"
+#include "../common/src/Network/Packets.h"
+#include "../common/src/Network/PackagingSystem.h"
+#include "../common/src/Async/AsyncUnorderedMap.h"
+#include "../common/src/Async/Async.h"
 
 class Client;
 /**
@@ -25,7 +27,7 @@ public:
      * @brief Constructs a MessageHandler instance.
      * @param pClients Pointer to a map storing connected NPCs, indexed by their unique identifier.
      */
-    MessageHandler(std::unordered_map<std::string, Npc *> *pClients);
+    MessageHandler(AsyncUnorderedMap<std::string, Npc *> *pClients);
     /**
      * @brief Processes an incoming packet string.
      * @param stringPacket The raw packet data received from the server.
@@ -40,14 +42,17 @@ public:
     void setClient(Client &client);
 
 private:
-    std::unordered_map<std::string, Npc *> *pClients; ///< Pointer to the map storing NPCs currently in the game.
+    AsyncUnorderedMap<std::string, Npc *> *pClients; ///< Pointer to the map storing NPCs currently in the game.
     Client *pClient;                                 ///< Pointer to the Client instance for sending and receiving messages.
-    std::mutex clientsMutex;                         ///< Mutex for thread-safe access to the clients map.
+    
+    //bool isClientRegistered(udp::endpoint &clientEndpoint);
 
     void handleServerHandshakeAccept(std::string &buffer);
+    void handleServerNewClientConnected(std::string &buffer);
     void handleServerRequestsHeartbeat(std::string &buffer);
     void handleServerDistributePosition(std::string &buffer);
     void handleServerDistributeAnimations(std::string &buffer);
+    void handleServerDistributeEquip(std::string &buffer);
     void handleServerDistributeRotations(std::string &buffer);
     void handleServerRemoveClient(std::string &buffer);
 };

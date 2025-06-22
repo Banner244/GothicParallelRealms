@@ -52,6 +52,22 @@ namespace DataStructures {
         }
     };
 
+    struct LastEquip {
+        std::string meleeWeaponInstanceName = "";
+        std::string rangedWeaponInstanceName = "";
+        std::string armorInstanceName = "";
+
+        bool isSame(LastEquip lastEquip) {
+            if(lastEquip.meleeWeaponInstanceName == meleeWeaponInstanceName && lastEquip.rangedWeaponInstanceName == rangedWeaponInstanceName && lastEquip.armorInstanceName == armorInstanceName)
+                return true;
+            
+            meleeWeaponInstanceName = lastEquip.meleeWeaponInstanceName;
+            rangedWeaponInstanceName = lastEquip.rangedWeaponInstanceName;
+            armorInstanceName = lastEquip.armorInstanceName;
+            return false;
+        }
+    };
+
     struct LastRotation {
         float yaw = 0;
         float pitch = 0;

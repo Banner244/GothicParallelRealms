@@ -5,7 +5,11 @@
 #include "ZVec3.h"
 #include "zSTRING.h"
 #include "zMAT4.h"
+#include "oCObjectFactory.h"
+#include "oCItem.h"
+#include "oCMsgWeapon.h"
 
+class oCItem;
 /**
  * @brief Base memory address for the main player's NPC instance.
  *
@@ -34,28 +38,40 @@ public:
     class Offset
     {
     public:
-        static constexpr uintptr_t POS_X = 0x48; // float
-        static constexpr uintptr_t POS_Z = 0x58; // float
-        static constexpr uintptr_t POS_Y = 0x68; // float
+        // float
+        static constexpr uintptr_t POS_X = 0x48; 
+        // float
+        static constexpr uintptr_t POS_Z = 0x58; 
+        // float
+        static constexpr uintptr_t POS_Y = 0x68;
 
-        static constexpr uintptr_t CURRENT_HEALTH = 0x184; // int
-        static constexpr uintptr_t MAX_HEALTH = 0x188;     // int
+        // int
+        static constexpr uintptr_t CURRENT_HEALTH = 0x184; 
+        // int
+        static constexpr uintptr_t MAX_HEALTH = 0x188;
 
-        static constexpr uintptr_t MAX_MANA = 0x190;     // int
-        static constexpr uintptr_t CURRENT_MANA = 0x18C; // int
+        // int
+        static constexpr uintptr_t MAX_MANA = 0x190;     
+        // int
+        static constexpr uintptr_t CURRENT_MANA = 0x18C; 
 
-        static constexpr uintptr_t STRENGTH = 0x194;  // int
-        static constexpr uintptr_t EXPERTISE = 0x198; // int
+        // int
+        static constexpr uintptr_t STRENGTH = 0x194;  
+        // int
+        static constexpr uintptr_t DEXTERITY = 0x198; 
 
-        static constexpr uintptr_t LEVEL = 0x1EC;                 // int
-        static constexpr uintptr_t EXPERIENCE_NEXT_LEVEL = 0x31C; // int
-        static constexpr uintptr_t CURRENT_EXPERIENCE = 0x320;    // int
+        // int
+        static constexpr uintptr_t LEVEL = 0x1EC; 
+        // int                
+        static constexpr uintptr_t EXPERIENCE_NEXT_LEVEL = 0x31C; 
+        // int
+        static constexpr uintptr_t CURRENT_EXPERIENCE = 0x320;    
     };
+    
     /**
      * @brief Creates a new NPC instance.
      * @return Pointer to the newly created NPC.
      */
-
     static OCNpc *CreateNewNpc();
     /**
      * @brief Creates an NPC instance from an existing memory address.
@@ -76,13 +92,13 @@ public:
         return *reinterpret_cast<T *>(reinterpret_cast<uintptr_t>(this) + offset);
     }
 
-    void setVisualWithString(char *visual);
+    void setVisualWithString(const char *visual);
 
-    void setAdditionalVisuals(char *textureBody, int param2, int param3, char *textureHead, int param5, int param6, int param7);
+    void setAdditionalVisuals(const char *textureBody, int param2, int param3, const char *textureHead, int param5, int param6, int param7);
 
-    void setVobName(char *vobName);
+    void setVobName(const char *vobName);
 
-    void setByScriptInstance(char *name, int param2);
+    void setByScriptInstance(const char *name, int param2);
 
     void enable(ZVec3 *pos);
 
@@ -112,6 +128,30 @@ public:
     zSTRING *getSectorNameVobIsIn();
 
     void addVobToWorld_CorrectParentDependencies();
+
+    oCItem * getEquippedArmor();
+    oCItem * getEquippedMeleeWeapon();
+    oCItem * getEquippedRangedWeapon();
+
+    void equipArmor(oCItem * armor);
+    void equipItem(oCItem * item);
+    void equipWeapon(oCItem * weapon); 
+    void equipFarWeapon(oCItem * weapon); 
+    void equip(oCItem * item);
+    void equipBestWeapon(int param1);
+
+    void unequipItem(oCItem * item);
+
+    oCItem * putInInv(oCItem * item);
+
+    int EV_DrawWeapon1(oCMsgWeapon * msgWeapon);
+
+    oCItem * getWeapon();
+
+    int useItem(oCItem * item);
+
+    void setTalentValue(int talentIndex, int value);
+    //zSTRING *getName2();
 
     /*int applyOverlay(char * animName);
 

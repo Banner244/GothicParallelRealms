@@ -1,14 +1,31 @@
 #include "ServerManager.h"
 #include <queue>
+#include <boost/asio/ip/address.hpp>
 
-ServerManager::ServerManager(boost::asio::io_context &io_context, boost::asio::io_context &processing_context) : socket(io_context, udp::endpoint(udp::v4(), 12345)){
+using boost::asio::ip::address;
+
+ServerManager::ServerManager(boost::asio::io_context &io_context, boost::asio::io_context &processing_context, IniData::Ini config) 
+    : configData(config), socket(io_context, udp::endpoint(boost::asio::ip::make_address(config.serverIp), config.serverPort)) {
 
     this->processing_context = &processing_context;
-    std::cout << "UDP-Server started on Port 12345..." << std::endl;
+    std::cout << "UDP-Server started on "<< configData.serverIp << ":" << std::to_string(configData.serverPort) << "..." << std::endl;
     serverRunning = true;
     messageHandler = new MessageHandler(clients, socket);
 
     start_receive();
+
+    // Task with Heartbeat
+    boost::asio::post(io_context, [this]() {
+        watchingHeartbeat();
+    });
+
+    // If activated then sending server status to rest-server
+    if(configData.monitoringActive) {
+        boost::asio::post(io_context, [&]() {
+            std::cout << "Monitoring Client connected to " << configData.monitoringIp << ":"  << std::to_string(configData.monitoringPort) <<"..."<< std::endl;
+            monitor = std::make_unique<MonitoringClient>(configData, &clients, serverRunning);
+        });
+    }
 }
 
 void ServerManager::start_receive()
@@ -22,7 +39,7 @@ void ServerManager::start_receive()
         {
             if (!error)
             {
-                std::cout << "Received something: " << bytes_received << " bytes\n";
+                Async::PrintLn( "Received something: " + std::to_string(bytes_received) + " bytes");
 
                 boost::asio::post(*processing_context, [this, buffer, sender_endpoint, bytes_received]() {
                     std::string receivedPackage(buffer->data(), bytes_received);
@@ -30,15 +47,16 @@ void ServerManager::start_receive()
                     messageHandler->handleBuffer(*sender_endpoint, receivedPackage);
                 });
 
-                // Starte den nächsten Empfang mit einem neuen Buffer!
+                // repeat receiving
                 start_receive();
             }
             else
             {
-                std::cerr << "\nError receiving: " << error.message() << "\n";
+                Async::PrintLn( "\nError receiving: " + error.message());
+                //std::cerr << "\nError receiving: " << error.message() << "\n";
                 messageHandler->removeClient(*sender_endpoint);
 
-                // Starte erneut den Empfang
+                // repeat receiving
                 start_receive();
             }
         });
@@ -48,8 +66,8 @@ void ServerManager::watchingHeartbeat() {
     while(serverRunning) {
         std::queue<udp::endpoint> endpointsToRemove;
         {
-            std::lock_guard<std::mutex> lock(messageHandler->clients_mutex);
-            for (auto it = clients.begin(); it != clients.end(); ++it)
+            std::lock_guard<std::mutex> lock(clients.getMutex());
+            for (auto it = clients.getUnorderedMap()->begin(); it != clients.getUnorderedMap()->end(); ++it)
             {
                 auto currentTime = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double, std::milli> elapsed = currentTime - it->second.lastResponse;
@@ -59,8 +77,8 @@ void ServerManager::watchingHeartbeat() {
                     endpointsToRemove.push(it->second.endpoint);
                     //messageHandler->removeClient(it->second.endpoint);
                 } else if( durrationInSec >= 5) {
-                    std::cout << "Elapsed Time: " << durrationInSec << " seconds" << std::endl;
-
+                    //std::cout << "Elapsed Time: " << durrationInSec << " seconds" << std::endl;
+                    Async::PrintLn( "Elapsed Time: " + std::to_string(durrationInSec) + " seconds");
                     // Sending every 5 Seconds a Heartbeat request
                     if(durrationInSec % 5 == 0){
                         PackagingSystem heartbeatRequest(Packets::ServerPacket::serverRequestHeartbeat);

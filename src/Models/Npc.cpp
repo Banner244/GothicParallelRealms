@@ -42,6 +42,17 @@ void Npc::setPlayerPosition(float x, float y, float z)
 	setZ(z);
 }
 
+void Npc::setName(std::string name)
+{
+	basic_string * n =  (basic_string*)((char*)this->oCNpc + 0x108);//(basic_string*)((char*)this->oCNpc + 0x108);
+	*n = name.c_str();
+}
+std::string Npc::getName()
+{
+	basic_string * n =  (basic_string*)((char*)this->oCNpc + 0x108);
+	return n->c_str();
+}
+
 void Npc::tpToOldCamp()
 {
 	// this->setPlayerPosition(-8334.085f, 11636.9f, -1185.910f);
@@ -141,7 +152,7 @@ int Npc::getExpertise()
 	if (!isPlayerLoaded())
 		return 0;
 
-	return oCNpc->callVariable<int>(OCNpc::Offset::EXPERTISE);
+	return oCNpc->callVariable<int>(OCNpc::Offset::DEXTERITY);
 }
 
 float Npc::getX()
@@ -241,6 +252,27 @@ DataStructures::LastAnimation Npc::getLastAnimation() {
 	}
 
 	return retLastAnim;
+}
+
+DataStructures::LastEquip Npc::getLastEquip() {
+	DataStructures::LastEquip retLastEquip;
+
+	if(oCNpc->getEquippedMeleeWeapon())
+		retLastEquip.meleeWeaponInstanceName = oCNpc->getEquippedMeleeWeapon()->getInstanceName()->stdString();
+	else 
+		retLastEquip.meleeWeaponInstanceName = "";
+	
+	if(oCNpc->getEquippedRangedWeapon())
+		retLastEquip.rangedWeaponInstanceName = oCNpc->getEquippedRangedWeapon()->getInstanceName()->stdString();
+	else 
+		retLastEquip.rangedWeaponInstanceName = "";
+
+	if(oCNpc->getEquippedArmor())
+		retLastEquip.armorInstanceName = oCNpc->getEquippedArmor()->getInstanceName()->stdString();
+	else 
+		retLastEquip.armorInstanceName = "";
+	
+	return retLastEquip;
 }
 
 DataStructures::LastRotation Npc::getLastRotation(){
