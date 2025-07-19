@@ -74,10 +74,12 @@ int PackagingSystem::VerifyPacket(std::string &packet){ // STATIC PRIVATE
 
     std::string size = "";
 
-    while(packet.at(0) != '|') {
+    while(packet.at(0) != '|' && !packet.empty()) {
         size += packet.at(0);
         packet.erase(packet.begin());
     }
+    if(packet.size() == 0)
+        return -1;
     packet.erase(packet.begin());
 
     int sizeOfPacket = std::stoi(size);
@@ -95,11 +97,12 @@ T PackagingSystem::ReadItem(std::string &packet) { // STATIC
     std::string item = "";
     std::string itemSizeStr = "";
 
-    while(packet.at(0) != '|') {
+    while(packet.at(0) != '|' && !packet.empty()) {
         itemSizeStr += packet.at(0);
         packet.erase(packet.begin());
     }
-
+    if(packet.empty())
+        return 0;
     packet.erase(packet.begin());
 
     int itemSize = std::stoi(itemSizeStr);

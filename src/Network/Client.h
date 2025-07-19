@@ -5,8 +5,8 @@
 #include <memory>
 #include <functional>
 
-#include "../common/src/Network/PackagingSystem.h"
-#include "../common/src/Network/Packets.h"
+#include "../../common/src/Network/PackagingSystem.h"
+#include "../../common/src/Network/Packets.h"
 
 #include "../Logic/GameThreadWorker.h"
 #include "../Models/Npc.h"
@@ -31,7 +31,7 @@ public:
      * @param port The server port number.
      * @param gameThreadWorker Pointer to the game thread worker for processing game-related tasks.
      */
-    Client(boost::asio::io_context &io_context, const std::string &username, const std::string &host, const std::string &port, GameThreadWorker *gameThreadWorker);
+    Client(boost::asio::io_context &io_context, const std::string &username, const std::string &host, const std::string &port, GameThreadWorker *& gameThreadWorker);
     ~Client();
 
     void send_message(const std::string &message);
@@ -49,7 +49,7 @@ public:
     const bool isConnected() const;
 
 private:
-    GameThreadWorker *gameThreadWorker;
+    GameThreadWorker *pGameThreadWorker;
     Npc *mainPlayer = new Npc(ADDR_PLAYERBASE);
     std::string username;
     udp::socket socket_;

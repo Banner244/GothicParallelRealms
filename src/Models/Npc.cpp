@@ -231,7 +231,7 @@ DataStructures::LastPosition Npc::getLastPosition() {
 	return retLastPos;
 }
 
-DataStructures::LastAnimation Npc::getLastAnimation() {
+DataStructures::LastAnimation Npc::getLastAnimation() {// TODO: Improve this shit
 	DataStructures::LastAnimation retLastAnim;
 	zCModel *npcModel = new zCModel(oCNpc->getModel());
 

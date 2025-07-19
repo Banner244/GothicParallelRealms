@@ -48,7 +48,7 @@ endif()
 
 
 # MinHook Pfad relativ zum CMake-Projektverzeichnis
-set(MINHOOK_DIR ${CMAKE_SOURCE_DIR}/MinHook)
+set(MINHOOK_DIR ${CMAKE_SOURCE_DIR}/common/lib/MinHook)
 
 # Suche alle .cpp-Dateien im aktuellen Verzeichnis
 file(GLOB_RECURSE SOURCES "src/*.cpp")
@@ -59,7 +59,7 @@ include_directories("common/src/")
 
 
 # Dear ImGui Quellen und Header definieren
-set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/imgui)
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/common/lib/imgui)
 set(IMGUI_BACKENDS_DIR ${IMGUI_DIR}/backends)
 
 set(IMGUI_SOURCES

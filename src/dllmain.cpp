@@ -10,10 +10,11 @@
 #include "Logic/GameThreadWorker.h"
 #include "Models/ImGuiData.h"
 #include "Logic/ImGuiManager.h"
-#include "Logic/sMain.h"
 #include "Network/DataChangeNotifier.h"
 #include "../common/src/IniManager.h"
 #include "Models/IniData.h"
+
+#include "Logic/Playground.h"
 
 // Globals
 HINSTANCE dll_handle;
@@ -76,9 +77,9 @@ LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 ImGuiData imGuiData;
 ImGuiManager *guiManager;
-sMain *mainLoop = new sMain();
-GameThreadWorker *gameThreadWorker = new GameThreadWorker();
 
+GameThreadWorker *gameThreadWorker = nullptr;//new GameThreadWorker();
+Playground playground;
 bool visibleGui = true;
 
 bool init = false;
@@ -112,11 +113,16 @@ HRESULT __stdcall detour_present(IDXGISwapChain *p_swap_chain, UINT sync_interva
 			return p_present(p_swap_chain, sync_interval, flags);
 	}
 
-	// Handling Tasks from Server 
-	gameThreadWorker->processMessages();
-	
-	// Handling Game things, like Rendering of NPCs
-	gameThreadWorker->checkGameState();
+	if(gameThreadWorker) {
+		// Handling Tasks from Server 
+		gameThreadWorker->processMessages();
+		
+		// Handling Game things, like Rendering of NPCs
+		gameThreadWorker->checkGameState();
+	}
+
+	playground.doThing();
+
 
 	guiManager->startOfMainLoop();
 	guiManager->showContent(imGuiData);
@@ -214,7 +220,8 @@ DWORD WINAPI MainThread()
 		}
 
 		// give imGui players Information
-		imGuiData.clients = *gameThreadWorker->clients->getUnorderedMap();
+		if(gameThreadWorker)
+			imGuiData.clients = *gameThreadWorker->clients.getUnorderedMap();
 		Sleep(80);
 	}
 	io_thread.join();

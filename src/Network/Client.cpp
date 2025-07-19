@@ -1,19 +1,20 @@
 #include "Client.h"
 
-Client::Client(boost::asio::io_context &io_context, const std::string &username, const std::string &host, const std::string &port, GameThreadWorker *gameThreadWorker)
+Client::Client(boost::asio::io_context &io_context, const std::string &username, const std::string &host, const std::string &port, GameThreadWorker *& gameThreadWorker)
     : socket_(io_context), resolver_(io_context), username(username), server_endpoint_(*resolver_.resolve(udp::v4(), host, port).begin())
 {
-    this->gameThreadWorker = gameThreadWorker;
+
+    gameThreadWorker = new GameThreadWorker(*this);
+    this->pGameThreadWorker = gameThreadWorker;
 
     socket_.open(udp::v4());
     start_receive();
-    gameThreadWorker->setClientForHandler(*this);
 }
 
 Client::~Client()
 {
     delete mainPlayer;
-    delete gameThreadWorker;
+    delete pGameThreadWorker;
 }
 
 Npc * Client::getMainPlayer(){
@@ -58,7 +59,7 @@ void Client::start_receive()
                 std::fill(recv_buffer_.begin(), recv_buffer_.end(), 0);
 
                 // Paket verarbeiten
-                this->gameThreadWorker->addTask(receivedPackage);
+                this->pGameThreadWorker->addTask(receivedPackage);
             }
             else
             {

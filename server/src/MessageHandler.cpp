@@ -9,6 +9,7 @@ MessageHandler::MessageHandler(AsyncUnorderedMap<std::string, CommonStructures::
 void MessageHandler::handleBuffer(udp::endpoint &clientEndpoint, std::string buffer)
 {
     int id = PackagingSystem::ReadPacketId(buffer);
+    if(id == -1) return; // Error, received something wrong
     Packets::ClientPacket packetId = static_cast<Packets::ClientPacket>(id);
 
     Async::PrintLn( "ID: " + std::to_string(id) );
@@ -101,7 +102,6 @@ void MessageHandler::clientHandshakeRequest(udp::endpoint &clientEndpoint, std::
     // ###################################
 
     // ###### SEND CLIENT EVERYONE ELSE ######
-    // TODO: Continue Here to share the Name of the new Client to the other clients!!
     PackagingSystem helloInfo(Packets::ServerPacket::serverNewClientConnected);
     
     helloInfo.addString(clientPortIp);

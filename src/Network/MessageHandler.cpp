@@ -1,11 +1,8 @@
 #include "MessageHandler.h"
 
-MessageHandler::MessageHandler(AsyncUnorderedMap<std::string, Npc *> *pClients) : pClients(pClients)
+MessageHandler::MessageHandler(AsyncUnorderedMap<std::string, Npc *> *pClients, Client &client) : pClients(pClients), pClient(&client)
 {
-}
-void MessageHandler::setClient(Client &client)
-{
-    this->pClient = &client;
+
 }
 
 void MessageHandler::managePacket(std::string stringPacket)
@@ -189,6 +186,9 @@ void MessageHandler::handleServerDistributeAnimations(std::string &buffer)
                 npcModel->stopAnimationInt(lastId);
         }
     }
+
+    // Handy for ClientGameMapping and DataChangeNotifier Class
+    value->networkState.animation = npcNewAnim;
 }
 
 void MessageHandler::handleServerDistributeEquip(std::string &buffer)

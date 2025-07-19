@@ -55,6 +55,13 @@ class Npc
 
 		void setInterpolatePosition(float x, float z, float y);
 
+		struct NetworkState {
+			DataStructures::LastPosition position;
+			DataStructures::LastAnimation animation;
+			DataStructures::LastEquip equip;
+			DataStructures::LastRotation rotation;
+		} networkState;
+
 		DataStructures::LastPosition getLastPosition();
 		DataStructures::LastAnimation getLastAnimation();
 		DataStructures::LastEquip getLastEquip();
