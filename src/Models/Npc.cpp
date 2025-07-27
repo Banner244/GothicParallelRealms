@@ -239,7 +239,7 @@ DataStructures::LastAnimation Npc::getLastAnimation() {// TODO: Improve this shi
 	retLastAnim.animationCount = animCount;
 	
 	for(int i = 0; i < animCount; i++) {
-		uintptr_t addr = reinterpret_cast<uintptr_t>(npcModel->getAddress())+ 0x38 + (i * 4) ;
+		uintptr_t addr = reinterpret_cast<uintptr_t>(npcModel->getAddress())+ 0x38 + (i * 4) ; // 0x38 = zCModelAniActive
 		void * pp = reinterpret_cast<void*> (addr);
 
 		uintptr_t addr2 = *reinterpret_cast<uintptr_t*>(pp);

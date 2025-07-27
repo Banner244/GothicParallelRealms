@@ -2,6 +2,8 @@
 #include <unordered_map>
 #include <mutex>
 #include <optional>
+#include <functional>
+
 
 template<typename T1, typename T2>
 class AsyncUnorderedMap {
@@ -25,6 +27,11 @@ class AsyncUnorderedMap {
             return false;
         }
 
+        void accessMap (std::function<void(std::unordered_map<T1, T2>&)> userFunction) {
+            std::lock_guard<std::mutex> lock(this->mtxMap);
+            userFunction(map);
+        }
+
         std::optional<std::reference_wrapper<T2>> find(const T1& key) {
             auto it = map.find(key);
             if(it != map.end()) 
@@ -36,10 +43,10 @@ class AsyncUnorderedMap {
         std::unordered_map<T1, T2> *getUnorderedMap() {
             return &this->map;
         }
-
+/*
         std::mutex &getMutex()  {
             return mtxMap;
-        }
+        }*/
         /*T at();
         int size();*/
 

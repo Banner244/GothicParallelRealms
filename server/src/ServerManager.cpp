@@ -53,7 +53,6 @@ void ServerManager::start_receive()
             else
             {
                 Async::PrintLn( "\nError receiving: " + error.message());
-                //std::cerr << "\nError receiving: " << error.message() << "\n";
                 messageHandler->removeClient(*sender_endpoint);
 
                 // repeat receiving
@@ -65,19 +64,16 @@ void ServerManager::start_receive()
 void ServerManager::watchingHeartbeat() {
     while(serverRunning) {
         std::queue<udp::endpoint> endpointsToRemove;
-        {
-            std::lock_guard<std::mutex> lock(clients.getMutex());
-            for (auto it = clients.getUnorderedMap()->begin(); it != clients.getUnorderedMap()->end(); ++it)
+        clients.accessMap([&](auto &map) {
+            for (auto it = map.begin(); it != map.end(); ++it)
             {
                 auto currentTime = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double, std::milli> elapsed = currentTime - it->second.lastResponse;
                 int durrationInSec = static_cast<int>(elapsed.count()/1000);
 
-                if(durrationInSec >= 10/*25*/) {
+                if(durrationInSec >= 10) {
                     endpointsToRemove.push(it->second.endpoint);
-                    //messageHandler->removeClient(it->second.endpoint);
                 } else if( durrationInSec >= 5) {
-                    //std::cout << "Elapsed Time: " << durrationInSec << " seconds" << std::endl;
                     Async::PrintLn( "Elapsed Time: " + std::to_string(durrationInSec) + " seconds");
                     // Sending every 5 Seconds a Heartbeat request
                     if(durrationInSec % 5 == 0){
@@ -86,8 +82,7 @@ void ServerManager::watchingHeartbeat() {
                     }   
                 }
             }
-        }
-
+        });
         while (!endpointsToRemove.empty()) {
             udp::endpoint endpoint = endpointsToRemove.front(); 
             endpointsToRemove.pop(); 

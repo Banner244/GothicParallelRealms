@@ -121,9 +121,8 @@ void MessageHandler::clientHandshakeRequest(udp::endpoint &clientEndpoint, std::
     // ###################################
 
     // ###### SEND EVERYONE ELSE TO CLIENT ######
-    {
-        std::lock_guard<std::mutex> lock(clients->getMutex());
-        for (auto it = clients->getUnorderedMap()->begin(); it != clients->getUnorderedMap()->end(); ++it)
+    clients->accessMap([&](auto &map) {
+        for (auto it = map.begin(); it != map.end(); ++it)
         {
             if(it->first == clientPortIp)
                 continue;
@@ -144,7 +143,7 @@ void MessageHandler::clientHandshakeRequest(udp::endpoint &clientEndpoint, std::
 
             sendMessage(clientEndpoint, playerInfo.serializePacket());
         }
-    }
+    });
     // ###################################
 }
 
@@ -243,12 +242,13 @@ void MessageHandler::sendMessage(udp::endpoint &clientEndpoint, std::string buff
 /// NEEDS A REWORK
 void MessageHandler::sendToAllExceptSender(udp::endpoint &senderEndpoint, std::string buffer)
 {
-    std::lock_guard<std::mutex> lock(clients->getMutex());
-    for (auto it = clients->getUnorderedMap()->begin(); it != clients->getUnorderedMap()->end(); ++it)
-    {
-        //if (senderEndpoint != it->second.endpoint) // Uncomment for main branch
-            sendMessage(it->second.endpoint, buffer);
-    }
+    clients->accessMap([&](auto &map){
+        for (auto it = map.begin(); it != map.end(); ++it)
+        {
+            //if (senderEndpoint != it->second.endpoint) // Uncomment for main branch
+                sendMessage(it->second.endpoint, buffer);
+        }
+    });
 }
 
 void MessageHandler::removeClient(udp::endpoint &clientEndpoint)
@@ -258,14 +258,15 @@ void MessageHandler::removeClient(udp::endpoint &clientEndpoint)
     if(clients->existsItem(clientPortIp))
         clients->remove(clientPortIp);
 
-    std::lock_guard<std::mutex> lock(clients->getMutex());
-    // Telling the Clients to remove unreachable client
-    for (auto &pair : *clients->getUnorderedMap())
-    {
-        PackagingSystem clientToRemove(Packets::ServerPacket::serverRemoveClient);
-        clientToRemove.addString(clientPortIp);
-        sendMessage(pair.second.endpoint, clientToRemove.serializePacket());
-    }
+
+    clients->accessMap([&](auto &map) {
+        for (auto &pair : map)
+        {
+            PackagingSystem clientToRemove(Packets::ServerPacket::serverRemoveClient);
+            clientToRemove.addString(clientPortIp);
+            sendMessage(pair.second.endpoint, clientToRemove.serializePacket());
+        }
+    });
 
     updateConsoleTitle();
 }
