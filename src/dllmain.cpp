@@ -162,11 +162,14 @@ DWORD WINAPI MainThread()
 	SetupConsole();
 
 	// ######### INI STUFF #########
-	if(!IniData::CreateConfigIfMissing(IniData::CLIENT_CONFIG_FILE))
+	if(!IniData::CreateConfigIfMissing(IniData::CLIENT_CONFIG_FILE)){
+		std::cout << "Error: Couldn't read/create config...\n";
+		Sleep(1500);
 		return -1;
-		
+	}
+			
 	IniData::Ini config = IniData::LoadIni();
-
+	
 	// ###########################
 
 	std::cout << "Starting MAIN...\n"

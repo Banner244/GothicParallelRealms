@@ -12,6 +12,8 @@
 #include "../../common/src/Async/AsyncUnorderedMap.h"
 #include "../../common/src/Async/Async.h"
 
+#include "../Models/WeaponMode.h"
+
 class Client;
 /**
  * @class MessageHandler
@@ -48,6 +50,7 @@ private:
     void handleServerRequestsHeartbeat(std::string &buffer);
     void handleServerDistributePosition(std::string &buffer);
     void handleServerDistributeAnimations(std::string &buffer);
+    void handleServerDistributeWeaponMode(std::string &buffer);
     void handleServerDistributeEquip(std::string &buffer);
     void handleServerDistributeRotations(std::string &buffer);
     void handleServerRemoveClient(std::string &buffer);

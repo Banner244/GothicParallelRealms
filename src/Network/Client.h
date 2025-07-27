@@ -40,6 +40,7 @@ public:
     void sendHandshakeRequest();
     void sendPlayerPosition();
     void sendPlayerAnimation();
+    void sendPlayerWeaponMode();
     void sendPlayerEquip();
     void sendPlayerRotation();
 

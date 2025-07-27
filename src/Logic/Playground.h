@@ -50,7 +50,7 @@ class Playground {
                     npc->setName("Steve");
 
                 } else {
-                    std::cout << "Setting Anims..\n";
+                    //std::cout << "Setting Anims..\n";
                     DataStructures::LastAnimation npcLastAnim = npc->getLastAnimation();
                     DataStructures::LastAnimation npcNewAnim = pMainPlayer->getLastAnimation();
                     std::unique_ptr<zCModel> npcModel = std::make_unique<zCModel>(npc->oCNpc->getModel());
@@ -79,6 +79,12 @@ class Playground {
                         }
                     }
 
+                    /*if(pMainPlayer->oCNpc->getWeaponMode != nullptr){
+                        std::cout << "Weapon is drawn.\n";
+                        npc->oCNpc->setWeaponMode(1);
+                    }*/
+                    std::cout << "WeaponMode: " << std::to_string(pMainPlayer->oCNpc->getWeaponMode()) << "\n";
+                    npc->oCNpc->setWeaponMode(pMainPlayer->oCNpc->getWeaponMode());
                 }
             }
 

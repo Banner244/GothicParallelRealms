@@ -9,6 +9,8 @@
 #include "oCItem.h"
 #include "oCMsgWeapon.h"
 
+#include "../Models/WeaponMode.h"
+
 class oCItem;
 /**
  * @brief Base memory address for the main player's NPC instance.
@@ -151,6 +153,9 @@ public:
     int useItem(oCItem * item);
 
     void setTalentValue(int talentIndex, int value);
+
+    void setWeaponMode(WeaponMode mode);
+    WeaponMode getWeaponMode();
     //zSTRING *getName2();
 
     /*int applyOverlay(char * animName);

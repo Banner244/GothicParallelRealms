@@ -284,6 +284,17 @@ void OCNpc::setTalentValue(int talentIndex, int value)
     setTalentValueRef(this, talentIndex, value);
 }
 
+void OCNpc::setWeaponMode(WeaponMode mode){
+    using _SetWeaponMode = void(__thiscall *)(void *pThis, int mode);
+    _SetWeaponMode setWeaponModeRef = reinterpret_cast<_SetWeaponMode>(0x696550);
+    setWeaponModeRef(this, mode);
+}
+
+WeaponMode OCNpc::getWeaponMode(){
+    using _GetWeaponMode = int(__thiscall *)(void *pThis);
+    _GetWeaponMode GetWeaponModeRef = reinterpret_cast<_GetWeaponMode>(0x695820);
+    return static_cast<WeaponMode>(GetWeaponModeRef(this));
+}
 /*zSTRING *OCNpc::getName2(){
     zSTRING * nS = zSTRING::CreateNewzSTRING("");
     using _GetName = zSTRING* (__thiscall *)(void* pThis);

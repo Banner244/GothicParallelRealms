@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "../Models/WeaponMode.h"
 
 namespace DataStructures {
     struct LastPosition {
@@ -49,6 +50,19 @@ namespace DataStructures {
             }
         
             return true;
+        }
+    };
+
+    struct LastWeaponMode {
+        WeaponMode weaponMode;
+
+        bool isSame(const LastWeaponMode& lastWeaponMode) {
+            if (weaponMode == lastWeaponMode.weaponMode) {
+                return true;
+            }
+            
+            weaponMode = lastWeaponMode.weaponMode;
+            return false;
         }
     };
 

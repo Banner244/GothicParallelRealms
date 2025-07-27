@@ -120,16 +120,29 @@ void Client::sendPlayerPosition()
 
 void Client::sendPlayerAnimation()
 {
-    DataStructures::LastAnimation lastAnim =  mainPlayer->getLastAnimation();
+    DataStructures::LastAnimation lastAnim = mainPlayer->getLastAnimation();
 
     PackagingSystem packetAnim(Packets::ClientPacket::clientShareAnimations);
     packetAnim.addInt(lastAnim.animationCount);
 
     for(const auto &id : lastAnim.animationIds) {
         packetAnim.addInt(id);
+        //std::cout << "AnimId: " << std::to_string(id) << "\n";
     }
 
     std::string bufferStr = packetAnim.serializePacket();
+    this->send_message(bufferStr);
+}
+
+void Client::sendPlayerWeaponMode()
+{
+    DataStructures::LastWeaponMode lastWMode = mainPlayer->getLastWeaponMode();
+
+    PackagingSystem packetWeaponMode(Packets::ClientPacket::clientShareWeaopnMode);
+
+    packetWeaponMode.addInt(lastWMode.weaponMode);
+
+    std::string bufferStr = packetWeaponMode.serializePacket();
     this->send_message(bufferStr);
 }
 

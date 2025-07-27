@@ -64,6 +64,7 @@ class Npc
 
 		DataStructures::LastPosition getLastPosition();
 		DataStructures::LastAnimation getLastAnimation();
+		DataStructures::LastWeaponMode getLastWeaponMode();
 		DataStructures::LastEquip getLastEquip();
 		DataStructures::LastRotation getLastRotation();
 };

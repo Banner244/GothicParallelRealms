@@ -22,6 +22,13 @@ void DataChangeNotifier::initListValues() {
     });
 
     playerState.push_back( [this]() { 
+        DataStructures::LastWeaponMode retLastWeaponMode = pMainPlayer->getLastWeaponMode();
+        if(!playerLastWeaponMode.isSame(retLastWeaponMode)) {
+            pClient->sendPlayerWeaponMode();
+        }
+    });
+
+    playerState.push_back( [this]() { 
         DataStructures::LastEquip retLastEquip = pMainPlayer->getLastEquip();
         if(!playerLastEquip.isSame(retLastEquip)) {
             pClient->sendPlayerEquip();

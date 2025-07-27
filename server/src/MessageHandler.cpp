@@ -41,6 +41,9 @@ void MessageHandler::handleBuffer(udp::endpoint &clientEndpoint, std::string buf
     case Packets::ClientPacket::clientShareAnimations:
         clientSharesAnimations(clientEndpoint, buffer);
         break;
+    case Packets::ClientPacket::clientShareWeaopnMode:
+        clientSharesWeaponMode(clientEndpoint, buffer);
+        break;
     case Packets::ClientPacket::clientShareEquip:
         clientSharesEquip(clientEndpoint, buffer);
         break;
@@ -196,6 +199,18 @@ void MessageHandler::clientSharesAnimations(udp::endpoint &clientEndpoint, std::
     }
 
     sendToAllExceptSender(clientEndpoint, animationPacket.serializePacket());
+}
+
+void MessageHandler::clientSharesWeaponMode(udp::endpoint &clientEndpoint, std::string &buffer)
+{
+    auto safeBuffer = std::make_shared<std::string>(buffer);
+    std::string clientPortIp = getClientUniqueString(clientEndpoint);
+
+    PackagingSystem weaponModePacket(Packets::ServerPacket::serverDistributeWeaponMode);
+    weaponModePacket.addString(clientPortIp);
+    weaponModePacket.addInt(PackagingSystem::ReadItem<int>(buffer));
+
+    sendToAllExceptSender(clientEndpoint, weaponModePacket.serializePacket());
 }
 
 void MessageHandler::clientSharesEquip(udp::endpoint &clientEndpoint, std::string &buffer)

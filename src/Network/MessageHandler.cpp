@@ -26,6 +26,9 @@ void MessageHandler::managePacket(std::string stringPacket)
     case Packets::ServerPacket::serverDistributeAnimations:
         handleServerDistributeAnimations(stringPacket);
         break;
+    case Packets::ServerPacket::serverDistributeWeaponMode:
+        handleServerDistributeWeaponMode(stringPacket);
+        break;
     case Packets::ServerPacket::serverDistributeEquip:
         handleServerDistributeEquip(stringPacket);
         break;
@@ -189,6 +192,27 @@ void MessageHandler::handleServerDistributeAnimations(std::string &buffer)
 
     // Handy for ClientGameMapping and DataChangeNotifier Class
     value->networkState.animation = npcNewAnim;
+}
+
+void MessageHandler::handleServerDistributeWeaponMode(std::string &buffer)
+{
+    std::string receivedKey = PackagingSystem::ReadItem<std::string>(buffer);
+
+    auto it = pClients->find(receivedKey);
+    if (!it)
+    {
+        return;
+    }
+
+    Npc *value = it.value();
+    DataStructures::LastWeaponMode npcLastWeaponMode = value->getLastWeaponMode();
+    DataStructures::LastAnimation npcNewAnim;
+    std::unique_ptr<zCModel> npcModel = std::make_unique<zCModel>(value->oCNpc->getModel());
+
+    WeaponMode weaponMode = static_cast<WeaponMode>(PackagingSystem::ReadItem<int>(buffer));
+
+    if(weaponMode != npcLastWeaponMode.weaponMode)
+        value->oCNpc->setWeaponMode(weaponMode);
 }
 
 void MessageHandler::handleServerDistributeEquip(std::string &buffer)

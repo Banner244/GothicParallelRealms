@@ -248,10 +248,19 @@ DataStructures::LastAnimation Npc::getLastAnimation() {// TODO: Improve this shi
 		uintptr_t addr3 = *reinterpret_cast<uintptr_t*>(pp2);
 		addr3 += 0x4c;
 		int * pp3 = reinterpret_cast<int*> (addr3);
+
 		retLastAnim.animationIds.push_back(*pp3);
 	}
 
 	return retLastAnim;
+}
+
+DataStructures::LastWeaponMode Npc::getLastWeaponMode() {
+	DataStructures::LastWeaponMode retLastWeaponMode;
+
+	retLastWeaponMode.weaponMode = oCNpc->getWeaponMode();
+
+	return retLastWeaponMode;
 }
 
 DataStructures::LastEquip Npc::getLastEquip() {
