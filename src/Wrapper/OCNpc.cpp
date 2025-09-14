@@ -249,7 +249,13 @@ oCItem * OCNpc::putInInv(oCItem * item)
     _PutInInv putInInvRef = reinterpret_cast<_PutInInv>(0x6a4ff0);
 
     return putInInvRef(this, item);
+}
 
+oCItem * OCNpc::removeFromInv(oCItem * item, int param){
+        using _RemoveFromInv = oCItem*(__thiscall *)(void *pThis, oCItem * item, int param);
+    _RemoveFromInv removeFromInvRef = reinterpret_cast<_RemoveFromInv>(0x6a5260);
+
+    return removeFromInvRef(this, item, param);
 }
 
 int OCNpc::EV_DrawWeapon1(oCMsgWeapon * msgWeapon)
@@ -258,6 +264,27 @@ int OCNpc::EV_DrawWeapon1(oCMsgWeapon * msgWeapon)
     _EV_DrawWeapon1 EV_DrawWeapon1Ref = reinterpret_cast<_EV_DrawWeapon1>(0x6a8b80);
 
     return EV_DrawWeapon1Ref(this, msgWeapon);
+}
+
+int OCNpc::EV_ForceRemoveWeapon(oCMsgWeapon * msgWeapon){
+    using _EV_RemoveWeapon = int(__thiscall *)(void *pThis, oCMsgWeapon * msgWeapon);
+    _EV_RemoveWeapon EV_RemoveWeaponRef = reinterpret_cast<_EV_RemoveWeapon>(0x6a9f40);
+
+    return EV_RemoveWeaponRef(this, msgWeapon);
+}
+
+int OCNpc::EV_RemoveWeapon(oCMsgWeapon * msgWeapon){
+    using _EV_RemoveWeapon = int(__thiscall *)(void *pThis, oCMsgWeapon * msgWeapon);
+    _EV_RemoveWeapon EV_RemoveWeaponRef = reinterpret_cast<_EV_RemoveWeapon>(0x6a93c0);
+
+    return EV_RemoveWeaponRef(this, msgWeapon);
+}
+
+int OCNpc::EV_RemoveWeapon1(oCMsgWeapon * msgWeapon){
+    using _EV_RemoveWeapon1 = int(__thiscall *)(void *pThis, oCMsgWeapon * msgWeapon);
+    _EV_RemoveWeapon1 EV_RemoveWeapon1Ref = reinterpret_cast<_EV_RemoveWeapon1>(0x6a9790);
+
+    return EV_RemoveWeapon1Ref(this, msgWeapon);
 }
 
 // returns the weapon in the fighting slot
@@ -295,6 +322,13 @@ WeaponMode OCNpc::getWeaponMode(){
     _GetWeaponMode GetWeaponModeRef = reinterpret_cast<_GetWeaponMode>(0x695820);
     return static_cast<WeaponMode>(GetWeaponModeRef(this));
 }
+
+zCEventManager * OCNpc::GetEM(int createOrNot){ // STATIC
+    using _GetEM = zCEventManager*(__fastcall *)(int createOrNot);
+    _GetEM _getEMRef = reinterpret_cast<_GetEM>(0x5d49b0);
+    return _getEMRef(createOrNot);
+}
+
 /*zSTRING *OCNpc::getName2(){
     zSTRING * nS = zSTRING::CreateNewzSTRING("");
     using _GetName = zSTRING* (__thiscall *)(void* pThis);

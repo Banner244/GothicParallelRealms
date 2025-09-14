@@ -8,10 +8,12 @@
 #include "oCObjectFactory.h"
 #include "oCItem.h"
 #include "oCMsgWeapon.h"
+#include "zCEventManager.h"
 
 #include "../Models/WeaponMode.h"
 
 class oCItem;
+class zCEventManager;
 /**
  * @brief Base memory address for the main player's NPC instance.
  *
@@ -145,8 +147,12 @@ public:
     void unequipItem(oCItem * item);
 
     oCItem * putInInv(oCItem * item);
+    oCItem * removeFromInv(oCItem * item, int param);
 
     int EV_DrawWeapon1(oCMsgWeapon * msgWeapon);
+    int EV_RemoveWeapon1(oCMsgWeapon * msgWeapon);
+    int EV_RemoveWeapon(oCMsgWeapon * msgWeapon);
+    int EV_ForceRemoveWeapon(oCMsgWeapon * msgWeapon);
 
     oCItem * getWeapon();
 
@@ -156,6 +162,10 @@ public:
 
     void setWeaponMode(WeaponMode mode);
     WeaponMode getWeaponMode();
+
+    // eventmanager*
+    // 1 = creates if it's not created. 0 return nullptr if it is not created
+    static zCEventManager * GetEM(int createOrNot);
     //zSTRING *getName2();
 
     /*int applyOverlay(char * animName);

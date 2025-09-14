@@ -209,10 +209,25 @@ void MessageHandler::handleServerDistributeWeaponMode(std::string &buffer)
     DataStructures::LastAnimation npcNewAnim;
     std::unique_ptr<zCModel> npcModel = std::make_unique<zCModel>(value->oCNpc->getModel());
 
-    WeaponMode weaponMode = static_cast<WeaponMode>(PackagingSystem::ReadItem<int>(buffer));
+    int mode = PackagingSystem::ReadItem<int>(buffer);
+    WeaponMode weaponMode = static_cast<WeaponMode>(mode);
 
-    if(weaponMode != npcLastWeaponMode.weaponMode)
-        value->oCNpc->setWeaponMode(weaponMode);
+    if(weaponMode != npcLastWeaponMode.weaponMode){
+        //zCEventManager* em = OCNpc::GetEM(1);
+        //em->onMessage(c, value->oCNpc);
+        oCMsgWeapon * c = oCMsgWeapon::CreateoCMsgWeapon(mode, 0, 0);
+
+        if(weaponMode == WeaponMode::OneHandMode){
+            Async::PrintLn("OneHandMode");
+        }
+        if(weaponMode == WeaponMode::DefaultMode){
+            Async::PrintLn("WeaponMode::DefaultMode");
+            value->oCNpc->EV_ForceRemoveWeapon(c);
+            //value->oCNpc->setWeaponMode(weaponMode);
+        } else {
+            value->oCNpc->EV_DrawWeapon1(c);
+        }
+    }
 }
 
 void MessageHandler::handleServerDistributeEquip(std::string &buffer)

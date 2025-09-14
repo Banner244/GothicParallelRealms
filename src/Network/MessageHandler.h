@@ -6,6 +6,7 @@
 
 #include "../Models/Npc.h"
 #include "../Wrapper/zCModel.h"
+#include "../Wrapper/zCEventManager.h"
 #include "../Network/Client.h"
 #include "../../common/src/Network/Packets.h"
 #include "../../common/src/Network/PackagingSystem.h"

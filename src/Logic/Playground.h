@@ -85,6 +85,14 @@ class Playground {
                     }*/
                     std::cout << "WeaponMode: " << std::to_string(pMainPlayer->oCNpc->getWeaponMode()) << "\n";
                     npc->oCNpc->setWeaponMode(pMainPlayer->oCNpc->getWeaponMode());
+                    oCMsgWeapon *  c = oCMsgWeapon::CreateoCMsgWeapon(1, 0, 0);
+                    npc->oCNpc->EV_DrawWeapon1(c);
+
+
+                    //zCEventManager* em = OCNpc::GetEM(1);
+
+        // Nachricht ins System schicken
+                    //em->onMessage(c, npc->oCNpc);
                 }
             }
 
