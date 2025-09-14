@@ -5,20 +5,47 @@
 #include <boost/asio.hpp>
 
 #include "ServerManager.h"
+#include "IniData.h"
 
 #include "MessageHandler.h"
+//#include "../../common/src/IniManager.h"
 
 using boost::asio::ip::udp;
 
+
+std::string ascii = R"(
+  ____                 _ _      _   ____            _               
+ |  _ \ __ _ _ __ __ _| | | ___| | |  _ \ ___  __ _| |_ __ ___  ___ 
+ | |_) / _` | '__/ _` | | |/ _ \ | | |_) / _ \/ _` | | '_ ` _ \/ __|
+ |  __/ (_| | | | (_| | | |  __/ | |  _ <  __/ (_| | | | | | | \__ \
+ |_|   \__,_|_|  \__,_|_|_|\___|_| |_| \_\___|\__,_|_|_| |_| |_|___/
+)";
+
+
+IniData::Ini getConfigData() {
+    IniData::Ini ret;
+    // #### LOADIN INI ####
+    if(!IniData::CreateConfigIfMissing(IniData::CONFIG_FILE))
+        return ret;
+
+    ret = IniData::LoadIni();
+    std::cout << "-- Config loaded --" << "\n";
+
+    return ret;
+}
+
 int main()
 {
+    std::cout << ascii << "\n\n";
     try
     {
+        IniData::Ini configData = getConfigData();
+
         boost::asio::io_context io_context;
         boost::asio::io_context processing_context;
         boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work_guard(processing_context.get_executor());
 
-        ServerManager serverManager(io_context, processing_context);
+        ServerManager serverManager(io_context, processing_context, configData);
 
         const size_t thread_count = std::max(1u, std::thread::hardware_concurrency() / 2);
         std::cout << "Using " << thread_count << " network threads.\n";
@@ -37,7 +64,7 @@ int main()
             threads.emplace_back([&processing_context]() { processing_context.run(); });
         }
 
-        serverManager.watchingHeartbeat();
+        //serverManager.watchingHeartbeat();
 
         // waiting for the end of all threads
         for (auto &thread : threads)

@@ -1,22 +1,12 @@
 #include "GameThreadWorker.h"
+#include <iomanip>
 
-GameThreadWorker::GameThreadWorker()
+GameThreadWorker::GameThreadWorker(Client &client)
 {
-    clients = new std::unordered_map<std::string, Npc *>();
-    messageHandler = new MessageHandler(clients);
-    pMainPlayer = new Npc(ADDR_PLAYERBASE);
-}
+    messageHandler = std::make_unique<MessageHandler>(&clients, client);
+    pMainPlayer = std::make_unique<Npc>(ADDR_PLAYERBASE);
 
-GameThreadWorker::~GameThreadWorker()
-{
-    delete clients;
-    delete messageHandler;
-    delete pMainPlayer;
-}
-
-void GameThreadWorker::setClientForHandler(Client &client)
-{
-    messageHandler->setClient(client);
+    mapping = std::make_unique<ClientGameMapping>(&clients);
 }
 
 void GameThreadWorker::addTask(std::string task)
@@ -38,10 +28,12 @@ void GameThreadWorker::processMessages()
         removeTask();
     }
 }
-//Npc *npc;
+
 void GameThreadWorker::checkGameState(){
-    // Checks if player is in range of an other player to render him
-    for (const auto& pair : *clients) {
+    /* ## Checks if player is in range of an other player to render him ## */
+    std::unordered_map<std::string, Npc*> copyOfClients = *clients.getUnorderedMap();
+
+    for (const auto& pair : copyOfClients) {
         if (pMainPlayer->oCNpc->getDistanceToVob(pair.second->oCNpc) < 4500 && pair.second->oCNpc->getHomeWorld() == 0)
         {
             void *add = OCWorld::AddVob(pair.second->oCNpc);
@@ -49,9 +41,7 @@ void GameThreadWorker::checkGameState(){
         }
     }
 
-    /* ################ Custom Shit Here################# */
-    if (GetAsyncKeyState(VK_RSHIFT) < 0)
-    {
+    /* ## Checks if clients are in sync with there acions ## */
+    mapping->manageClientsInSync();
 
-    }
 }

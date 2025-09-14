@@ -72,7 +72,6 @@ public:
 
 private:
     std::string mPacket; ///< The internal string storing the packet data.
-    char *mPacketBufferPtr = nullptr;
 
     int mPacketId = 0;
     /**

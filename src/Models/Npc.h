@@ -19,6 +19,9 @@ class Npc
 
 		OCNpc *oCNpc;
 		
+		void setName(std::string name);
+		std::string getName();
+
 		void healPlayerBy(int HP);
 		void tpToOldCamp();
 		void superJump();
@@ -52,7 +55,16 @@ class Npc
 
 		void setInterpolatePosition(float x, float z, float y);
 
+		struct NetworkState {
+			DataStructures::LastPosition position;
+			DataStructures::LastAnimation animation;
+			DataStructures::LastEquip equip;
+			DataStructures::LastRotation rotation;
+		} networkState;
+
 		DataStructures::LastPosition getLastPosition();
 		DataStructures::LastAnimation getLastAnimation();
+		DataStructures::LastWeaponMode getLastWeaponMode();
+		DataStructures::LastEquip getLastEquip();
 		DataStructures::LastRotation getLastRotation();
 };

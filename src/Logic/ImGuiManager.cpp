@@ -26,8 +26,8 @@ void ImGuiManager::showContent(ImGuiData imGuiData)
     std::string coords = "Coords.:" + player->getCoordinates();
 
     std::string level = "Level:" + std::to_string(player->getCurrentLevel());
-    ImGui::Text(coords.c_str());
-    ImGui::Text(level.c_str());
+    ImGui::Text("%s", coords.c_str());
+    ImGui::Text("%s", level.c_str());
 
     ImGui::Text("\nPlayers");
     if (!imGuiData.clients.empty())
@@ -42,10 +42,10 @@ void ImGuiManager::showContent(ImGuiData imGuiData)
             std::string posZ = std::to_string(valueNpc->getZ());
             std::string posY = std::to_string(valueNpc->getY());
 
-            ImGui::Text(valueKey.c_str());
-            ImGui::Text(("\t" + posX).c_str());
-            ImGui::Text(("\t" + posZ).c_str());
-            ImGui::Text(("\t" + posY).c_str());
+            ImGui::Text("%s", valueNpc->getName().c_str());
+            ImGui::Text("%s", ("\t" + posX).c_str());
+            ImGui::Text("%s", ("\t" + posZ).c_str());
+            ImGui::Text("%s", ("\t" + posY).c_str());
         }
     }
     else

@@ -1,19 +1,20 @@
 #include "Client.h"
 
-Client::Client(boost::asio::io_context &io_context, const std::string &host, const std::string &port, GameThreadWorker *gameThreadWorker)
-    : socket_(io_context), resolver_(io_context), server_endpoint_(*resolver_.resolve(udp::v4(), host, port).begin())
+Client::Client(boost::asio::io_context &io_context, const std::string &username, const std::string &host, const std::string &port, GameThreadWorker *& gameThreadWorker)
+    : socket_(io_context), resolver_(io_context), username(username), server_endpoint_(*resolver_.resolve(udp::v4(), host, port).begin())
 {
-    this->gameThreadWorker = gameThreadWorker;
+
+    gameThreadWorker = new GameThreadWorker(*this);
+    this->pGameThreadWorker = gameThreadWorker;
 
     socket_.open(udp::v4());
     start_receive();
-    gameThreadWorker->setClientForHandler(*this);
 }
 
 Client::~Client()
 {
     delete mainPlayer;
-    delete gameThreadWorker;
+    delete pGameThreadWorker;
 }
 
 Npc * Client::getMainPlayer(){
@@ -58,7 +59,7 @@ void Client::start_receive()
                 std::fill(recv_buffer_.begin(), recv_buffer_.end(), 0);
 
                 // Paket verarbeiten
-                this->gameThreadWorker->addTask(receivedPackage);
+                this->pGameThreadWorker->addTask(receivedPackage);
             }
             else
             {
@@ -67,6 +68,36 @@ void Client::start_receive()
             // Nächstes Paket empfangen
             start_receive();
         });
+}
+
+void Client::setConnected() {
+    this->connected = true;
+}
+
+const bool Client::isConnected() const {
+    return connected;
+}
+
+void Client::sendHandshakeRequest() {
+    PackagingSystem packetHandshake(Packets::ClientPacket::clientHandshakeRequest);
+    packetHandshake.addString(this->username);
+
+    DataStructures::LastPosition lasPos = mainPlayer->getLastPosition();
+    packetHandshake.addFloatPointNumber(lasPos.x + 90, 2);
+    packetHandshake.addFloatPointNumber(lasPos.z, 2);
+    packetHandshake.addFloatPointNumber(lasPos.y + 90, 2);
+
+    packetHandshake.addFloatPointNumber(lasPos.yaw, 2);
+    packetHandshake.addFloatPointNumber(lasPos.pitch, 2);
+    packetHandshake.addFloatPointNumber(lasPos.roll, 2);
+
+    DataStructures::LastEquip lastEquip =  mainPlayer->getLastEquip();
+    packetHandshake.addString(lastEquip.meleeWeaponInstanceName);
+    packetHandshake.addString(lastEquip.rangedWeaponInstanceName);
+    packetHandshake.addString(lastEquip.armorInstanceName);
+
+    std::string bufferStr = packetHandshake.serializePacket();
+    this->send_message(bufferStr);
 }
 
 void Client::sendPlayerPosition()
@@ -89,16 +120,43 @@ void Client::sendPlayerPosition()
 
 void Client::sendPlayerAnimation()
 {
-    DataStructures::LastAnimation lastAnim =  mainPlayer->getLastAnimation();
+    DataStructures::LastAnimation lastAnim = mainPlayer->getLastAnimation();
 
     PackagingSystem packetAnim(Packets::ClientPacket::clientShareAnimations);
     packetAnim.addInt(lastAnim.animationCount);
 
     for(const auto &id : lastAnim.animationIds) {
         packetAnim.addInt(id);
+        //std::cout << "AnimId: " << std::to_string(id) << "\n";
     }
 
     std::string bufferStr = packetAnim.serializePacket();
+    this->send_message(bufferStr);
+}
+
+void Client::sendPlayerWeaponMode()
+{
+    DataStructures::LastWeaponMode lastWMode = mainPlayer->getLastWeaponMode();
+
+    PackagingSystem packetWeaponMode(Packets::ClientPacket::clientShareWeaopnMode);
+
+    packetWeaponMode.addInt(lastWMode.weaponMode);
+
+    std::string bufferStr = packetWeaponMode.serializePacket();
+    this->send_message(bufferStr);
+}
+
+void Client::sendPlayerEquip()
+{
+    DataStructures::LastEquip lastEquip =  mainPlayer->getLastEquip();
+
+    PackagingSystem packetEquip(Packets::ClientPacket::clientShareEquip);
+    
+    packetEquip.addString(lastEquip.meleeWeaponInstanceName);
+    packetEquip.addString(lastEquip.rangedWeaponInstanceName);
+    packetEquip.addString(lastEquip.armorInstanceName);
+
+    std::string bufferStr = packetEquip.serializePacket();
     this->send_message(bufferStr);
 }
 

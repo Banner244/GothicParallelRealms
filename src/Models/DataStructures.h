@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "../Models/WeaponMode.h"
 
 namespace DataStructures {
     struct LastPosition {
@@ -49,6 +50,35 @@ namespace DataStructures {
             }
         
             return true;
+        }
+    };
+
+    struct LastWeaponMode {
+        WeaponMode weaponMode;
+
+        bool isSame(const LastWeaponMode& lastWeaponMode) {
+            if (weaponMode == lastWeaponMode.weaponMode) {
+                return true;
+            }
+            
+            weaponMode = lastWeaponMode.weaponMode;
+            return false;
+        }
+    };
+
+    struct LastEquip {
+        std::string meleeWeaponInstanceName = "";
+        std::string rangedWeaponInstanceName = "";
+        std::string armorInstanceName = "";
+
+        bool isSame(LastEquip lastEquip) {
+            if(lastEquip.meleeWeaponInstanceName == meleeWeaponInstanceName && lastEquip.rangedWeaponInstanceName == rangedWeaponInstanceName && lastEquip.armorInstanceName == armorInstanceName)
+                return true;
+            
+            meleeWeaponInstanceName = lastEquip.meleeWeaponInstanceName;
+            rangedWeaponInstanceName = lastEquip.rangedWeaponInstanceName;
+            armorInstanceName = lastEquip.armorInstanceName;
+            return false;
         }
     };
 

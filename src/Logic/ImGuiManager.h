@@ -13,7 +13,7 @@
 #include <d3d11.h>
 #pragma comment(lib, "d3d11.lib")
 
-#include "../Models/NPC.h"
+#include "../Models/Npc.h"
 #include "../Models/ImGuiData.h"
 
 class ImGuiManager {

@@ -13,6 +13,10 @@
 #include "../Network/Client.h"
 #include "../Network/MessageHandler.h"
 
+#include "ClientGameMapping.h"
+
+#include "../../common/src/Async/AsyncUnorderedMap.h"
+
 class Client;
 class Npc;
 class MessageHandler;
@@ -38,15 +42,16 @@ class MessageHandler;
 class GameThreadWorker {
 
     public:
-        GameThreadWorker();
+        /**
+        * @brief Associates a specific client with the message handler.
+        * 
+        * @param client Reference to the client instance.
+        */
+        GameThreadWorker(Client &client);
         /**
          * @brief Pointer to a map containing active NPC clients, indexed by their IP/Port combination.
         */
-        std::unordered_map<std::string, Npc*> *clients;
-
-
-        ~GameThreadWorker();
-
+        AsyncUnorderedMap<std::string, Npc*> clients;
         
         /**
          * @brief Processes incoming network messages.
@@ -77,13 +82,6 @@ class GameThreadWorker {
         * This method is called when a task has been completed.
         */
         void removeTask();
-
-        /**
-        * @brief Associates a specific client with the message handler.
-        * 
-        * @param client Reference to the client instance.
-        */
-        void setClientForHandler(Client &client);
     private:
         /**
          * @brief Queue of tasks to be processed by the game thread.
@@ -92,7 +90,11 @@ class GameThreadWorker {
         /**
         * @brief Pointer to the MessageHandler responsible for processing communication.
         */
-        MessageHandler * messageHandler;
+        /*MessageHandler * messageHandler;
+        Npc *pMainPlayer;*/
 
-        Npc *pMainPlayer;
+        std::unique_ptr<MessageHandler> messageHandler;
+        std::unique_ptr<Npc> pMainPlayer;
+
+        std::unique_ptr<ClientGameMapping> mapping;
 };

@@ -42,6 +42,17 @@ void Npc::setPlayerPosition(float x, float y, float z)
 	setZ(z);
 }
 
+void Npc::setName(std::string name)
+{
+	basic_string * n =  (basic_string*)((char*)this->oCNpc + 0x108);//(basic_string*)((char*)this->oCNpc + 0x108);
+	*n = name.c_str();
+}
+std::string Npc::getName()
+{
+	basic_string * n =  (basic_string*)((char*)this->oCNpc + 0x108);
+	return n->c_str();
+}
+
 void Npc::tpToOldCamp()
 {
 	// this->setPlayerPosition(-8334.085f, 11636.9f, -1185.910f);
@@ -141,7 +152,7 @@ int Npc::getExpertise()
 	if (!isPlayerLoaded())
 		return 0;
 
-	return oCNpc->callVariable<int>(OCNpc::Offset::EXPERTISE);
+	return oCNpc->callVariable<int>(OCNpc::Offset::DEXTERITY);
 }
 
 float Npc::getX()
@@ -220,7 +231,7 @@ DataStructures::LastPosition Npc::getLastPosition() {
 	return retLastPos;
 }
 
-DataStructures::LastAnimation Npc::getLastAnimation() {
+DataStructures::LastAnimation Npc::getLastAnimation() {// TODO: Improve this shit
 	DataStructures::LastAnimation retLastAnim;
 	zCModel *npcModel = new zCModel(oCNpc->getModel());
 
@@ -228,7 +239,7 @@ DataStructures::LastAnimation Npc::getLastAnimation() {
 	retLastAnim.animationCount = animCount;
 	
 	for(int i = 0; i < animCount; i++) {
-		uintptr_t addr = reinterpret_cast<uintptr_t>(npcModel->getAddress())+ 0x38 + (i * 4) ;
+		uintptr_t addr = reinterpret_cast<uintptr_t>(npcModel->getAddress())+ 0x38 + (i * 4) ; // 0x38 = zCModelAniActive
 		void * pp = reinterpret_cast<void*> (addr);
 
 		uintptr_t addr2 = *reinterpret_cast<uintptr_t*>(pp);
@@ -237,10 +248,40 @@ DataStructures::LastAnimation Npc::getLastAnimation() {
 		uintptr_t addr3 = *reinterpret_cast<uintptr_t*>(pp2);
 		addr3 += 0x4c;
 		int * pp3 = reinterpret_cast<int*> (addr3);
+
 		retLastAnim.animationIds.push_back(*pp3);
 	}
 
 	return retLastAnim;
+}
+
+DataStructures::LastWeaponMode Npc::getLastWeaponMode() {
+	DataStructures::LastWeaponMode retLastWeaponMode;
+
+	retLastWeaponMode.weaponMode = oCNpc->getWeaponMode();
+
+	return retLastWeaponMode;
+}
+
+DataStructures::LastEquip Npc::getLastEquip() {
+	DataStructures::LastEquip retLastEquip;
+
+	if(oCNpc->getEquippedMeleeWeapon())
+		retLastEquip.meleeWeaponInstanceName = oCNpc->getEquippedMeleeWeapon()->getInstanceName()->stdString();
+	else 
+		retLastEquip.meleeWeaponInstanceName = "";
+	
+	if(oCNpc->getEquippedRangedWeapon())
+		retLastEquip.rangedWeaponInstanceName = oCNpc->getEquippedRangedWeapon()->getInstanceName()->stdString();
+	else 
+		retLastEquip.rangedWeaponInstanceName = "";
+
+	if(oCNpc->getEquippedArmor())
+		retLastEquip.armorInstanceName = oCNpc->getEquippedArmor()->getInstanceName()->stdString();
+	else 
+		retLastEquip.armorInstanceName = "";
+	
+	return retLastEquip;
 }
 
 DataStructures::LastRotation Npc::getLastRotation(){
